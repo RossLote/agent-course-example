@@ -58,7 +58,7 @@ the walkthrough (a still and a one-line transcript each):
 1. Open: four shelves, eight items in the tray. ✓
 2. Raw chicken to the top shelf: returns, message as specified. ✓
 3. Raw chicken to the bottom shelf: stays. ✓
-4. Keyboard: Tab to lettuce, Enter, arrow down twice, Enter: placed. Screen reader transcript:
+4. Keyboard: Tab to lettuce, Enter, arrow down three times, Enter: placed. Screen reader transcript:
    *"Lettuce placed. Correct."*
 5. All eight placed: "7 out of 8 right first time", raw chicken listed with its reason. ✓
 6. Try again: tray full, score cleared. ✓

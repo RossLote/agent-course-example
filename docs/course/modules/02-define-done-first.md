@@ -78,7 +78,7 @@ with all the checks green. Not "the agent says so".*
 > Bead .3, keyboard and screen reader, has no acceptance yet. Six lines have been suggested.
 > Pick the three a reviewer could check.
 
-- [ ] Pressing Enter on the focused tomatoes, then arrow down twice, then Enter, places them
+- [ ] Pressing Enter on the focused tomatoes, then arrow down three times, then Enter, places them
   in the salad drawer. **Yes:** a reviewer can do it and see it.
 - [ ] The screen reader says "Tomatoes placed in the salad drawer. Correct." **Yes:** a
   reviewer can hear it.
