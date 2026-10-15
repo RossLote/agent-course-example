@@ -1,0 +1,271 @@
+/* The fridge (docs/design/2026-10-15-first-pass/M05-TwoFridges.dc.html), on the design's tokens. */
+
+.fridge {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+.fridge-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fridge-title {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.fridge-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.fridge-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* The cabinet: its shelves top to bottom, each a button that takes the held item. */
+.fridge-cabinet {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 10px;
+  border: 2px solid var(--line-strong);
+  border-radius: 14px;
+  background: var(--ground);
+  list-style: none;
+}
+
+.fridge-shelf {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 12px;
+  border: 2px solid var(--surface);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+
+.fridge-shelf:disabled {
+  cursor: default;
+}
+
+.fridge-shelf:not(:disabled) {
+  cursor: pointer;
+}
+
+.fridge-shelf[data-target] {
+  border-style: dashed;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.fridge-shelf[data-target]:hover,
+.fridge-shelf[data-cursor],
+.fridge-shelf[data-over] {
+  border-style: solid;
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.fridge-shelf-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fridge-shelf-sub {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.fridge-on-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 24px;
+}
+
+.fridge-placed {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--right-line);
+  border-radius: 999px;
+  background: var(--right-soft);
+  color: var(--right);
+  font-size: 13px;
+}
+
+/* A flash fridge never says right: what stays is just there. */
+.fridge[data-feedback='flash'] .fridge-placed {
+  border-color: var(--line);
+  background: var(--ground);
+  color: var(--ink);
+}
+
+.fridge[data-feedback='flash'] .fridge-placed .fridge-icon {
+  display: none;
+}
+
+/* The tray. Its items are buttons that also drag, so a touch on one never scrolls the page. */
+.fridge-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 68px;
+  padding: 10px;
+  border: 2px dashed var(--line-strong);
+  border-radius: 10px;
+}
+
+.fridge-item {
+  min-height: var(--target);
+  padding: 6px 14px;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.fridge-item:hover {
+  border-color: var(--ink);
+}
+
+.fridge-item[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.fridge-item[data-dragging] {
+  opacity: 0.4;
+}
+
+.fridge-ghost {
+  position: fixed;
+  z-index: 10;
+  padding: 8px 14px;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgb(23 32 41 / 25%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* The status line: the live region's words, with a tick or a cross for a drop. */
+.fridge-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.fridge-status .fridge-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.fridge-status[data-tone='right'] {
+  border-color: var(--right-line);
+  background: var(--right-soft);
+  color: var(--right);
+}
+
+.fridge-status[data-tone='wrong'] {
+  border-color: var(--learner-line);
+  background: var(--learner-soft);
+}
+
+.fridge-status[data-tone='wrong'] .fridge-icon {
+  color: var(--wrong);
+}
+
+.fridge-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.fridge-score {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--right-line);
+  border-radius: 10px;
+  background: var(--right-soft);
+}
+
+.fridge-score-line {
+  font-weight: 700;
+}
+
+.fridge-wrong {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  list-style: none;
+}
+
+.fridge-wrong li,
+.fridge-all-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.fridge-wrong .fridge-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: var(--wrong);
+}
+
+.fridge-all-right .fridge-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: var(--right);
+}

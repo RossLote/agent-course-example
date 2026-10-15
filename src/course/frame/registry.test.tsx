@@ -32,7 +32,6 @@ const placeholders: Screen[] = [
     panel: { heading: 'The record', note: '{filled} of {total}' },
   },
   { type: 'match', slug: 'sorting', scored: false, heading: 'Sort', ...match },
-  { type: 'fridge', heading: 'Fridge', fridge: 'one-shot' },
   { type: 'compare', heading: 'Compare', left: 'one-shot', right: 'accepted', table: { rows: [{ aspect: 'A', left: 'L', right: 'R', wall: 'W' }] } },
 ];
 
