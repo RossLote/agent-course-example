@@ -24,6 +24,16 @@ const states = (container: HTMLElement) => [...container.querySelectorAll('.choi
 /** The box panel's caption, "n of 4 walls up. …". */
 const caption = () => screen.getByText(/of 4 walls up/, { selector: 'figcaption' }).textContent;
 const marks = (container: HTMLElement) => within(container).queryAllByRole('img', { name: /^(Right|Wrong)$/ }).map((m) => m.getAttribute('aria-label'));
+/** Each option's verdict pill, its words and its tone, or none. */
+const verdicts = (container: HTMLElement) =>
+  [...container.querySelectorAll('.choice')].map((li) => {
+    const pill = li.querySelector('.choice-verdict');
+    return pill === null ? 'none' : `${pill.getAttribute('data-tone')}: ${pill.textContent}`;
+  });
+const RIGHT_TICK = 'right: Right to tick';
+const RIGHT_LEAVE = 'right: Right to leave it';
+const WRONG_TICK = "wrong: Shouldn't be ticked";
+const MISSED = 'wrong: Missed: should be ticked';
 
 describe('ChooseScreen, tick everything (module 00)', () => {
   it('shows the five options unticked, with Check waiting for a tick', () => {
@@ -37,32 +47,62 @@ describe('ChooseScreen, tick everything (module 00)', () => {
     expect(states(container)).toEqual(['none', 'none', 'none', 'none', 'none']);
   });
 
-  it('marks every option by its own rightness on Check, each with its feedback and the four cards after', () => {
+  it('judges every option right with the three right ones ticked: five green pills, each with its feedback, and the four cards after', () => {
     const { container, shown } = renderChoose('00', 'what-went-wrong');
-    for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box);
-    expect(states(container)).toEqual(['on', 'on', 'on', 'on', 'on']);
+    fireEvent.click(option(/^It built things nobody asked for/));
+    fireEvent.click(option('It invented the rules.'));
+    fireEvent.click(option('It checked its own work.'));
+    expect(states(container)).toEqual(['on', 'on', 'on', 'none', 'none']);
     expect(screen.queryByRole('heading', { name: 'What just happened' })).toBeNull();
 
     press('Check my answer');
-    expect(states(container)).toEqual(['right', 'right', 'right', 'wrong', 'wrong']);
-    expect(marks(container)).toEqual(['Right', 'Right', 'Right', 'Wrong', 'Wrong']);
+    expect(states(container)).toEqual(['right-tick', 'right-tick', 'right-tick', 'right-leave', 'right-leave']);
+    expect(verdicts(container)).toEqual([RIGHT_TICK, RIGHT_TICK, RIGHT_TICK, RIGHT_LEAVE, RIGHT_LEAVE]);
+    // The pill carries right and wrong; the feedback under it has no mark of its own.
+    expect(marks(container)).toEqual([]);
     shown.options.forEach((o) => {
+      // The option keeps its name; its verdict and feedback are its description.
       const box = option(o.label);
       expect(box.hasAttribute('disabled')).toBe(true);
-      expect(document.getElementById(box.getAttribute('aria-describedby')!)?.textContent).toBe(o.feedback);
+      const [verdictId, feedbackId] = box.getAttribute('aria-describedby')!.split(' ');
+      expect(document.getElementById(verdictId)?.textContent).toMatch(/^Right to (tick|leave it)$/);
+      expect(document.getElementById(feedbackId)?.textContent).toBe(o.feedback);
     });
-    expect(screen.getByRole('status').textContent).toBe('Checked. You ticked 3 of the 3 right options and 2 of the 2 wrong ones. Each option now says why.');
+    const summary = screen.getByRole('status');
+    expect(summary.textContent).toBe('5 of 5 right.');
+    expect(summary.getAttribute('data-tone')).toBe('right');
+    expect(summary.className).toBe('choice-summary');
 
     const cards = screen.getByRole('heading', { name: 'What just happened' }).nextElementSibling as HTMLElement;
     expect(within(cards).getAllByRole('listitem')).toHaveLength(4);
   });
 
-  it('marks the options it was not ticked for too: tick none of the right ones and the right ones still go green', () => {
+  it('judges what was done with each option: a wrong tick and a missed one go red, and the summary counts both', () => {
     const { container } = renderChoose('00', 'what-went-wrong');
-    fireEvent.click(option('It was too slow.'));
+    fireEvent.click(option(/^It built things nobody asked for/));
+    fireEvent.click(option('It invented the rules.'));
+    fireEvent.click(option('It should have said no.'));
     press('Check my answer');
-    expect(states(container)).toEqual(['right', 'right', 'right', 'wrong', 'wrong']);
-    expect(screen.getByRole('status').textContent).toMatch(/ticked 0 of the 3 right options and 1 of the 2 wrong ones/);
+    expect(states(container)).toEqual(['right-tick', 'right-tick', 'missed', 'wrong-tick', 'right-leave']);
+    expect(verdicts(container)).toEqual([RIGHT_TICK, RIGHT_TICK, MISSED, WRONG_TICK, RIGHT_LEAVE]);
+    const summary = screen.getByRole('status');
+    expect(summary.textContent).toBe("3 of 5 right: one tick shouldn't be there, and one missed.");
+    expect(summary.getAttribute('data-tone')).toBe('wrong');
+  });
+
+  it('says the summary in the one live region, there from the start, once per Check', () => {
+    const { container } = renderChoose('00', 'what-went-wrong');
+    const region = screen.getByRole('status');
+    expect(region.textContent).toBe('');
+    fireEvent.click(option('It was too slow.'));
+    expect(region.textContent).toBe('');
+    press('Check my answer');
+    expect(screen.getByRole('status')).toBe(region);
+    expect(region.textContent).toBe("1 of 5 right: one tick shouldn't be there, and 3 missed.");
+    press('Try again');
+    expect(screen.getByRole('status')).toBe(region);
+    expect(region.textContent).toBe('');
+    expect(container.querySelectorAll('[role="status"]')).toHaveLength(1);
   });
 
   it('sends one interacted per ticked option on Check, each with the whole pick, and again after Try again', () => {
@@ -80,17 +120,49 @@ describe('ChooseScreen, tick everything (module 00)', () => {
     expect(onEvent.mock.calls.map(([e]) => e)).toEqual([{ type: 'interacted', slug: 'what-went-wrong', response: 'It invented the rules.', answer: { picked: [1] } }]);
   });
 
-  it('clears the ticks, the marks, the feedback and the cards on Try again', () => {
+  it('clears the ticks, the verdicts, the feedback, the summary and the cards on Try again', () => {
     const { container } = renderChoose('00', 'what-went-wrong');
     for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box);
     press('Check my answer');
     press('Try again');
     expect(screen.getAllByRole('checkbox').map((c) => [(c as HTMLInputElement).checked, c.hasAttribute('disabled')])).toEqual(Array(5).fill([false, false]));
     expect(states(container)).toEqual(['none', 'none', 'none', 'none', 'none']);
-    expect(marks(container)).toEqual([]);
+    expect(verdicts(container)).toEqual(Array(5).fill('none'));
+    expect(screen.getByRole('status').className).toBe('sr-only');
     expect(container.querySelector('.choice-feedback')).toBeNull();
     expect(screen.queryByRole('heading', { name: 'What just happened' })).toBeNull();
     expect(screen.getByRole('status').textContent).toBe('');
+  });
+});
+
+describe('ChooseScreen, every multi choose judges the same way (modules 00, 02, 03, 06)', () => {
+  const multis: [string, string][] = [
+    ['00', 'what-went-wrong'],
+    ['02', 'write-the-acceptance'],
+    ['03', 'build-the-box'],
+    ['06', 'what-would-you-change'],
+  ];
+
+  it.each(multis)('module %s %s: the right ones ticked is all right, everything ticked marks the wrong ones', (slug, choose) => {
+    const first = renderChoose(slug, choose);
+    const { options } = first.shown;
+    const total = options.length;
+    options.forEach((o) => o.right && fireEvent.click(option(o.label)));
+    press(first.shown.checkLabel ?? 'Check my answer');
+    expect(verdicts(first.container)).toEqual(options.map((o) => (o.right ? RIGHT_TICK : RIGHT_LEAVE)));
+    expect(screen.getByRole('status').textContent).toBe(`${total} of ${total} right.`);
+    expect(marks(first.container)).toEqual([]);
+    first.unmount();
+
+    const all = renderChoose(slug, choose);
+    for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box);
+    press(all.shown.checkLabel ?? 'Check my answer');
+    expect(verdicts(all.container)).toEqual(options.map((o) => (o.right ? RIGHT_TICK : WRONG_TICK)));
+    const wrong = options.filter((o) => !o.right).length;
+    expect(screen.getByRole('status').textContent).toBe(
+      `${total - wrong} of ${total} right: ${wrong === 1 ? 'one tick' : `${wrong} ticks`} shouldn't be there.`,
+    );
+    all.unmount();
   });
 });
 
@@ -186,7 +258,8 @@ describe('ChooseScreen, build the box (module 03)', () => {
     fireEvent.click(option(/^Its own working area/));
     press('Check my box');
     expect(drawn(container).area).toBe('up');
-    expect(states(container)).toEqual(['right', 'wrong', 'right', 'right', 'wrong', 'right', 'right']);
+    expect(states(container)).toEqual(['missed', 'right-leave', 'missed', 'right-tick', 'right-leave', 'missed', 'missed']);
+    expect(screen.getByRole('status').textContent).toBe('3 of 7 right: 4 missed.');
     press('Try again');
     expect(drawn(container).area).toBe('down');
     expect(caption()).toMatch(/^0 of 4/);
@@ -254,7 +327,9 @@ describe('ChooseScreen, from a saved answer', () => {
   it('renders a tick-everything checked, with the after cards, and the box from its ticks', () => {
     const tick = renderChoose('00', 'what-went-wrong', { picked: [0, 3] });
     expect(screen.getAllByRole('checkbox').map((c) => (c as HTMLInputElement).checked)).toEqual([true, false, false, true, false]);
-    expect(states(tick.container)).toEqual(['right', 'right', 'right', 'wrong', 'wrong']);
+    expect(states(tick.container)).toEqual(['right-tick', 'missed', 'missed', 'wrong-tick', 'right-leave']);
+    expect(verdicts(tick.container)).toEqual([RIGHT_TICK, MISSED, MISSED, WRONG_TICK, RIGHT_LEAVE]);
+    expect(screen.getByRole('status').textContent).toBe("2 of 5 right: one tick shouldn't be there, and 2 missed.");
     expect(screen.getByRole('heading', { name: 'What just happened' })).toBeTruthy();
     tick.unmount();
 
