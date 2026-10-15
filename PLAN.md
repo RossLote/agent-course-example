@@ -118,7 +118,9 @@ decisions C1–C17 in `docs/course/README.md` §9, with the same numbers. D18–
 brief's, recorded with their reasons on bead `agent-course-r4n` (log
 `docs/conversations/2026-10-15-brief.md`). The rules after them are epic
 `agent-course-wqw`'s, with the epic review's additions folded in; where an addition replaced
-an earlier rule, only the final rule is here. All of them bind every bead.
+an earlier rule, only the final rule is here. Round two's rules, epic `agent-course-7ec`'s,
+come last; where one replaces a round-one rule, that rule records the reversal. All of them
+bind every bead.
 
 ### From the content draft (D1–D17)
 
@@ -310,11 +312,13 @@ an earlier rule, only the final rule is here. All of them bind every bead.
   are one engine, and D14 holds for both.
 - **A fridge play.** A play ends when every item is placed or, on the one-shot, when the
   timer runs out; Try again or Reset starts a new play; leaving mid-play ends nothing. The
-  one-shot has a "No timer" control that works before or during a play, and its wrong drop
-  returns the item and says only that it returned, never why. After Enter picks an item up,
-  the cursor starts on the first shelf, so the salad drawer is three arrow-downs away.
-  *Reason:* one completed statement per play, WCAG 2.2.1 on the timer, and the one-shot
-  shows what an unbriefed build leaves out.
+  one-shot's wrong drop returns the item and says only that it returned, never why (its "No
+  timer" control, which worked before or during a play for WCAG 2.2.1, was reversed on
+  2026-10-15 under 2.2.1's essential exception: the time pressure is what the activity
+  shows, it is optional and unscored, and nothing waits on it; see "The one-shot's timer" in
+  round two's rules). After Enter picks an item up, the cursor starts on the first shelf, so
+  the salad drawer is three arrow-downs away. *Reason:* one completed statement per play,
+  and the one-shot shows what an unbriefed build leaves out.
 - **Accessibility.** WCAG 2.2 AA throughout: real buttons and links, 44px targets, visible
   focus, every control reachable by Tab, right and wrong carried by an icon as well as
   colour. The one-shot is keyboard-operable too, and its comparison row says so. *Reason:*
@@ -330,6 +334,90 @@ an earlier rule, only the final rule is here. All of them bind every bead.
   e2e, plus the package. *Reason:* the course has no server to integrate with.
 - **Test fixtures.** The shell's and the frame's tests use inline fixtures, never the stub
   modules the content beads replace. *Reason:* the tests survive the content arriving.
+
+### Epic `agent-course-7ec`'s rules (round two)
+
+Ross played round one from its branch and asked for five changes (log
+`docs/conversations/2026-10-15-round-one-feedback.md`; design
+`docs/design/2026-10-15-round-one-feedback/`). Round one's rules above still bind every
+bead, except where a rule here replaces one.
+
+- **Home, done at a glance.** Every module card on the home page says where it stands in one
+  place, a pill in the card's top row beside the module number. A done module's pill is
+  solid green with a tick and the word "Done", and its card has a 2px green border; "In
+  progress" (indigo, soft fill) and "Not started" (outline, muted) are quieter pills in the
+  same place. The status line at the card's foot goes. The words stay those of
+  `src/course/home/labels.ts`, and tick, word and colour go together (D14). The design is
+  `Main` ("1a") on the round's canvas. *Reason:* Ross could not tell a done module from one
+  not started.
+- **The multi choose's verdicts.** A multi-select choose (mode multi), once checked, judges
+  what the learner did with each option, not whether the option is a right one: ticked and
+  right "Right to tick"; left and wrong "Right to leave it"; ticked and wrong "Shouldn't be
+  ticked"; left and right "Missed: should be ticked". The first two are green with a tick,
+  the last two red with a cross, as a pill beside the option's label; the option's own
+  feedback sits under it with no icon of its own. A summary line under the list, visible and
+  announced, reads "5 of 5 right." when every choice is right, else "<n> of <total> right: "
+  then "one tick shouldn't be there" or "<k> ticks shouldn't be there", and "one missed" or
+  "<m> missed", joined by ", and ", ending with a full stop. It holds for every multi choose
+  (00 what-went-wrong, 02 write-the-acceptance, 03 build-the-box, 06
+  what-would-you-change); single choice and the statements are unchanged. *Reason:* Ross
+  read red crosses on rows he had rightly left unticked as his own mistakes.
+- **The one-shot's timer.** The one-shot fridge runs fifteen seconds
+  (`content/fridge/one-shot.yaml`), and no fridge has a No timer control. This reverses
+  round one's No timer ("A fridge play"), put there for WCAG 2.2.1, under 2.2.1's essential
+  exception: the time pressure is what the activity shows, it is optional and unscored, and
+  nothing waits on it. *Reason:* Ross wants learners to run out of time quickly; a minute
+  with no information is longer than anyone will try.
+- **The last five seconds.** The last five seconds of any timed fridge warn: the timer reads
+  red and pulses (no pulse under prefers-reduced-motion), the fridge's outline turns red,
+  and a short high beep sounds at 0:05, 0:04, 0:03, 0:02 and 0:01 and a long low tone at
+  0:00, six tones a play. The tones are made in the page with the Web Audio API (no audio
+  file, nothing fetched, no new dependency) and start only after the learner's first
+  pick-up. There is no mute control. When time is up the tray gives way to the fridge
+  file's time-up message and Reset. *Reason:* Ross asked for sound in the last five seconds
+  to raise the stress, so the learner feels how bad the unbriefed build is.
+- **The one-shot's copy.** Module 00's fridge intro reads "Optional, fifteen seconds. The
+  timer starts as soon as you pick something up."; the agent's two "60-second timer" lines
+  in module 00 read "15-second timer". A saved one-shot play with the timer switched off
+  (round one's No timer) no longer fits and counts as none. *Reason:* the copy follows the
+  timer, and a play without the timer is not a play of this one-shot.
+- **Balanced cards rows.** A cards block, numbered or plain, lays out in balanced rows: the
+  column count from two to four (one for a single card, never more than the cards) that
+  leaves the fewest empty places in the last row, more columns on a tie (5 cards: three
+  then two; 6: three and three; 7: four then three); a short last row is centred. Narrower screens drop to fewer columns and keep a short last
+  row centred. *Reason:* "How a brief goes" ran four and one, every card taller than it
+  needed to be.
+- **The brief, one round at a time.** The learner's opening message stays; the current round
+  shows alone under it with a "Send answers" button, off until every question in the round
+  has an answer, with the hint "Answer every question, then send." beside it; the last round
+  keeps Your defaults beside Send answers. Send answers or Your defaults fades the round out
+  and puts one learner line in its place ("My answers to 1 to 5.", "My answers to 6 to 8.",
+  or the defaults reply from the YAML); then the agent shows a spinner and "Thinking…" for
+  about 1.5 seconds, and the next round's message and questions arrive in the same place,
+  with focus moved to that message. After the last round come Thinking, the closing message
+  and the comparison card. On screen at any time: the opening, the latest learner line and
+  the agent's current turn; the record panel keeps every decision and fills as chips are
+  picked. Under prefers-reduced-motion nothing fades, and Thinking still shows. *Reason:*
+  it is Ross's real workflow (answer a batch, press Enter, the agent thinks and comes back),
+  and he did not see round two appear below round one.
+- **The brief's statements and resume.** The brief's statements are unchanged (interacted per
+  chip pick, three for Your defaults); Send answers sends nothing. Its saved answer also
+  records which rounds were sent: a resumed brief opens on the first unsent round with its
+  picks and no Thinking; a fully sent brief opens closed; a saved answer from round one,
+  which has no record of sending, counts a round as sent when every question in it is
+  answered. Module 01's brief intro reads "…pick it or pick differently, then send your
+  answers. Every answer becomes a decision on the right." *Reason:* sending is the learner's
+  Enter, not a choice a designer reads, and a learner who comes back finds the brief where
+  they left it.
+- **Fixed words in code.** The new fixed words (the four verdicts and the summary, Send
+  answers and its hint, the "My answers to …" line, Thinking…) live in the screens' code
+  beside round one's fixed words, as `src/course/home/labels.ts` does, not in the schema;
+  this epic changes no schema. *Reason:* moving fixed words into course.yaml is a later
+  round's, and no schema change keeps the beads disjoint.
+- **The look, round two.** The first pass's tokens (`src/styles/tokens.css`); the only new
+  visual pieces are the status pills, the verdict pills and the red timer warning. No new
+  dependency. *Reason:* the round's design pass kept the first pass's look unchanged, and
+  package.json stays as round one left it.
 
 ## 6a. Engine terms
 
