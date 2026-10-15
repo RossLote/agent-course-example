@@ -2,11 +2,38 @@
 
 **Wall:** the open box. **Time:** about 5 minutes.
 
-**Objective.** The learner can name the three things an agent does with a vague ask
+**Objective.** The learner can say what the course is about and what the example is, and can name the three things an agent does with a vague ask
 (guesses the gaps, builds more than asked, marks its own homework) and say in a sentence why
 checking matters more than the prompt.
 
-## Screen 1 · Opening
+## Screen 1 · Welcome: what you are doing here
+
+Less on the screen than anywhere else in the course. Added after Ross's first look at the
+design (2026-10-15): two things are on screen at once throughout, working with an agent and
+the thing the agent builds, and the learner has to be told which is which before anything
+else.
+
+Heading: *This course is about working with an AI agent. To show it, we follow one job from
+start to finish.* Under it: *Two things are on screen at once, so here they are, apart.*
+
+Three roles in a row, drawn apart, with an arrow between each:
+
+- **You.** You answer the agent's questions, decide what done means, set up the checks, and
+  judge what comes back. That is the work this course teaches.
+- **The agent**, drawn inside a dashed box. A scripted one, nothing real. It does the
+  building, inside a box you put round it. It will also, at times, guess, over-build and mark
+  its own homework, so you can see it happen.
+- **The fridge activity.** The job we follow: a drag-and-drop activity for a client's
+  food-hygiene course, built in code because the authoring tool can't do it. It is only the
+  example. You never build it yourself.
+
+Three lines under them: the subject is the agent; the fridge is the example, picked up by
+every module where the last one left it; you do your part at each step, then a check, then
+one takeaway. Eight modules, about 50 minutes, leave after any and come back.
+
+One button: **Continue**. Nothing else on the page.
+
+## Screen 2 · Opening
 
 Course title. One line under it: *A course on working with AI agents, built from Ross
 Lote's workflow for building with them, by that workflow.*
@@ -23,7 +50,7 @@ you will be able to set up a piece of agent work so that you can trust what come
 An open box drawn beside it: a floor and no walls. (The diagram that gains a wall per
 module.)
 
-## Screen 2 · The request
+## Screen 3 · The request
 
 > A client's food-hygiene course needs a fridge activity: learners drag food onto the right
 > shelf of a fridge and are told why when they get it wrong. Our authoring tool's
@@ -31,7 +58,7 @@ module.)
 
 *Let's do what most people do first.*
 
-## Screen 3 · Try it: just ask
+## Screen 4 · Try it: just ask
 
 A chat with the fake agent. The learner's first message is fixed, shown as typed:
 
@@ -58,7 +85,7 @@ The learner is asked: *Tick everything that went wrong here.* (multi-select)
 
 After submitting, the three right options light up with their lines.
 
-## Screen 4 · What just happened
+## Screen 5 · What just happened
 
 Three short cards:
 
@@ -76,7 +103,7 @@ Then the turn: *Here is the part that works.* A fourth card:
    fifth-shelf bug in a minute. That asymmetry is the whole workflow: box the builder, then
    let reviewers loose.
 
-## Screen 5 · Check
+## Screen 6 · Check
 
 **Q1.** Your agent built a feature you never mentioned. What most likely happened?
 
@@ -95,7 +122,7 @@ Then the turn: *Here is the part that works.* A fourth card:
 - (c) Nothing: agents lie. *They do not lie; they are sure. Those are different problems with
   the same fix.*
 
-## Screen 6 · Takeaway
+## Screen 7 · Takeaway
 
 > **The builder is the worst judge of its own work.** Everything that follows is about
 > putting walls round the builder and letting the reviewers in.

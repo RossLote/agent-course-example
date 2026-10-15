@@ -178,3 +178,33 @@ set it up; it comes before the brief.
   pentagon of walls round the builder, with the retro as a ring round it.
 - The canvas's source is copied into `docs/design/2026-10-15-first-pass/`
   with a README, so the design phase leaves an artefact in the repo.
+
+## Ross: I like it, but the start is confusing
+
+- I'm really liking it. But there's confusion at the very beginning: it
+  isn't clear what exactly we're going to be doing. The first page does
+  explain it, but at the very bottom, and there's so much on it that it's
+  hard to know what you're actually doing.
+- We're talking about two things here: the fact that we're building
+  something using AI, and the thing that we're building. Those two collide
+  at some point and it's "what am I actually doing here?"
+- So there should be an initial page with less on it. It loads, it tells
+  you what this whole thing is, you click continue, and then it takes you
+  into a page like the current first page.
+
+## Agent: a welcome page, the roles drawn apart
+
+- It makes sense, and it is the course's one real framing problem: the
+  subject and the example are on screen together throughout, so the
+  learner has to be told which is which before anything else.
+- Added a welcome page as the entry: one heading ("This course is about
+  working with an AI agent. To show it, we follow one job from start to
+  finish"), the three roles drawn apart with arrows (you; the agent, in a
+  dashed box; the fridge activity, "only the example, you never build it
+  yourself"), three lines on what each means, and one Continue. The old
+  first page is now the home page, trimmed: the thesis, the box and the
+  modules, with the example card gone and a "What am I doing here?" link
+  back to the welcome. Every module's brand link goes home.
+- Recorded as C16 in the course README; module 00's storyboard gains the
+  welcome as its first screen; the design README notes the correction;
+  the canvas source in the repo is refreshed.
