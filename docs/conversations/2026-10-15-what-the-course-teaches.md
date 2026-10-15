@@ -261,3 +261,9 @@ set it up; it comes before the brief.
   the difference.
 - Recorded as C17; module 05 gains the screen and module 00 gains "try
   what it built"; canvas source refreshed; committed.
+
+## Ross: start building
+
+- This is looking really, really good. I'd like you to start building it. We
+  need a brief first, on implementation: the xAPI data and the LMS, which
+  needs xAPI 1.0.2. The brief continues in `2026-10-15-brief.md`.
