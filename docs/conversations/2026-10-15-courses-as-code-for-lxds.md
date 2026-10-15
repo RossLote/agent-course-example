@@ -127,3 +127,70 @@ builds software. Nothing here changes the round-one epic.
   and what the first real module is; whether one repo for all clients is
   acceptable to the company; and whether this gets an idea bead and a repo
   now, as the course did, or waits until after Tuesday.
+
+## Ross: drop ngage, drop the course; this is new
+
+- Drop the authoring tool. I am not suggesting it is related to this in any
+  way. I pointed at it only so you could look at its component library.
+- And do not tie this to the course or its modules. This project gave me an
+  idea for a product LXDs can use to build courses; the course itself has
+  nothing to do with it. Disregard this project entirely. It is a completely
+  new thing. Don't do what you just did; that was annoying.
+
+## Agent: fresh, as its own thing
+
+- Noted in the project memory so it does not happen again. The reference is
+  used only for what a component library needs; nothing from the course
+  carries over.
+- What it is: a product in which an LXD describes a course and an agent
+  builds it, with three things under their hands: a component library, a
+  set of skills, and a repo of their own content. The agent is the authoring
+  tool; Git is the save button. Phase one is those three used from Claude
+  Code in VS Code; phase two wraps them in an app.
+- The library: a versioned package holding the components, the player that
+  renders a course from config plus components, and the packager that turns
+  it into what an LMS accepts. A component carries a schema for the config
+  the agent writes, a renderer, a reporting contract, its accessibility
+  behaviour, a fixture, and a note the agent reads on when to use it. Each
+  has its own schema version with migrations; the library has a semver
+  release; a course pins the release. A default set ships; themes are tokens
+  per client that every component consumes.
+- The skills: the LXD's loop with the guardrails built in. Brief; outline
+  reviewed as a document; build module by module behind a gate (schema,
+  accessibility, reporting tests, a play-through); preview; change by
+  saying what is wrong; content review by agents with lenses (objective
+  alignment, accuracy against source material, accessibility, reading
+  level, brand); client review from a built preview or the walkthrough;
+  package; revise. A missing component takes a stricter path: built with
+  its contract tests, kept in the repo's own components folder, promoted
+  to the shared library by pull request. The guardrails: no code written by
+  the LXD, the engine a dependency not in their repo, only validating
+  config, nothing done until the gate is green, commits and pull requests
+  made by the skills, no component usable until it passes the contract.
+- The repo: the team's whole library. Clients at the top, each with a theme,
+  brand assets and courses; each course a directory with a manifest, one
+  file per module, a media manifest and a lockfile; self-contained so a
+  client can move to its own repo. Media: small assets in the repo, the
+  rest in an object store with content-addressed keys, the media manifest
+  recording hash, URL and alt text, the packager inlining at build so no
+  package links out.
+- The app: a shell over all of that: GitHub sign-in and a repo, chat with
+  dictation running the agent with the skills, the player as the preview,
+  click an element to change or flag it (handing the component and its
+  config path to the agent), a read-mostly view of config and code, tasks,
+  a publish button. No capability the VS Code route lacks; it removes the
+  terminal, Git and the file tree from view.
+- Decisions it forces: YAML with a JSON schema as the config format; SCORM
+  1.2 and 2004, xAPI and cmi5 from day one because clients decide; one repo
+  per team or per client, decided by confidentiality and GitHub policy;
+  media in a bucket or the company's DAM, pluggable; client review via a
+  hosted preview or the walkthrough; a person owning library releases; a
+  seat and a token budget per LXD.
+- Where to start: one small kit repo built with the workflow (a dozen
+  components, the player, SCORM 1.2 and xAPI packaging, preview mode, the
+  skills), then a sample content repo with one client and one course built
+  by one LXD in VS Code from a real brief; the pilot's retro says what the
+  guardrails and the app need to be.
+- Questions back: the first LXD and a real first course; the LMS formats
+  clients need in year one; one repo per team or per client; a new repo and
+  idea bead now or after Tuesday.
