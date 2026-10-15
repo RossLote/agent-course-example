@@ -57,3 +57,32 @@ the agent working alone, so the log is short.
 
 - Paused with A and E in their worktrees, uncommitted. The handoff says how
   to finish them, re-record the walkthrough and open the pull request.
+
+## Ross: pick it up from the handoff
+
+- In a fresh session I pasted the handoff: finish the run.
+
+## Agent: A and E landed, the gate green, the walkthrough re-recorded
+
+- Both batches had got further than the handoff thought: A's store was
+  finished, and E had done all six beads. I read each diff against its beads
+  and the review-fix decisions and ran their gates, all green, so neither
+  needed a fresh worker. Both are committed and merged.
+- A changes two rules in PLAN.md §6, so I wrote them there: on load the newer
+  of State and the local copy wins, and a State read that fails is "nothing
+  known", not "none", so the course writes no State until a read answers. A
+  module now completes only with every check answered, whatever the route.
+- The full gate is green on the epic branch: 351 unit tests, 6 e2e specs and
+  the package check. The walkthrough spec needed two label updates (module
+  04's "Try another verdict", module 07's renamed score and takeaway), and the
+  slowed-down recording ran again from the start: 13 chapters, 58 pictures,
+  3:45.
+
+## Agent: the pull request, as an Artifact
+
+- The repo still has no remote, so the pull request is an Artifact page with
+  the video on it (https://claude.ai/artifact/B8MrLMfgpUCbKw72bxVPeC), and the
+  branch to merge is agent-course-wqw/round-one. It is a two-way door: nothing
+  is deployed, so reverting the merge puts everything back.
+- The epic is closed with its run record. All you have to do is read the page
+  and merge the branch into main.
