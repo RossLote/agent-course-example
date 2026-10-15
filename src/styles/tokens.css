@@ -1,0 +1,40 @@
+/*
+ * The design's tokens (docs/design/2026-10-15-first-pass/README.md): a cool light ground with
+ * white cards, one accent for the course's own controls and the box's walls, the agent in teal
+ * and the learner in amber, green and red for right and wrong (always with an icon as well).
+ */
+:root {
+  --ground: #f3f5f7;
+  --surface: #ffffff;
+  --surface-sunk: #f8f9fb;
+  --ink: #172029;
+  --muted: #5b6672;
+  --line: #d9dee3;
+  --line-strong: #aeb6bf;
+
+  --accent: #2f4bd6;
+  --accent-strong: #1f37a8;
+  --accent-soft: #eef1fd;
+
+  --agent: #0e7c86;
+  --agent-soft: #e8f4f5;
+  --agent-line: #bfe0e3;
+
+  --learner: #b45309;
+  --learner-soft: #fff3dc;
+  --learner-line: #f3d9a4;
+
+  --right: #1b7f4b;
+  --right-soft: #eaf6ee;
+  --right-line: #bfe3cb;
+  --wrong: #b42318;
+  --wrong-soft: #fbedeb;
+
+  --font-display: 'Manrope Variable', system-ui, sans-serif;
+  --font-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  --radius-card: 12px;
+  --radius-control: 10px;
+  --target: 44px;
+}

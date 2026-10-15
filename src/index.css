@@ -1,7 +1,19 @@
-/* Nothing is fetched from the network at run time; fonts, once chosen, are bundled. */
+/*
+ * The fonts are bundled from the @fontsource packages: nothing is fetched from the network at
+ * run time. Manrope for headings, Atkinson Hyperlegible for body text, JetBrains Mono for ids,
+ * gate output and excerpts.
+ */
+@import '@fontsource-variable/manrope';
+@import '@fontsource/atkinson-hyperlegible/400.css';
+@import '@fontsource/atkinson-hyperlegible/400-italic.css';
+@import '@fontsource/atkinson-hyperlegible/700.css';
+@import '@fontsource/atkinson-hyperlegible/700-italic.css';
+@import '@fontsource-variable/jetbrains-mono';
+@import './styles/tokens.css';
+@import './styles/controls.css';
+
 :root {
-  --font-sans: system-ui, sans-serif;
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 *,
@@ -13,17 +25,45 @@
 html,
 body,
 #root {
-  height: 100%;
+  min-height: 100%;
   margin: 0;
 }
 
 body {
-  font-family: var(--font-sans);
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
   line-height: 1.5;
 }
 
-main {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 4rem 1rem;
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+}
+
+a:hover {
+  color: var(--accent-strong);
+}
+
+/* Every control shows where focus is. A heading the page moves focus to shows nothing. */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+[tabindex='-1']:focus {
+  outline: none;
 }

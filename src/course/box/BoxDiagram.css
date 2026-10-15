@@ -1,0 +1,86 @@
+/* --box-halo is the colour behind the box: a card that holds it sets it to the card's. */
+.box {
+  --box-halo: var(--ground);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+}
+
+.box-drawing {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  overflow: visible;
+}
+
+.box-drawing text {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  /* A halo of the background, so a label stays readable where the ring or a wall crosses it. */
+  stroke: var(--box-halo);
+  stroke-width: 6px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+
+.box-wall[data-state='dashed'] rect {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+}
+
+.box-wall[data-state='dashed'] text {
+  fill: var(--muted);
+}
+
+.box-wall[data-state='solid'] rect {
+  fill: var(--accent);
+}
+
+.box-wall[data-state='solid'] text {
+  fill: var(--ink);
+}
+
+.box-centre {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.box-centre-held {
+  stroke: var(--ink);
+}
+
+.box-drawing .box-centre-label {
+  font-family: var(--font-display);
+  font-size: 14px;
+  fill: var(--muted);
+  stroke: none;
+}
+
+.box-ring circle {
+  fill: none;
+  stroke: var(--learner);
+  stroke-width: 3;
+  stroke-dasharray: 9 6;
+}
+
+/* The label sits on the ring; its halo stops the dashes either side of it. */
+.box-drawing .box-ring text {
+  fill: var(--learner);
+  stroke-width: 8px;
+}
+
+.box-caption {
+  max-width: 300px;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
