@@ -3,30 +3,18 @@
 // Ids come from src/content (D24); the actor and registration from the launch, verbatim.
 import type { Activity, Agent, Context, InteractionActivity, Result, ResultScore, Statement } from '@xapi/xapi';
 import { activityId, activityPath, fridgeActivityPath, moduleActivityPath, type Course, type Module, type Screen } from '../content/index.ts';
+import { plainText } from '../content/copy.ts';
 import type { ScreenEvent, Score } from '../screens/types.ts';
 import { courseActivityId, type Launch } from './launch.ts';
+import { ACTIVITY_TYPES, VERBS } from './vocabulary.ts';
 
 /** What the builders read of the course. */
 export type StatementCourse = Pick<Course, 'id' | 'title' | 'fridges'>;
 
-/** The ADL verbs the course uses. */
-export const VERBS = {
-  initialized: { id: 'http://adlnet.gov/expapi/verbs/initialized', display: { 'en-US': 'initialized' } },
-  completed: { id: 'http://adlnet.gov/expapi/verbs/completed', display: { 'en-US': 'completed' } },
-  answered: { id: 'http://adlnet.gov/expapi/verbs/answered', display: { 'en-US': 'answered' } },
-  interacted: { id: 'http://adlnet.gov/expapi/verbs/interacted', display: { 'en-US': 'interacted' } },
-} as const;
-
-/** The ADL activity types of the course's objects. */
-export const ACTIVITY_TYPES = {
-  course: 'http://adlnet.gov/expapi/activities/course',
-  module: 'http://adlnet.gov/expapi/activities/module',
-  interaction: 'http://adlnet.gov/expapi/activities/cmi.interaction',
-  simulation: 'http://adlnet.gov/expapi/activities/simulation',
-} as const;
-
 type AnsweredEvent = Extract<ScreenEvent, { type: 'answered' }>;
 type InteractedEvent = Extract<ScreenEvent, { type: 'interacted' }>;
+/** The events that send a statement of their own: a takeaway's completes its module through progress. */
+type StatementEvent = Exclude<ScreenEvent, { type: 'takeaway-reached' }>;
 
 /** The actor of every statement in preview, where there is no launch to give one. */
 export function previewActor(course: Pick<Course, 'id'>): Agent {
@@ -72,8 +60,8 @@ export function fridgeCompleted(course: StatementCourse, launch: Launch | null, 
   return statement(course, launch, VERBS.completed, object, childContext(course, launch), { completion: true, score: resultScore(score) });
 }
 
-/** The statement a screen's event sends, whatever the event: what the frame's callback calls. */
-export function screenStatement(course: StatementCourse, launch: Launch | null, module: Module, screen: Screen, event: ScreenEvent): Statement {
+/** The statement a screen's event sends: what the frame's callback calls. */
+export function screenStatement(course: StatementCourse, launch: Launch | null, module: Module, screen: Screen, event: StatementEvent): Statement {
   switch (event.type) {
     case 'answered':
       return answered(course, launch, module, screen, event);
@@ -81,8 +69,6 @@ export function screenStatement(course: StatementCourse, launch: Launch | null, 
       return interacted(course, launch, module, screen, event);
     case 'fridge-ended':
       return fridgeCompleted(course, launch, event.slug, event.score);
-    case 'takeaway-reached':
-      return moduleCompleted(course, launch, module);
   }
 }
 
@@ -143,17 +129,6 @@ function screenActivity(course: StatementCourse, module: Module, screen: Screen)
       interactionType: screen.type === 'match' ? 'matching' : screen.type === 'order' ? 'sequencing' : 'choice',
     },
   };
-}
-
-// `**bold**` or `*italic*`: the only markup copy has, matched as the screens' Copy matches it.
-const EMPHASIS = /\*\*(.+?)\*\*|\*(.+?)\*/g;
-
-/**
- * Copy as plain text, for a response or an activity's name: the words of `**bold**` and
- * `*italic*` without their markers; a lone asterisk stays.
- */
-export function plainText(text: string): string {
-  return text.replace(EMPHASIS, (_, bold: string | undefined, italic: string | undefined) => plainText(bold ?? italic ?? ''));
 }
 
 /**

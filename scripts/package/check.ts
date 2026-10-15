@@ -10,8 +10,9 @@ const absoluteHtmlRef = /\b(?:src|href)\s*=\s*["']?((?:\/|https?:)[^"'\s>]*)/gi;
 /** A stylesheet url() that is root-absolute or off-site. */
 const absoluteCssUrl = /\burl\(\s*["']?((?:\/|https?:)[^"')\s]*)/gi;
 
-/** Every problem with the files of a package, keyed by their path in the zip; [] when it is sound. */
-export function checkPackage(files: Readonly<Record<string, Uint8Array>>): string[] {
+/** Every problem with a zip, read as the LMS would unzip it; [] when it is sound. */
+export function checkZip(zip: Uint8Array): string[] {
+  const files = unzipSync(zip);
   const problems: string[] = [];
   for (const required of ['tincan.xml', LAUNCH_FILE]) {
     if (!(required in files)) problems.push(`${required} is not at the root of the zip`);
@@ -22,9 +23,4 @@ export function checkPackage(files: Readonly<Record<string, Uint8Array>>): strin
     for (const [, ref] of strFromU8(bytes).matchAll(pattern)) problems.push(`${path} references ${ref}, which is not a relative path`);
   }
   return problems;
-}
-
-/** Every problem with a zip, read as the LMS would unzip it. */
-export function checkZip(zip: Uint8Array): string[] {
-  return checkPackage(unzipSync(zip));
 }

@@ -3,6 +3,7 @@ import { course as realCourse, type Module, type Screen } from '../content/index
 import { fixtureCourse, fixtureTakeaway } from '../course/frame/fixture.ts';
 import { scoredItem } from '../course/frame/progress.ts';
 import type { ScreenEvent } from '../screens/types.ts';
+import { resultScore } from '../xapi/statements.ts';
 import {
   courseComplete,
   courseScore,
@@ -13,7 +14,6 @@ import {
   modulesDone,
   moduleStatus,
   parseProgress,
-  scaledScore,
   step,
   takeCause,
   type ProgressCause,
@@ -111,20 +111,20 @@ describe('the views', () => {
     expect(modulesDone(realCourse, doc)).toBe(8);
     expect(courseComplete(realCourse, doc)).toBe(true);
     expect(courseScore(realCourse, doc)).toEqual({ raw: 28, max: 28 });
-    expect(scaledScore(courseScore(realCourse, doc))).toBe(1);
+    expect(resultScore(courseScore(realCourse, doc)).scaled).toBe(1);
   });
 
   it('is not complete with seven of eight done', () => {
     const seven = playAll({ modules: realCourse.modules.slice(0, 7) });
     expect(modulesDone(realCourse, seven)).toBe(7);
     expect(courseComplete(realCourse, seven)).toBe(false);
-    expect(scaledScore({ raw: 0, max: 0 })).toBe(0);
+    expect(resultScore({ raw: 0, max: 0 }).scaled).toBe(0);
   });
 });
 
 describe('homeNext', () => {
   it('starts before anything is reached', () => {
-    expect(homeNext(course, EMPTY_PROGRESS)).toEqual({ action: 'start' });
+    expect(homeNext(course, EMPTY_PROGRESS)).toEqual({ action: 'start', slug: '00', screen: 1 });
   });
 
   it('continues the first module not done, at the screen reached', () => {
@@ -137,7 +137,7 @@ describe('homeNext', () => {
   });
 
   it('reviews from the first module once every module is done', () => {
-    expect(homeNext(course, playAll(course))).toEqual({ action: 'review' });
+    expect(homeNext(course, playAll(course))).toEqual({ action: 'review', slug: '00', screen: 1 });
   });
 });
 

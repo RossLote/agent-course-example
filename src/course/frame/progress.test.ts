@@ -102,6 +102,13 @@ describe('recordEvent', () => {
     expect(recordEvent(before, { type: 'takeaway-reached' })).toBe(before);
   });
 
+  it('gives back the same records when an event carries the answer they already hold', () => {
+    const answer = [0, 1];
+    const before = play([{ type: 'interacted', slug: 'tick', response: 'A', answer }]);
+    expect(recordEvent(before, { type: 'interacted', slug: 'tick', response: 'B', answer })).toBe(before);
+    expect(recordEvent(before, { type: 'interacted', slug: 'tick', response: 'B', answer: [0, 1] })).not.toBe(before);
+  });
+
   it('gives records that survive JSON as they are', () => {
     const answers = play([
       { type: 'answered', slug: 'walls', right: false, score: { raw: 1, max: 2 }, response: 'One: X; Two: X', answer: { One: 'x', Two: 'x' } },

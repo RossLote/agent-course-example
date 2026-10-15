@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import { Copy } from '../scene/Copy.tsx';
+import { indexBelow, savedField } from '../saved.ts';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
 import { ChatLog, Chip, Message } from './Conversation.tsx';
 
@@ -8,8 +9,8 @@ type ChatAnswer = { reply: number };
 
 /** The reply a saved answer holds, or undefined when there is none or it is not an option. */
 function savedReply(saved: SavedAnswer | undefined, count: number): number | undefined {
-  const reply = saved !== null && typeof saved === 'object' && 'reply' in saved ? saved.reply : undefined;
-  return typeof reply === 'number' && Number.isInteger(reply) && reply >= 0 && reply < count ? reply : undefined;
+  const reply = savedField(saved, 'reply');
+  return indexBelow(reply, count) ? reply : undefined;
 }
 
 /**

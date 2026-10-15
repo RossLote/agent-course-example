@@ -1,11 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
-import { choose, COURSE_ID, drag, fridge, heading, keepLocal, marked, next, playModule00, solidWalls, tick } from './play.ts';
+import { choose, COURSE_ID, drag, fridge, heading, HOME_HEADING, keepLocal, marked, next, playModule00, solidWalls, tick } from './play.ts';
 
 // The whole course in preview, played as the ACCEPTANCE BAR plays it (steps 1 to 12), and the
 // statements drawer read at the end: every statement the play sent, oldest first, as D19 and
 // the review additions list them (PLAN.md §6, "Statements").
-
-const HOME_HEADING = 'Agents are better at reviewing than building.';
 
 // One drawer line per statement: its verb and object (a path under course.yaml's id, or
 // "course" for the course itself), then its success, score and completion when it has them.

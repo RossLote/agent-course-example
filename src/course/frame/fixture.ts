@@ -1,8 +1,24 @@
 // An inline course for the frame's and the screens' tests (PLAN.md §6, "Test fixtures"):
-// never the files under content/, so the tests hold whatever the content says.
-import type { Course, Module, ModuleWall, Screen } from '../../content/index.ts';
+// never the files under content/, so the tests hold whatever the content says. Beside it, the
+// empty progress a screen is rendered with, and `realScreen` for the tests that play a screen
+// as authored.
+import { course, type Course, type Module, type Screen, type ScreenOf, type ScreenType } from '../../content/index.ts';
+import { moduleWall } from '../../content/schema.ts';
+import type { ModuleProgress } from '../../screens/types.ts';
+import { NO_ANSWERS } from './progress.ts';
 
-const WALLS: ModuleWall[] = ['none', 'record', 'done', 'gate', 'agents', 'evidence', 'ring', 'all'];
+const WALLS = moduleWall.options;
+
+/** The progress of a module nothing has been answered in: what a screen's test renders it with. */
+export const NO_PROGRESS: ModuleProgress = { items: NO_ANSWERS, score: { raw: 0, max: 0 } };
+
+/** A screen of the real course, as authored, and its module: the first of `type` in the module, or the one with `slug`. */
+export function realScreen<T extends ScreenType>(moduleSlug: string, type: T, slug?: string): { module: Module; screen: ScreenOf<T> } {
+  const module = course.modules.find((m) => m.slug === moduleSlug);
+  const screen = module?.screens.find((s): s is ScreenOf<T> => s.type === type && (slug === undefined || ('slug' in s && s.slug === slug)));
+  if (!module || !screen) throw new Error(`module ${moduleSlug} has no ${type} ${slug ?? ''}`);
+  return { module, screen };
+}
 
 /** A module with these screens; its title is "Module <nn> title" and its wall the course's order. */
 export function fixtureModule(slug: string, screens: Screen[]): Module {

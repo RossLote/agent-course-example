@@ -4,6 +4,7 @@
 // fridge file, so the component, the tests and the one-shot's timer and points share one set of
 // rules.
 import type { Fridge } from '../content/index.ts';
+import { isRecord } from '../screens/saved.ts';
 import type { Json, SavedAnswer, Score } from '../screens/types.ts';
 
 /** What just happened, for the words (./words.ts) and the status line's icon. */
@@ -154,9 +155,6 @@ export function fridgeReducer(fridge: Fridge, play: FridgePlay, action: FridgeAc
 export function savedPlay(play: FridgePlay): SavedAnswer {
   return { placements: { ...play.placements }, wrongFirst: [...play.wrongFirst], points: play.points, timeLeft: play.timeLeft };
 }
-
-const isRecord = (value: Json | undefined): value is { readonly [key: string]: Json } =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 /**
  * A play from a saved answer: its placements and the items wrong first time, keeping only what

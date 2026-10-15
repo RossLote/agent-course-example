@@ -1,14 +1,10 @@
-/* The fridge (docs/design/2026-10-15-first-pass/M05-TwoFridges.dc.html), on the design's tokens. */
+/* The fridge (docs/design/2026-10-15-first-pass/M05-TwoFridges.dc.html), on the design's tokens.
+   Its panel is a .scene-card (src/styles/controls.css). */
 
 .fridge {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-width: 0;
-  padding: 20px 22px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  background: var(--surface);
 }
 
 .fridge-head {
@@ -127,7 +123,7 @@
   color: var(--ink);
 }
 
-.fridge[data-feedback='flash'] .fridge-placed .fridge-icon {
+.fridge[data-feedback='flash'] .fridge-placed .tone-icon {
   display: none;
 }
 
@@ -171,21 +167,6 @@
   opacity: 0.4;
 }
 
-.fridge-ghost {
-  position: fixed;
-  z-index: 10;
-  padding: 8px 14px;
-  border: 2px solid var(--accent);
-  border-radius: 999px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 15px;
-  white-space: nowrap;
-  box-shadow: 0 6px 16px rgb(23 32 41 / 25%);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
 /* The status line: the live region's words, with a tick or a cross for a drop. */
 .fridge-status {
   display: flex;
@@ -198,7 +179,7 @@
   font-size: 15px;
 }
 
-.fridge-status .fridge-icon {
+.fridge-status .tone-icon {
   flex-shrink: 0;
   margin-top: 4px;
 }
@@ -214,17 +195,8 @@
   background: var(--learner-soft);
 }
 
-.fridge-status[data-tone='wrong'] .fridge-icon {
+.fridge-status[data-tone='wrong'] .tone-icon {
   color: var(--wrong);
-}
-
-.fridge-live {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
 }
 
 .fridge-score {
@@ -258,13 +230,13 @@
   gap: 8px;
 }
 
-.fridge-wrong .fridge-icon {
+.fridge-wrong .tone-icon {
   flex-shrink: 0;
   margin-top: 4px;
   color: var(--wrong);
 }
 
-.fridge-all-right .fridge-icon {
+.fridge-all-right .tone-icon {
   flex-shrink: 0;
   margin-top: 4px;
   color: var(--right);

@@ -1,14 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { course, type ScreenOf } from '../../content/index.ts';
-import { fixtureModule, fixtureTakeaway } from '../../course/frame/fixture.ts';
-import { NO_ANSWERS } from '../../course/frame/progress.ts';
+import { fixtureModule, fixtureTakeaway, NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { ChatScreen } from './index.tsx';
 
 // Module 00's "Just ask", as authored: no replies.
-const module00 = course.modules.find((m) => m.slug === '00')!;
-const justAsk = module00.screens.find((s): s is ScreenOf<'chat'> => s.type === 'chat' && s.slug === 'just-ask')!;
+const { module: module00, screen: justAsk } = realScreen('00', 'chat', 'just-ask');
 
 // Module 00 has no replies, so the replies are an inline chat.
 const withReplies: ScreenOf<'chat'> = {
@@ -29,7 +27,7 @@ const withReplies: ScreenOf<'chat'> = {
 function renderChat(shown: ScreenOf<'chat'>, saved?: SavedAnswer) {
   const onEvent = vi.fn();
   const module = shown === justAsk ? module00 : fixtureModule('00', [shown, fixtureTakeaway()]);
-  render(<ChatScreen screen={shown} module={module} course={course} saved={saved} progress={{ items: NO_ANSWERS, score: { raw: 0, max: 0 } }} onEvent={onEvent} />);
+  render(<ChatScreen screen={shown} module={module} course={course} saved={saved} progress={NO_PROGRESS} onEvent={onEvent} />);
   return onEvent;
 }
 

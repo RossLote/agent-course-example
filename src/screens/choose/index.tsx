@@ -1,10 +1,12 @@
 import { useId, useState } from 'react';
 import type { ScreenOf } from '../../content/index.ts';
+import { CheckButton } from '../parts/CheckButton.tsx';
+import { Mark, ToneIcon } from '../parts/Tone.tsx';
+import { indexBelow, savedField } from '../saved.ts';
 import { Blocks } from '../scene/Blocks.tsx';
 import { Copy } from '../scene/Copy.tsx';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
 import { BoxPanel } from './BoxPanel.tsx';
-import { Mark } from './Mark.tsx';
 import './Choose.css';
 
 type Option = ScreenOf<'choose'>['options'][number];
@@ -18,9 +20,9 @@ type ChooseAnswer = { picked: number[] };
  */
 function savedPicks(saved: SavedAnswer | undefined, count: number): number[] | undefined {
   if (saved === undefined) return undefined;
-  const picked = saved !== null && typeof saved === 'object' && 'picked' in saved ? saved.picked : undefined;
+  const picked = savedField(saved, 'picked');
   if (!Array.isArray(picked)) return [];
-  return picked.filter((i): i is number => Number.isInteger(i) && i >= 0 && i < count);
+  return picked.filter((i): i is number => indexBelow(i, count));
 }
 
 /** Right when the picks are exactly the right options. */
@@ -67,7 +69,6 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
   const [picked, setPicked] = useState<readonly number[]>(initial ?? []);
   const [checked, setChecked] = useState(initial !== undefined);
   const name = useId();
-  const hintId = useId();
 
   const toggle = (i: number) => {
     if (single) setPicked([i]);
@@ -75,7 +76,6 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
   };
 
   const check = () => {
-    if (picked.length === 0) return;
     const answer: ChooseAnswer = { picked: [...picked] };
     if (screen.scored) {
       const right = isRight(options, picked);
@@ -94,7 +94,6 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
 
   const walls = new Set(picked.flatMap((i) => options[i].wall ?? []));
   const reveals = checked ? picked.flatMap((i) => options[i].reveal ?? []) : [];
-  const waiting = !checked && picked.length === 0;
 
   const choices = (
     <div className="scene-card choose-card">
@@ -128,9 +127,7 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
                           <circle cx="12" cy="12" r="7" fill="currentColor" />
                         </svg>
                       ) : (
-                        <svg viewBox="0 0 24 24" width="14" height="14">
-                          <path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        <ToneIcon tone="right" />
                       ))}
                   </span>
                   <span className="choice-label">
@@ -151,19 +148,14 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
         </ul>
       </fieldset>
       <div className="choice-actions">
-        {/* One button that turns from Check into Try again and back, so focus stays on it. */}
-        <button
-          type="button"
-          className={checked ? 'btn btn-ghost' : 'btn btn-primary'}
-          aria-disabled={waiting || undefined}
-          aria-describedby={waiting ? hintId : undefined}
-          onClick={checked ? tryAgain : check}
-        >
-          {checked ? 'Try again' : (screen.checkLabel ?? 'Check my answer')}
-        </button>
-        <span id={hintId} hidden>
-          {single ? 'Choose an answer first.' : 'Tick at least one first.'}
-        </span>
+        <CheckButton
+          checked={checked}
+          waiting={picked.length === 0}
+          hint={single ? 'Choose an answer first.' : 'Tick at least one first.'}
+          label={screen.checkLabel}
+          onCheck={check}
+          onTryAgain={tryAgain}
+        />
       </div>
       <p className="sr-only" role="status">
         {checked && <Result options={options} picked={picked} single={single} />}

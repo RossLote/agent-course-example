@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
+import { fixtureCourse } from '../frame/fixture.ts';
 import { HomePage } from './HomePage.tsx';
 
+// The fixture's title and box; the home copy and two modules of the test's own.
+const { title, box } = fixtureCourse();
 const course = {
-  title: 'Course title',
-  box: {
-    centre: 'the builder',
-    walls: { record: 'R wall', done: 'D wall', gate: 'G wall', agents: 'A wall', evidence: 'E wall' },
-    ring: 'the ring',
-  },
+  title,
+  box,
   home: {
     meta: 'Two modules',
     leave: 'Leave any time',
@@ -75,7 +74,7 @@ describe('HomePage', () => {
   });
 
   it('starts, continues where the learner got to, or reviews from the first module', () => {
-    const { rerender } = render(<HomePage course={course} next={{ action: 'start' }} />);
+    const { rerender } = render(<HomePage course={course} next={{ action: 'start', slug: '00', screen: 1 }} />);
     const primary = () => screen.getByRole('link', { name: /^(Start the first|Continue|Review)/ });
     expect(primary().textContent).toBe('Start the first');
     expect(primary().getAttribute('href')).toBe('#/modules/00/1');
@@ -84,7 +83,7 @@ describe('HomePage', () => {
     expect(primary().textContent).toBe('Continue module 01');
     expect(primary().getAttribute('href')).toBe('#/modules/01/4');
 
-    rerender(<HomePage course={course} next={{ action: 'review' }} />);
+    rerender(<HomePage course={course} next={{ action: 'review', slug: '00', screen: 1 }} />);
     expect(primary().textContent).toBe('Review from module 00');
     expect(primary().getAttribute('href')).toBe('#/modules/00/1');
   });

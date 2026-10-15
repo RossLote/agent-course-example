@@ -58,14 +58,20 @@ export function moduleProgress(module: { screens: readonly Screen[] }, answers: 
   return { items: answers, score: { raw, max } };
 }
 
+/** Whether a record says what another does: the same answer object, score and rightness. */
+function sameRecord(a: AnswerRecord | undefined, b: AnswerRecord): boolean {
+  return a !== undefined && a.answer === b.answer && a.right === b.right && a.score?.raw === b.score?.raw && a.score?.max === b.score?.max;
+}
+
 /**
  * The records once an event is taken in: the latest answer and score per slug win. `answered`
  * replaces the slug's record; `interacted` replaces its answer; `fridge-ended` its score (and
  * its answer when it carries one); `takeaway-reached` changes nothing here (the progress store
- * records it as the module's completion).
+ * records it as the module's completion). The same records come back when nothing changes, as
+ * for the second of an unscored screen's `interacted` events that carry one answer.
  */
 export function recordEvent(answers: ModuleAnswers, event: ScreenEvent): ModuleAnswers {
-  const update = (slug: string, record: AnswerRecord): ModuleAnswers => ({ ...answers, [slug]: record });
+  const update = (slug: string, record: AnswerRecord): ModuleAnswers => (sameRecord(answers[slug], record) ? answers : { ...answers, [slug]: record });
   switch (event.type) {
     case 'answered':
       return update(event.slug, { answer: event.answer, score: event.score, right: event.right });

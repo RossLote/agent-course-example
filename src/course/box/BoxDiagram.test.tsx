@@ -1,12 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { fixtureCourse } from '../frame/fixture.ts';
 import { BoxDiagram } from './BoxDiagram.tsx';
 
-const labels = {
-  centre: 'the builder',
-  walls: { record: 'R wall', done: 'D wall', gate: 'G wall', agents: 'A wall', evidence: 'E wall' },
-  ring: 'the ring',
-};
+const labels = fixtureCourse().box;
 
 function states(container: HTMLElement) {
   return [...container.querySelectorAll('[data-wall]')].map((g) => `${g.getAttribute('data-wall')}:${g.getAttribute('data-state')}`);

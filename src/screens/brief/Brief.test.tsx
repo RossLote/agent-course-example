@@ -1,18 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { course, type ScreenOf } from '../../content/index.ts';
-import { NO_ANSWERS } from '../../course/frame/progress.ts';
+import { course } from '../../content/index.ts';
+import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { BriefScreen } from './index.tsx';
 
 // Module 01's brief, as authored.
-const module01 = course.modules.find((m) => m.slug === '01')!;
-const brief = module01.screens.find((s): s is ScreenOf<'brief'> => s.type === 'brief')!;
+const { module: module01, screen: brief } = realScreen('01', 'brief');
 const [round1, round2] = brief.rounds;
 
 function renderBrief(saved?: SavedAnswer) {
   const onEvent = vi.fn();
-  render(<BriefScreen screen={brief} module={module01} course={course} saved={saved} progress={{ items: NO_ANSWERS, score: { raw: 0, max: 0 } }} onEvent={onEvent} />);
+  render(<BriefScreen screen={brief} module={module01} course={course} saved={saved} progress={NO_PROGRESS} onEvent={onEvent} />);
   return onEvent;
 }
 

@@ -139,11 +139,6 @@ export function courseScore(course: ProgressCourse, doc: ProgressDoc): Score {
   return { raw, max };
 }
 
-/** The scaled score: points over the points there are (0 when there are none). */
-export function scaledScore(score: Score): number {
-  return score.max > 0 ? score.raw / score.max : 0;
-}
-
 /** What a cause changed between two documents, in the order the statements are sent. */
 export function progressEffects(course: ProgressCourse, before: ProgressDoc, after: ProgressDoc): ProgressEffect[] {
   if (before === after) return [];
@@ -168,15 +163,21 @@ export function step(course: ProgressCourse, doc: ProgressDoc, cause: ProgressCa
 }
 
 /**
- * Where the home page's primary button goes: the first module before anything is reached;
- * the first module not complete, at the screen reached in it (or its first), while the course
- * is under way; the first module again, to review, once every module is complete.
+ * Where the home page's primary button goes, and what it says: start the first module before
+ * anything is reached; continue the first module not complete, at the screen reached in it (or
+ * its first), while the course is under way; review from the first module once every module is
+ * complete.
  */
-export type HomeNext = { action: 'start' } | { action: 'continue'; slug: string; screen: number } | { action: 'review' };
+export interface HomeNext {
+  action: 'start' | 'continue' | 'review';
+  slug: string;
+  screen: number;
+}
 
 export function homeNext(course: ProgressCourse, doc: ProgressDoc): HomeNext {
+  const first = course.modules[0];
   const open = course.modules.find((m) => !moduleRecord(doc, m.slug).completed);
-  if (!open) return { action: 'review' };
-  if (course.modules.every((m) => moduleStatus(doc, m.slug) === 'not-started')) return { action: 'start' };
+  if (!open) return { action: 'review', slug: first.slug, screen: 1 };
+  if (course.modules.every((m) => moduleStatus(doc, m.slug) === 'not-started')) return { action: 'start', slug: first.slug, screen: 1 };
   return { action: 'continue', slug: open.slug, screen: Math.max(moduleRecord(doc, open.slug).reached, 1) };
 }

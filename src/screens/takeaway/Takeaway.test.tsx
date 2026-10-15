@@ -1,8 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import type { ScreenOf } from '../../content/index.ts';
-import { fixtureCourse } from '../../course/frame/fixture.ts';
-import { NO_ANSWERS } from '../../course/frame/progress.ts';
+import { fixtureCourse, NO_PROGRESS } from '../../course/frame/fixture.ts';
 import { TakeawayScreen } from './index.tsx';
 
 const takeaway = (extra: Partial<ScreenOf<'takeaway'>> = {}): ScreenOf<'takeaway'> => ({
@@ -14,11 +13,10 @@ const takeaway = (extra: Partial<ScreenOf<'takeaway'>> = {}): ScreenOf<'takeaway
 });
 
 const course = fixtureCourse();
-const progress = { items: NO_ANSWERS, score: { raw: 0, max: 0 } };
 
 function renderTakeaway(slug: string, shown = takeaway(), onEvent = vi.fn()) {
   const module = course.modules.find((m) => m.slug === slug)!;
-  const { container } = render(<TakeawayScreen screen={shown} module={module} course={course} progress={progress} onEvent={onEvent} />);
+  const { container } = render(<TakeawayScreen screen={shown} module={module} course={course} progress={NO_PROGRESS} onEvent={onEvent} />);
   const walls = Object.fromEntries([...container.querySelectorAll('[data-wall]')].map((g) => [g.getAttribute('data-wall'), g.getAttribute('data-state')]));
   const ring = container.querySelector('svg')?.getAttribute('data-ring');
   return { walls, ring, onEvent };

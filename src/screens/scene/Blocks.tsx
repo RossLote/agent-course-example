@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Block, ListItem, StatsItem } from '../../content/index.ts';
+import { Quote } from '../parts/Quote.tsx';
+import { ToneIcon } from '../parts/Tone.tsx';
 import type { ModuleProgress } from '../types.ts';
 import { Copy } from './Copy.tsx';
 import './Blocks.css';
@@ -86,16 +88,7 @@ function BlockView({ block, progress, level }: { block: Block; progress: ModuleP
       );
     }
     case 'quote':
-      return (
-        <figure className="block block-quote">
-          <blockquote>
-            <p>
-              “<Copy text={block.text} />”
-            </p>
-          </blockquote>
-          {block.attribution !== undefined && <figcaption>{block.attribution}</figcaption>}
-        </figure>
-      );
+      return <Quote className="block block-quote" text={block.text} attribution={block.attribution} />;
     case 'list': {
       const numbered = block.style !== 'bullets';
       const List = numbered ? 'ol' : 'ul';
@@ -194,15 +187,9 @@ function statValue(item: StatsItem, progress: ModuleProgress): string {
   return String(item.value);
 }
 
-const TONE_ICONS = {
-  right: { label: 'right', path: 'M5 13l4 4L19 7' },
-  wrong: { label: 'wrong', path: 'M6 6l12 12M18 6L6 18' },
-};
-
 /** One line of a list block: its number or marker, its tone's icon, its copy. */
 function ListLine({ item, number }: { item: ListItem; number?: number }) {
   const { text, marker, tone } = typeof item === 'string' ? { text: item, marker: undefined, tone: undefined } : item;
-  const icon = tone === 'right' || tone === 'wrong' ? TONE_ICONS[tone] : undefined;
   return (
     <li className="block-list-item" data-tone={tone}>
       {marker !== undefined ? (
@@ -212,11 +199,9 @@ function ListLine({ item, number }: { item: ListItem; number?: number }) {
           {number ?? '•'}
         </span>
       )}
-      {icon ? (
+      {tone === 'right' || tone === 'wrong' ? (
         <span className="block-list-tone">
-          <svg viewBox="0 0 24 24" width="14" height="14" role="img" aria-label={icon.label}>
-            <path d={icon.path} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <ToneIcon tone={tone} label={tone} />
         </span>
       ) : (
         tone === 'neutral' && <span className="block-list-tone" aria-hidden="true" />

@@ -1,7 +1,10 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
+import { fillTemplate } from '../../content/copy.ts';
 import type { ScreenOf } from '../../content/index.ts';
 import { ChatLog, Chip, Message } from '../chat/Conversation.tsx';
+import { useFocusAfterRender } from '../parts/useFocusAfterRender.ts';
 import { Copy } from '../scene/Copy.tsx';
+import { indexBelow, savedField } from '../saved.ts';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
 import './Brief.css';
 
@@ -17,14 +20,14 @@ const ROUNDS = ['one', 'two', 'three', 'four', 'five'];
 
 /** The state a saved answer holds; picks that are not chips of their question are dropped. */
 function savedState(saved: SavedAnswer | undefined, questions: readonly Question[]): BriefAnswer {
-  const record = saved !== null && typeof saved === 'object' && !Array.isArray(saved) ? saved : {};
-  const picks = 'picked' in record && Array.isArray(record.picked) ? record.picked : [];
+  const picks = savedField(saved, 'picked');
+  const list = Array.isArray(picks) ? picks : [];
   return {
     picked: questions.map((q, i) => {
-      const chip: unknown = picks[i];
-      return typeof chip === 'number' && Number.isInteger(chip) && chip >= 0 && chip < q.chips.length ? chip : null;
+      const chip = list[i];
+      return indexBelow(chip, q.chips.length) ? chip : null;
     }),
-    defaults: 'defaults' in record && record.defaults === true,
+    defaults: savedField(saved, 'defaults') === true,
   };
 }
 
@@ -52,16 +55,12 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
   const { rounds, panel } = screen;
   const questions = rounds.flatMap((round) => round.questions);
   const [state, setState] = useState(() => savedState(saved, questions));
-  const [closingFocus, setClosingFocus] = useState(false);
-  const closingRef = useRef<HTMLLIElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+  // Pressing "Your defaults" removes it; focus goes on to the agent's closing message.
+  const focusNext = useFocusAfterRender(root);
   const panelId = useId();
   const hintId = useId();
   const id = useId();
-
-  // Pressing "Your defaults" removes it; focus goes on to the agent's closing message.
-  useEffect(() => {
-    if (closingFocus) closingRef.current?.focus();
-  }, [closingFocus]);
 
   const { picked } = state;
   // The first question of each round, by its position across the rounds.
@@ -91,13 +90,13 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
     const next = { picked: picked.map((p, q) => (left.includes(q) ? recommended(questions[q]) : p)), defaults: true };
     setState(next);
     for (const q of left) report(q, next);
-    setClosingFocus(true);
+    focusNext('.chat-msg[tabindex="-1"]');
   };
 
-  const note = panel.note.replaceAll('{filled}', String(filled)).replaceAll('{total}', String(questions.length));
+  const note = fillTemplate(panel.note, { filled, total: questions.length });
 
   return (
-    <div className="brief">
+    <div ref={root} className="brief">
       <div className="scene-card brief-chat">
         <ChatLog label="The conversation">
           <Message who="learner">
@@ -161,7 +160,7 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
             </Message>
           )}
           {closed && (
-            <Message who="agent" ref={closingRef} tabIndex={-1}>
+            <Message who="agent" tabIndex={-1}>
               <p>
                 <Copy text={screen.closing} />
               </p>

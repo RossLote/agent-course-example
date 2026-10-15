@@ -1,13 +1,15 @@
-import { readFileSync } from 'node:fs';
 import { expect, type Locator, type Page } from '@playwright/test';
-import { parse } from 'yaml';
+import { readContent } from '../../scripts/content.ts';
 
-// The e2e specs' shared moves: the course id as course.yaml gives it, the guard that keeps every
-// request on the local server, the frame's Next, a pointer drag, and module 00 played as the
-// ACCEPTANCE BAR's steps 3 and 4 play it (the launch spec plays it too).
+// The e2e specs' shared moves: the course id as course.yaml gives it, the home page's heading,
+// the guard that keeps every request on the local server, the frame's Next, a pointer drag, and
+// module 00 played as the ACCEPTANCE BAR's steps 3 and 4 play it (the launch spec plays it too).
 
 /** course.yaml's id: the root of every module, check, interaction and fridge id (D24). */
-export const COURSE_ID: string = parse(readFileSync(new URL('../../content/course.yaml', import.meta.url), 'utf8')).id;
+export const COURSE_ID = readContent().id;
+
+/** The home page's h1, which module 00's takeaway goes on to. */
+export const HOME_HEADING = 'Agents are better at reviewing than building.';
 
 /**
  * Aborts and records every request that would leave `origin`. Register it before any narrower
@@ -64,8 +66,8 @@ export function fridge(page: Page, title: string) {
   return {
     root,
     item: (name: string) => root.getByRole('group', { name: 'The tray' }).getByRole('button', { name, exact: true }),
-    shelf: (id: string) => root.locator(`[data-shelf="${id}"]`),
-    onShelf: (id: string) => root.locator(`[data-shelf="${id}"] .fridge-placed`),
+    shelf: (id: string) => root.locator(`[data-drop-target="${id}"]`),
+    onShelf: (id: string) => root.locator(`[data-drop-target="${id}"] .fridge-placed`),
     tray: root.getByRole('group', { name: 'The tray' }).getByRole('button'),
     status: root.locator('.fridge-status'),
     timer: root.getByRole('timer', { name: 'Time left' }),
@@ -147,5 +149,5 @@ export async function playModule00(page: Page): Promise<void> {
 
   await next(page, /^The builder is the worst judge of its own work\./);
   await expect(page.locator('[data-wall][data-state="dashed"]')).toHaveCount(5);
-  await next(page, 'Agents are better at reviewing than building.');
+  await next(page, HOME_HEADING);
 }

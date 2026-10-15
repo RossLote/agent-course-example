@@ -1,6 +1,6 @@
 /* The match screen (M07-Capstone's name the wall in the design's first pass): a row of target
-   chips under each row's text, the row tinted right or wrong once checked. The option, feedback
-   and mark parts come from the choose screen (../choose/Choose.css). */
+   chips under each row's text, the row tinted right or wrong once checked. The option and
+   feedback parts come from the choose screen (../choose/Choose.css). */
 
 .match-rows {
   display: flex;

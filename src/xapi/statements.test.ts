@@ -1,36 +1,28 @@
 import { describe, expect, it } from 'vitest';
-import { course, type Module, type Screen, type ScreenOf } from '../content/index.ts';
+import { course, type ScreenOf } from '../content/index.ts';
+import { realScreen } from '../course/frame/fixture.ts';
 import { ACTOR_JSON, LAUNCH_ACTIVITY_ID, REGISTRATION, sparkLaunch } from './fixtures.ts';
 import {
-  ACTIVITY_TYPES,
   answered,
   courseCompleted,
   fridgeCompleted,
   initialized,
   interacted,
   moduleCompleted,
-  plainText,
   previewActor,
   resultScore,
   screenStatement,
-  VERBS,
 } from './statements.ts';
+import { ACTIVITY_TYPES, VERBS } from './vocabulary.ts';
 
 // The builders run on course.yaml and the modules as authored: the ids are the D24 ids.
 const COURSE_ID = 'https://rosslote.github.io/agent-course/';
 const launch = sparkLaunch();
 
-function screenOf(slug: string, find: (screen: Screen) => boolean): { module: Module; screen: Screen } {
-  const module = course.modules.find((m) => m.slug === slug);
-  const screen = module?.screens.find(find);
-  if (!module || !screen) throw new Error(`module ${slug} has no such screen`);
-  return { module, screen };
-}
-
-const check1 = screenOf('00', (s) => s.type === 'choose' && s.slug === 'check-1');
-const chat = screenOf('00', (s) => s.type === 'chat');
-const order = screenOf('07', (s) => s.type === 'order');
-const match = screenOf('07', (s) => s.type === 'match');
+const check1 = realScreen('00', 'choose', 'check-1');
+const chat = realScreen('00', 'chat');
+const order = realScreen('07', 'order');
+const match = realScreen('07', 'match');
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
@@ -171,21 +163,18 @@ describe('module, check, interaction and fridge statements', () => {
   });
 
   it('a screen with no activity of its own sends nothing', () => {
-    const scene = screenOf('00', (s) => s.type === 'scene');
+    const scene = realScreen('00', 'scene');
     expect(() => interacted(course, launch, scene.module, scene.screen, { type: 'interacted', slug: 'x', response: 'x', answer: 0 })).toThrow();
   });
 });
 
 describe('screenStatement', () => {
-  it('builds the statement for each of the four events', () => {
+  it('builds the statement for each of the three events that send one', () => {
     const { module, screen } = check1;
     expect(screenStatement(course, null, module, screen, { type: 'answered', slug: 'check-1', right: true, score: { raw: 1, max: 1 }, response: 'r', answer: 1 }).verb).toEqual(VERBS.answered);
     expect(screenStatement(course, null, chat.module, chat.screen, { type: 'interacted', slug: 'just-ask', response: 'r', answer: 1 }).verb).toEqual(VERBS.interacted);
     const fridge = screenStatement(course, null, module, screen, { type: 'fridge-ended', slug: 'one-shot', score: { raw: 300, max: 1400 } });
     expect(fridge.object).toMatchObject({ id: `${COURSE_ID}fridge/one-shot` });
-    const takeaway = screenStatement(course, null, module, screen, { type: 'takeaway-reached' });
-    expect(takeaway.verb).toEqual(VERBS.completed);
-    expect(takeaway.object).toMatchObject({ id: `${COURSE_ID}modules/00` });
   });
 });
 
@@ -197,13 +186,6 @@ describe('resultScore', () => {
 });
 
 describe('plain text', () => {
-  it('drops the emphasis markers and keeps the words; a lone asterisk stays', () => {
-    expect(plainText('**Two-way door.** Reverting is *safe*.')).toBe('Two-way door. Reverting is safe.');
-    expect(plainText('**bold with *italic* inside**')).toBe('bold with italic inside');
-    expect(plainText('5 * 3 is 15')).toBe('5 * 3 is 15');
-    expect(plainText('No markup.')).toBe('No markup.');
-  });
-
   it('in every response and every activity name', () => {
     const screen: ScreenOf<'choose'> = { type: 'choose', slug: 'check-1', scored: true, mode: 'single', heading: 'A **bold** heading', options: [] };
     const event = { type: 'answered', slug: 'check-1', right: true, score: { raw: 1, max: 1 }, response: 'two drops *of the same item*', answer: 1 } as const;

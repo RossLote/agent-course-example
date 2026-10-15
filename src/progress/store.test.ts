@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { course } from '../content/index.ts';
-import { sparkLaunch } from '../xapi/fixtures.ts';
+import { htmlResponse as html, jsonResponse as json, sparkLaunch } from '../xapi/fixtures.ts';
 import { localStateKey, readLocalState } from '../xapi/state.ts';
 import { createLrsTracker, createMemoryTracker } from '../xapi/tracker.ts';
 import { EMPTY_PROGRESS, moduleRecord, moduleStatus, type ProgressCause, type ProgressDoc } from './progress.ts';
@@ -26,8 +26,6 @@ let fetchMock: ReturnType<typeof vi.fn<typeof fetch>>;
 function recordStore(state: () => Response | Promise<Response>) {
   fetchMock.mockImplementation(async (_url, init) => (init?.method === undefined || init.method === 'GET' ? state() : new Response(null, { status: 204 })));
 }
-const json = (body: unknown) => new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } });
-const html = () => new Response('<!doctype html><html></html>', { status: 200, headers: { 'Content-Type': 'text/html' } });
 const puts = () => fetchMock.mock.calls.filter(([, init]) => init?.method === 'PUT').map(([, init]) => JSON.parse(String(init?.body)));
 
 beforeEach(() => {

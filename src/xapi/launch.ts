@@ -3,6 +3,7 @@
 // Authorization header), actor (an account Agent as JSON, used verbatim), registration and
 // activity_id. No launch means preview mode (PLAN.md §6, "Preview mode").
 import type { Agent } from '@xapi/xapi';
+import { isRecord } from '../screens/saved.ts';
 
 /** The launch data the course runs on. */
 export interface Launch {
@@ -47,12 +48,7 @@ function parseActor(json: string | null): Agent | null {
 
 /** The actor is any JSON object: it is the LMS's to shape, and it is passed on untouched. */
 function isAgent(value: unknown): value is Agent {
-  return isObject(value);
-}
-
-/** A JSON object: not null, not an array. */
-export function isObject(value: unknown): value is { [key: string]: unknown } {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return isRecord(value);
 }
 
 /**

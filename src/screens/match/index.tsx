@@ -1,10 +1,11 @@
 import { useId, useState } from 'react';
 import type { ScreenOf } from '../../content/index.ts';
-import { Mark } from '../choose/Mark.tsx';
+import { CheckButton } from '../parts/CheckButton.tsx';
+import { Mark } from '../parts/Tone.tsx';
+import { savedField } from '../saved.ts';
 import { Blocks } from '../scene/Blocks.tsx';
 import { Copy } from '../scene/Copy.tsx';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
-import { CheckButton } from './CheckButton.tsx';
 import '../choose/Choose.css';
 import './Match.css';
 
@@ -19,7 +20,7 @@ type MatchAnswer = { picks: (string | null)[] };
  */
 function savedPicks(saved: SavedAnswer | undefined, match: Match): (string | null)[] | undefined {
   if (saved === undefined) return undefined;
-  const picks = saved !== null && typeof saved === 'object' && 'picks' in saved ? saved.picks : undefined;
+  const picks = savedField(saved, 'picks');
   const list = Array.isArray(picks) ? picks : [];
   return match.rows.map((_, i) => {
     const pick = list[i];

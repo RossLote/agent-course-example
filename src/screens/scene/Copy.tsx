@@ -1,12 +1,10 @@
 import type { ReactNode } from 'react';
-
-// `**bold**` or `*italic*`: the only markup copy has (content/README.md).
-const INLINE = /\*\*(.+?)\*\*|\*(.+?)\*/g;
+import { EMPHASIS } from '../../content/copy.ts';
 
 function inline(text: string): ReactNode[] {
   const parts: ReactNode[] = [];
   let at = 0;
-  for (const match of text.matchAll(INLINE)) {
+  for (const match of text.matchAll(EMPHASIS)) {
     if (match.index > at) parts.push(text.slice(at, match.index));
     parts.push(
       match[1] !== undefined ? <strong key={match.index}>{inline(match[1])}</strong> : <em key={match.index}>{inline(match[2])}</em>,

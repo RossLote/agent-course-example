@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { course } from '../content/index.ts';
 import { newPlay, type FridgePlay } from './play.ts';
-import { fillTemplate, fridgeWords, theShelf } from './words.ts';
+import { fridgeWords, theShelf } from './words.ts';
 
 describe('theShelf', () => {
   it('lower-cases the first letter after "the"', () => {
@@ -11,13 +11,6 @@ describe('theShelf', () => {
 
   it('keeps a single "the" for a name that has one', () => {
     expect(theShelf({ id: 'door', name: 'The door' })).toBe('the door');
-  });
-});
-
-describe('fillTemplate', () => {
-  it('fills the slots it has values for and leaves the rest', () => {
-    expect(fillTemplate('{right} out of {total} right first time', { right: 7, total: 8 })).toBe('7 out of 8 right first time');
-    expect(fillTemplate('Final score {score}. {other}', { score: 0 })).toBe('Final score 0. {other}');
   });
 });
 

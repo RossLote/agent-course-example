@@ -1,13 +1,14 @@
-// Pointer drag for the fridge's items, hand-rolled on Pointer Events (no drag library: PLAN.md
-// §6, "Hash routing, hand-rolled"), so a mouse, a pen and a finger all drag the same way. The
-// item captures the pointer, a ghost follows it, and the shelf under it is found with
-// elementFromPoint, kept to this fridge's own shelves so two fridges on a page never mix.
+// Pointer drag for the fridge's items and the order screen's cards, hand-rolled on Pointer
+// Events (no drag library: PLAN.md §6, "Hash routing, hand-rolled"), so a mouse, a pen and a
+// finger all drag the same way. The item captures the pointer, a ghost follows it (DragGhost),
+// and the drop target under it, an element marked `data-drop-target` with its id, is found with
+// elementFromPoint, kept to the root's own targets so two fridges on a page never mix.
 import { useRef, useState, type PointerEvent, type RefObject } from 'react';
 
 /** How far the pointer moves before a press becomes a drag; less is a click. */
 const DRAG_START = 6;
 
-/** A drag in progress: the item, where the pointer is, and the shelf under it. */
+/** A drag in progress: the item, where the pointer is, and the drop target under it. */
 export interface Drag {
   item: string;
   x: number;
@@ -23,24 +24,26 @@ interface Press {
   dragging: boolean;
 }
 
-/** The shelf id of a `[data-shelf]` element at this point inside `root`, if there is one. */
-function shelfAt(root: HTMLElement | null, x: number, y: number): string | undefined {
-  const shelf = document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-shelf]');
-  return shelf && root?.contains(shelf) ? shelf.dataset.shelf : undefined;
+/** The id of the `[data-drop-target]` element at this point inside `root`, if there is one. */
+function targetAt(root: HTMLElement | null, x: number, y: number): string | undefined {
+  const target = document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-drop-target]');
+  return target && root?.contains(target) ? target.dataset.dropTarget : undefined;
+}
+
+export interface PointerDragOptions {
+  /** Gets the item and the target it was let go over; let go anywhere else, nothing happens. */
+  onDrop: (item: string, target: string) => void;
+  /** Called once when a press turns into a drag, so a timer can begin with it. */
+  onStart?: () => void;
+  /** False while the items may not move. */
+  enabled: boolean;
 }
 
 /**
- * The drag in progress and the handlers an item spreads onto its button. `onDrop` gets the
- * item and the shelf it was let go over; let go anywhere else, it stays in the tray.
- * `onStart` is called once when a press turns into a drag, so a timer can begin with it.
- * `swallowClick` is true for the click a browser fires at the end of a drag, which is not one.
+ * The drag in progress and the handlers an item spreads onto its button. `swallowClick` is true
+ * for the click a browser fires at the end of a drag, which is not one.
  */
-export function usePointerDrag(
-  root: RefObject<HTMLElement | null>,
-  onDrop: (item: string, shelf: string) => void,
-  onStart: () => void,
-  enabled: boolean,
-) {
+export function usePointerDrag(root: RefObject<HTMLElement | null>, { onDrop, onStart, enabled }: PointerDragOptions) {
   const [drag, setDrag] = useState<Drag | null>(null);
   const press = useRef<Press | null>(null);
   const dragged = useRef(false);
@@ -61,10 +64,10 @@ export function usePointerDrag(
       const current = press.current;
       if (current === null || current.pointer !== event.pointerId) return;
       if (!current.dragging && Math.hypot(event.clientX - current.x, event.clientY - current.y) < DRAG_START) return;
-      if (!current.dragging) onStart();
+      if (!current.dragging) onStart?.();
       current.dragging = true;
       event.preventDefault();
-      setDrag({ item, x: event.clientX, y: event.clientY, over: shelfAt(root.current, event.clientX, event.clientY) });
+      setDrag({ item, x: event.clientX, y: event.clientY, over: targetAt(root.current, event.clientX, event.clientY) });
     },
     onPointerUp(event: PointerEvent<HTMLElement>) {
       const current = press.current;
@@ -72,8 +75,8 @@ export function usePointerDrag(
       end();
       if (!current.dragging) return;
       dragged.current = true;
-      const shelf = shelfAt(root.current, event.clientX, event.clientY);
-      if (shelf !== undefined) onDrop(item, shelf);
+      const target = targetAt(root.current, event.clientX, event.clientY);
+      if (target !== undefined) onDrop(item, target);
     },
     onPointerCancel: end,
     onLostPointerCapture() {

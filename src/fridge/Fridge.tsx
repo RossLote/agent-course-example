@@ -1,12 +1,16 @@
 import { useEffect, useEffectEvent, useId, useRef, type KeyboardEvent } from 'react';
+import { fillTemplate } from '../content/copy.ts';
 import type { Fridge as FridgeFile } from '../content/index.ts';
+import { Announce } from '../screens/parts/Announce.tsx';
+import { DragGhost } from '../screens/parts/DragGhost.tsx';
+import { ToneIcon } from '../screens/parts/Tone.tsx';
+import { useFocusAfterRender } from '../screens/parts/useFocusAfterRender.ts';
+import { usePointerDrag } from '../screens/parts/usePointerDrag.ts';
 import { Copy } from '../screens/scene/Copy.tsx';
 import type { SavedAnswer, ScreenEvent } from '../screens/types.ts';
-import { ToneIcon } from './icons.tsx';
 import { allPlaced, isFinished, rightFirstTime, savedPlay, scoreOf, timedOut, trayItems, type FridgeAction } from './play.ts';
 import { useFridgePlay } from './useFridgePlay.ts';
-import { usePointerDrag } from './usePointerDrag.ts';
-import { fillTemplate, fridgeWords } from './words.ts';
+import { fridgeWords } from './words.ts';
 import './Fridge.css';
 
 export interface FridgeProps {
@@ -44,8 +48,8 @@ const HINT = 'Drag an item onto a shelf, or click it and then a shelf. With the 
 export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
   const root = useRef<HTMLElement>(null);
   const id = useId();
-  // What to focus once the action has rendered: an item's selector, or the score card's.
-  const focusNext = useRef<string | null>(null);
+  // What to focus once the action has rendered: an item, or the score card.
+  const focusNext = useFocusAfterRender(root);
   const [play, dispatch] = useFridgePlay(fridge, saved, (ended) =>
     onEvent?.({ type: 'fridge-ended', slug: name, score: scoreOf(fridge, ended), answer: savedPlay(ended) }),
   );
@@ -71,9 +75,9 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
     if (last.kind === 'placed') {
       const rest = trayItems(fridge, after);
       const at = Math.min(trayItems(fridge, before).findIndex((item) => item.id === last.item), rest.length - 1);
-      focusNext.current = rest.length === 0 ? '.fridge-score' : `[data-item="${rest[at].id}"]`;
+      focusNext(rest.length === 0 ? '.fridge-score' : `[data-item="${rest[at].id}"]`);
     } else if (last.kind === 'returned' || last.kind === 'put-back') {
-      focusNext.current = `[data-item="${last.item}"]`;
+      focusNext(`[data-item="${last.item}"]`);
     }
   };
 
@@ -86,13 +90,11 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
     return () => clearInterval(interval);
   }, [running]);
 
-  useEffect(() => {
-    const target = focusNext.current;
-    focusNext.current = null;
-    if (target !== null) root.current?.querySelector<HTMLElement>(target)?.focus();
+  const { drag, handlers, swallowClick } = usePointerDrag(root, {
+    onDrop: (item, shelf) => act({ type: 'drop', item, shelf }),
+    onStart: () => dispatch({ type: 'start' }),
+    enabled: !finished,
   });
-
-  const { drag, handlers, swallowClick } = usePointerDrag(root, (item, shelf) => act({ type: 'drop', item, shelf }), () => dispatch({ type: 'start' }), !finished);
 
   // Arrows and Escape while holding, from anywhere inside this fridge and nowhere else.
   const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
@@ -119,7 +121,7 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
   const dragged = drag === null ? undefined : fridge.items.find((item) => item.id === drag.item);
 
   return (
-    <section ref={root} className="fridge" aria-labelledby={`${id}-title`} data-feedback={fridge.feedback} onKeyDown={onKeyDown}>
+    <section ref={root} className="scene-card fridge" aria-labelledby={`${id}-title`} data-feedback={fridge.feedback} onKeyDown={onKeyDown}>
       <div className="fridge-head">
         <h2 id={`${id}-title`} className="fridge-title">
           <Copy text={fridge.title} />
@@ -155,7 +157,7 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
                 <button
                   type="button"
                   className="fridge-shelf"
-                  data-shelf={shelf.id}
+                  data-drop-target={shelf.id}
                   data-target={held !== null || drag !== null || undefined}
                   data-cursor={held?.cursor === index || undefined}
                   data-over={drag?.over === shelf.id || undefined}
@@ -223,15 +225,10 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
         ))}
       </div>
 
-      <p className="fridge-status" data-tone={tone}>
+      <Announce words={words} turn={play.turn} className="fridge-status" tone={tone}>
         {tone !== undefined && <ToneIcon tone={tone} size={16} />}
         <span>{words}</span>
-      </p>
-      <div className="fridge-live" aria-live="polite">
-        {/* A space that comes and goes makes a repeated sentence a change a reader announces. */}
-        {words}
-        {words !== '' && play.turn % 2 === 1 ? ' ' : ''}
-      </div>
+      </Announce>
 
       {timeUp && timer !== null && (
         <p className="fridge-timeup">
@@ -278,11 +275,7 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
         <Copy text={fridge.caption} />
       </p>
 
-      {drag !== null && dragged !== undefined && (
-        <span className="fridge-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden="true">
-          {dragged.name}
-        </span>
-      )}
+      {drag !== null && dragged !== undefined && <DragGhost drag={drag}>{dragged.name}</DragGhost>}
     </section>
   );
 }

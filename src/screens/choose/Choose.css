@@ -1,6 +1,5 @@
 /* The choose screen (Check, M00-JustAsk, M03-Box and M04-Skeptic in the design's first pass). The
-   choice-* parts and .mark are the option, its feedback and its right-or-wrong mark, which match
-   and order use too. */
+   choice-* parts are the option, its feedback and the actions, which match and order use too. */
 
 .choose {
   display: flex;
@@ -13,19 +12,6 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-/* Read by a screen reader, not shown. */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
 }
 
 .choice-set {
@@ -171,23 +157,6 @@
 
 .choice-actions .btn-primary[aria-disabled='true']:hover {
   background: var(--accent);
-}
-
-/* Right or wrong: a tick or a cross on green or red. */
-.mark {
-  flex-shrink: 0;
-}
-
-.mark circle {
-  fill: var(--wrong);
-}
-
-.mark path {
-  stroke: #fff;
-}
-
-.mark[data-right='true'] circle {
-  fill: var(--right);
 }
 
 /* The box panel beside the options (module 03). */

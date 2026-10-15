@@ -1,20 +1,19 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { course, type ScreenOf } from '../../content/index.ts';
-import { NO_ANSWERS } from '../../course/frame/progress.ts';
+import { course } from '../../content/index.ts';
+import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { OrderScreen } from './index.tsx';
 
 // Module 07's order the loop, as authored.
-const module = course.modules.find((m) => m.slug === '07')!;
-const shown = module.screens.find((s): s is ScreenOf<'order'> => s.type === 'order' && s.slug === 'order-the-loop')!;
+const { module, screen: shown } = realScreen('07', 'order', 'order-the-loop');
 const correct = shown.cards.map((c) => c.id);
 const label = (id: string) => shown.cards.find((c) => c.id === id)!.label;
 
 function renderOrder(saved?: SavedAnswer) {
   const onEvent = vi.fn();
   const { container } = render(
-    <OrderScreen screen={shown} module={module} course={course} saved={saved} progress={{ items: NO_ANSWERS, score: { raw: 0, max: 0 } }} onEvent={onEvent} />,
+    <OrderScreen screen={shown} module={module} course={course} saved={saved} progress={NO_PROGRESS} onEvent={onEvent} />,
   );
   return { onEvent, container };
 }

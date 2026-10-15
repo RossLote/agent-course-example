@@ -10,6 +10,11 @@
 //   the intro and the `side` column, and the Back and Next buttons.
 // - Blocks and copy render with `Blocks` (src/screens/scene/Blocks.tsx) and `Copy`
 //   (src/screens/scene/Copy.tsx).
+// - What more than one screen draws or does lives in src/screens/parts/: the right-or-wrong
+//   `Mark` and `ToneIcon`, the `CheckButton`, the `Announce` status line and live region, the
+//   pointer drag and its `DragGhost`, `useFocusAfterRender`, and the `Quote` the home page
+//   shares. A saved answer is read back with
+//   src/screens/saved.ts.
 // - With `saved`, it renders itself answered, with its feedback shown.
 // A screen bead replaces its own folder and never edits this file: the names here are fixed.
 import type { ComponentType } from 'react';

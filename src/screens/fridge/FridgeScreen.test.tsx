@@ -1,17 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { course } from '../../content/index.ts';
-import { NO_ANSWERS } from '../../course/frame/progress.ts';
+import { NO_PROGRESS } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { FridgeScreen } from './index.tsx';
-
-const progress = { items: NO_ANSWERS, score: { raw: 0, max: 0 } };
 
 function renderScreen(fridge: string, saved?: SavedAnswer) {
   const module = course.modules.find((m) => m.screens.some((s) => s.type === 'fridge' && s.fridge === fridge)) ?? course.modules[0];
   const onEvent = vi.fn();
   const view = render(
-    <FridgeScreen screen={{ type: 'fridge', heading: 'A fridge', fridge }} module={module} course={course} saved={saved} progress={progress} onEvent={onEvent} />,
+    <FridgeScreen screen={{ type: 'fridge', heading: 'A fridge', fridge }} module={module} course={course} saved={saved} progress={NO_PROGRESS} onEvent={onEvent} />,
   );
   return { ...view, onEvent };
 }
@@ -20,7 +18,7 @@ describe('FridgeScreen', () => {
   it("plays the fridge its screen names: module 00's one-shot, 5 shelves and 14 items", () => {
     const { container } = renderScreen('one-shot');
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Module 00: "Build me a fridge activity"');
-    expect(container.querySelectorAll('[data-shelf]')).toHaveLength(5);
+    expect(container.querySelectorAll('[data-drop-target]')).toHaveLength(5);
     expect(container.querySelectorAll('.fridge-tray button')).toHaveLength(14);
   });
 
@@ -29,7 +27,7 @@ describe('FridgeScreen', () => {
     const tray = container.querySelector<HTMLElement>('.fridge-tray')!;
     for (const item of course.fridges.accepted.items) {
       fireEvent.click(within(tray).getByRole('button', { name: item.name }));
-      fireEvent.click(container.querySelector<HTMLElement>(`[data-shelf="${item.shelf}"]`)!);
+      fireEvent.click(container.querySelector<HTMLElement>(`[data-drop-target="${item.shelf}"]`)!);
     }
     expect(onEvent).toHaveBeenCalledTimes(1);
     expect(onEvent).toHaveBeenCalledWith(expect.objectContaining({ type: 'fridge-ended', slug: 'accepted', score: { raw: 8, max: 8 } }));

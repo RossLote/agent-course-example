@@ -1,8 +1,13 @@
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
+import { useId, useRef, useState, type KeyboardEvent } from 'react';
+import { plainText } from '../../content/copy.ts';
 import type { ScreenOf } from '../../content/index.ts';
-import { usePointerDrag } from '../../fridge/usePointerDrag.ts';
-import { Mark } from '../choose/Mark.tsx';
-import { CheckButton } from '../match/CheckButton.tsx';
+import { Announce } from '../parts/Announce.tsx';
+import { CheckButton } from '../parts/CheckButton.tsx';
+import { DragGhost } from '../parts/DragGhost.tsx';
+import { Mark } from '../parts/Tone.tsx';
+import { useFocusAfterRender } from '../parts/useFocusAfterRender.ts';
+import { usePointerDrag } from '../parts/usePointerDrag.ts';
+import { savedField } from '../saved.ts';
 import { Blocks } from '../scene/Blocks.tsx';
 import { Copy } from '../scene/Copy.tsx';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
@@ -29,7 +34,7 @@ const HINT = 'Drag a card into place, or click it and then the card whose place 
  */
 function savedOrder(saved: SavedAnswer | undefined, screen: Order): string[] | undefined {
   if (saved === undefined) return undefined;
-  const order = saved !== null && typeof saved === 'object' && 'order' in saved ? saved.order : undefined;
+  const order = savedField(saved, 'order');
   const ids = Array.isArray(order) ? order.filter((id): id is string => typeof id === 'string') : [];
   const whole = ids.length === screen.cards.length && screen.cards.every((card) => ids.includes(card.id));
   return whole ? ids : [...screen.start];
@@ -37,7 +42,7 @@ function savedOrder(saved: SavedAnswer | undefined, screen: Order): string[] | u
 
 /** A card's name in the status line: its label up to the first colon or comma ("Retro"). */
 function shortName(card: Card): string {
-  return card.label.split(/[:,]/)[0].replaceAll('*', '').trim();
+  return plainText(card.label).split(/[:,]/)[0].trim();
 }
 
 /** The order with `id` taken out and put back at `index`. */
@@ -48,7 +53,7 @@ function moveTo(order: readonly string[], id: string, index: number): string[] {
 
 /**
  * Put the cards in order (PLAN.md §6a, "Screen types"): the cards start in the content's `start`
- * order and move by pointer drag (mouse, pen or touch, the fridge's hand-rolled drag), by a
+ * order and move by pointer drag (mouse, pen or touch, as the fridge's items drag), by a
  * click on a card and then on the card whose place it takes, or by the keyboard (Enter or Space
  * picks a card up, the arrows move it a place, Enter drops it, Escape puts it back). A status
  * line and a polite live region say each move. Check marks each card in place right and each
@@ -66,7 +71,6 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
   const [checked, setChecked] = useState(initial !== undefined);
   const [said, setSaid] = useState({ words: '', turn: 0 });
   const root = useRef<HTMLOListElement>(null);
-  const focusCard = useRef<string | null>(null);
   const feedbackIds = useId();
   const promptId = useId();
   const hintId = useId();
@@ -77,18 +81,15 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
   const at = (id: string, list: readonly string[]) => `position ${list.indexOf(id) + 1} of ${cards.length}`;
 
   // A card moved in the list loses focus in some browsers; the one that moved takes it back.
-  useEffect(() => {
-    const id = focusCard.current;
-    focusCard.current = null;
-    if (id !== null) root.current?.querySelector<HTMLElement>(`[data-card="${id}"]`)?.focus();
-  });
+  const focusNext = useFocusAfterRender(root);
+  const focusCard = (id: string) => focusNext(`[data-card="${id}"]`);
 
   /** Puts a card at `index` and lets go of it, whichever way it got there. */
   const place = (id: string, index: number) => {
     const next = moveTo(order, id, index);
     setOrder(next);
     setHeld(null);
-    focusCard.current = id;
+    focusCard(id);
     say(`${shortName(card(id))} dropped at ${at(id, next)}`);
   };
 
@@ -112,7 +113,7 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
     }
     const next = moveTo(order, held.id, index);
     setOrder(next);
-    focusCard.current = held.id;
+    focusCard(held.id);
     say(`${name} moved to ${at(held.id, next)}`);
   };
 
@@ -120,7 +121,7 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
     if (held === null) return;
     setOrder(held.from);
     setHeld(null);
-    focusCard.current = held.id;
+    focusCard(held.id);
     say(`${shortName(card(held.id))} put back at ${at(held.id, held.from)}`);
   };
 
@@ -137,7 +138,7 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
     }
   };
 
-  const { drag, handlers, swallowClick } = usePointerDrag(root, (id, over) => place(id, order.indexOf(over)), () => undefined, !checked);
+  const { drag, handlers, swallowClick } = usePointerDrag(root, { onDrop: (id, over) => place(id, order.indexOf(over)), enabled: !checked });
 
   const check = () => {
     const answer: OrderAnswer = { order: [...order] };
@@ -162,7 +163,7 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
             {HINT}
           </p>
         )}
-        {/* Each card's slot is a drop target: the fridge's drag finds targets by data-shelf. */}
+        {/* Each card's slot is a drop target for the pointer drag. */}
         <ol
           ref={root}
           className="order-list"
@@ -174,7 +175,7 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
             const feedbackId = `${feedbackIds}-${id}`;
             const state = checked ? (right ? 'right' : 'wrong') : held?.id === id ? 'on' : undefined;
             return (
-              <li key={id} className="order-slot" data-shelf={id} data-over={(drag !== null && drag.item !== id && drag.over === id) || undefined}>
+              <li key={id} className="order-slot" data-drop-target={id} data-over={(drag !== null && drag.item !== id && drag.over === id) || undefined}>
                 <div className="choice order-card" data-state={state}>
                   <button
                     type="button"
@@ -215,12 +216,7 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
             );
           })}
         </ol>
-        <p className="order-status">{said.words}</p>
-        <div className="sr-only" aria-live="polite">
-          {/* A space that comes and goes makes a repeated sentence a change a reader announces. */}
-          {said.words}
-          {said.words !== '' && said.turn % 2 === 1 ? ' ' : ''}
-        </div>
+        <Announce words={said.words} turn={said.turn} className="order-status" />
         <div className="choice-actions">
           <CheckButton checked={checked} label={screen.checkLabel} onCheck={check} onTryAgain={() => setChecked(false)} />
           <p className="check-result" role="status">
@@ -228,11 +224,7 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
           </p>
         </div>
       </div>
-      {drag !== null && (
-        <span className="order-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden="true">
-          {shortName(card(drag.item))}
-        </span>
-      )}
+      {drag !== null && <DragGhost drag={drag}>{shortName(card(drag.item))}</DragGhost>}
     </div>
   );
 }

@@ -36,7 +36,11 @@ export function createTracker(course: { id: string }, launch: Launch | null): Tr
   return launch ? createLrsTracker(course, launch) : createMemoryTracker(course);
 }
 
-/** The tracker for a launch: statements and State to the launch's record store, in order. */
+/**
+ * The tracker for a launch: statements and State to the launch's record store, in order. A State
+ * write is queued only when none is waiting already, and sends the latest document when its turn
+ * comes, so a burst of changes is one write.
+ */
 export function createLrsTracker(course: { id: string }, launch: Launch, { retryDelayMs = 1000 } = {}): Tracker {
   const xapi = new XAPI({ endpoint: launch.endpoint, auth: launch.auth, version: '1.0.2', adapter: 'fetch' });
   const queue = createQueue(retryDelayMs);
@@ -47,6 +51,8 @@ export function createLrsTracker(course: { id: string }, launch: Launch, { retry
     stateId: STATE_ID,
     ...(launch.registration && { registration: launch.registration }),
   };
+  // The latest document no queued write has taken yet; null when there is none.
+  let unsent: StateDocument | null = null;
   return {
     launch,
     log: null,
@@ -63,7 +69,18 @@ export function createLrsTracker(course: { id: string }, launch: Launch, { retry
     },
     setState(doc) {
       writeLocalState(localKey, doc);
-      queue.add('the State write', () => xapi.setState({ ...where, state: doc }));
+      const queued = unsent !== null;
+      unsent = doc;
+      if (queued) return;
+      // The latest document is taken on the first try; a retry sends the same one.
+      let state: StateDocument | null = null;
+      queue.add('the State write', () => {
+        if (state === null) {
+          state = unsent ?? doc;
+          unsent = null;
+        }
+        return xapi.setState({ ...where, state });
+      });
     },
     getLocalState: () => readLocalState(localKey),
     idle: () => queue.idle(),

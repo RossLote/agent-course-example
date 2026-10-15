@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { course, type Screen } from '../../content/index.ts';
+import { NO_PROGRESS } from '../../course/frame/fixture.ts';
 import { NO_ANSWERS } from '../../course/frame/progress.ts';
 import type { ModuleAnswers } from '../types.ts';
 import { CompareScreen } from './index.tsx';
@@ -10,14 +11,14 @@ const compare = module05.screens.find((s): s is Extract<Screen, { type: 'compare
 
 function renderCompare(items: ModuleAnswers = NO_ANSWERS) {
   const onEvent = vi.fn();
-  const view = render(<CompareScreen screen={compare} module={module05} course={course} progress={{ items, score: { raw: 0, max: 0 } }} onEvent={onEvent} />);
+  const view = render(<CompareScreen screen={compare} module={module05} course={course} progress={{ ...NO_PROGRESS, items }} onEvent={onEvent} />);
   const [left, right] = screen.getAllByRole('region').filter((region) => region.classList.contains('fridge'));
   return { ...view, onEvent, left, right };
 }
 
 function drop(fridge: HTMLElement, item: string, shelf: string) {
   fireEvent.click(within(fridge.querySelector<HTMLElement>('.fridge-tray')!).getByRole('button', { name: item }));
-  fireEvent.click(fridge.querySelector<HTMLElement>(`[data-shelf="${shelf}"]`)!);
+  fireEvent.click(fridge.querySelector<HTMLElement>(`[data-drop-target="${shelf}"]`)!);
 }
 
 describe('CompareScreen', () => {
@@ -25,8 +26,8 @@ describe('CompareScreen', () => {
     const { left, right } = renderCompare();
     expect(within(left).getByRole('heading', { level: 2 }).textContent).toBe(course.fridges['one-shot'].title);
     expect(within(right).getByRole('heading', { level: 2 }).textContent).toBe(course.fridges.accepted.title);
-    expect(left.querySelectorAll('[data-shelf]')).toHaveLength(5);
-    expect(right.querySelectorAll('[data-shelf]')).toHaveLength(4);
+    expect(left.querySelectorAll('[data-drop-target]')).toHaveLength(5);
+    expect(right.querySelectorAll('[data-drop-target]')).toHaveLength(4);
     expect(left.getAttribute('data-feedback')).toBe('flash');
     expect(right.getAttribute('data-feedback')).toBe('reason');
     expect(within(left).getByRole('timer').textContent).toBe('1:00');

@@ -1,23 +1,16 @@
 import { expect, test } from '@playwright/test';
+import { heading, HOME_HEADING, keepLocal } from '../course/play.ts';
 
 const SCENARIO_HEADING = "A client wants something the authoring tool can't do. You have an AI agent. You've never used one for this.";
-const HOME_HEADING = 'Agents are better at reviewing than building.';
 
 test('the app opens on the scenario, takes the job to the home page, and fetches nothing beyond the local server', async ({
   page,
   baseURL,
 }) => {
-  const origin = new URL(baseURL!).origin;
-  const external: string[] = [];
-  await page.route('**/*', (route) => {
-    const url = route.request().url();
-    if (new URL(url).origin === origin) return route.continue();
-    external.push(url);
-    return route.abort();
-  });
+  const external = await keepLocal(page, new URL(baseURL!).origin);
 
   await page.goto('/?registration=smoke');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(SCENARIO_HEADING);
+  await expect(heading(page)).toHaveText(SCENARIO_HEADING);
   await expect(page.getByText('Your role: learning designer')).toBeVisible();
   await expect(page.getByRole('banner').getByRole('link', { name: 'Getting the most out of agents' })).toBeVisible();
 
@@ -27,7 +20,7 @@ test('the app opens on the scenario, takes the job to the home page, and fetches
   for (const family of ['Manrope Variable', 'Atkinson Hyperlegible']) expect(loaded).toContain(family);
 
   await page.getByRole('link', { name: 'Take the job' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(HOME_HEADING);
+  await expect(heading(page)).toHaveText(HOME_HEADING);
   expect(new URL(page.url()).search).toBe('?registration=smoke');
   expect(new URL(page.url()).hash).toBe('#/home');
   const cards = page.getByRole('region', { name: 'The modules' }).getByRole('link');
@@ -40,7 +33,7 @@ test('the app opens on the scenario, takes the job to the home page, and fetches
 
 test('every control on the home page is reached by Tab and shows a focus ring', async ({ page }) => {
   await page.goto('/#/home');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(HOME_HEADING);
+  await expect(heading(page)).toHaveText(HOME_HEADING);
   const controls = await page.locator('a[href], button').count();
 
   const reached = new Set<string>();

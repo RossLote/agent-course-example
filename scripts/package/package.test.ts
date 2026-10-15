@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { strToU8, zipSync } from 'fflate';
+import { ACTIVITY_TYPES } from '../../src/xapi/vocabulary.ts';
 import { checkZip } from './check.ts';
-import { COURSE_ACTIVITY_TYPE, escapeXml, tincanXml } from './tincan.ts';
+import { escapeXml, tincanXml } from './tincan.ts';
 
 const course = {
   id: 'https://example.com/course/?a=1&b=2/',
@@ -44,13 +45,13 @@ describe('tincan.xml', () => {
   it('names the course activity, its title and description, the course type and index.html as the launch', () => {
     expect(activityOf(tincanXml(course))).toEqual({
       id: course.id,
-      type: COURSE_ACTIVITY_TYPE,
+      type: ACTIVITY_TYPES.course,
       name: course.title,
       description: course.description,
       descriptionLang: 'en-US',
       launch: 'index.html',
     });
-    expect(COURSE_ACTIVITY_TYPE).toBe('http://adlnet.gov/expapi/activities/course');
+    expect(ACTIVITY_TYPES.course).toBe('http://adlnet.gov/expapi/activities/course');
   });
 
   it('escapes the five XML special characters', () => {

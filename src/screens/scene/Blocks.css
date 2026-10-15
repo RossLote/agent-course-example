@@ -11,15 +11,6 @@
   gap: 14px;
 }
 
-/* A white card on the ground: a side block, a card item, a column. */
-.scene-card {
-  min-width: 0;
-  padding: 20px 22px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  background: var(--surface);
-}
-
 .block {
   min-width: 0;
   margin: 0;

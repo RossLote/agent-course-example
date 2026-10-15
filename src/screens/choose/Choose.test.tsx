@@ -1,22 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { course, type ScreenOf } from '../../content/index.ts';
-import { NO_ANSWERS } from '../../course/frame/progress.ts';
+import { course } from '../../content/index.ts';
+import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { ChooseScreen } from './index.tsx';
 
 // The real modules, as authored.
-function chooseIn(slug: string, choose: string) {
-  const module = course.modules.find((m) => m.slug === slug)!;
-  const shown = module.screens.find((s): s is ScreenOf<'choose'> => s.type === 'choose' && s.slug === choose)!;
-  return { module, shown };
-}
-
 function renderChoose(slug: string, choose: string, saved?: SavedAnswer) {
-  const { module, shown } = chooseIn(slug, choose);
+  const { module, screen: shown } = realScreen(slug, 'choose', choose);
   const onEvent = vi.fn();
   const { container, unmount } = render(
-    <ChooseScreen screen={shown} module={module} course={course} saved={saved} progress={{ items: NO_ANSWERS, score: { raw: 0, max: 0 } }} onEvent={onEvent} />,
+    <ChooseScreen screen={shown} module={module} course={course} saved={saved} progress={NO_PROGRESS} onEvent={onEvent} />,
   );
   return { shown, onEvent, container, unmount };
 }

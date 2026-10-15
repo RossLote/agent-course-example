@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { course } from '../content/index.ts';
-import { ACTOR_JSON, LAUNCH_ACTIVITY_ID, REGISTRATION, sparkLaunch } from './fixtures.ts';
+import { ACTOR_JSON, htmlResponse, jsonResponse, LAUNCH_ACTIVITY_ID, REGISTRATION, sparkLaunch } from './fixtures.ts';
 import { localStateKey } from './state.ts';
 import { initialized, moduleCompleted } from './statements.ts';
 import { createLrsTracker, createMemoryTracker, createTracker } from './tracker.ts';
@@ -24,9 +24,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function ok(body: unknown = ['an-id']) {
-  return new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } });
-}
+const ok = (body: unknown = ['an-id']) => jsonResponse(body);
 
 function failure(status = 500) {
   return new Response('the record store failed', { status });
@@ -138,7 +136,7 @@ describe('the record store tracker', () => {
   });
 
   it.each([
-    ['answered with HTML (the dev server answers unknown paths with index.html)', () => new Response('<!doctype html><html></html>', { status: 200, headers: { 'Content-Type': 'text/html' } })],
+    ['answered with HTML (the dev server answers unknown paths with index.html)', htmlResponse],
     ['answered with a JSON string', () => ok('progress')],
     ['answered with a JSON array', () => ok([1, 2])],
     ['answered 404', () => failure(404)],
@@ -167,6 +165,23 @@ describe('the record store tracker', () => {
     expect(new URL(request.url).searchParams.get('registration')).toBe(REGISTRATION);
     expect(request.body).toEqual({ modules: ['00'] });
     expect(localStorage.getItem(`agent-course:${COURSE_ID}:${REGISTRATION}`)).toBe('{"modules":["00"]}');
+  });
+
+  it('sends a burst of State changes as one write of the latest, after the statements before it', async () => {
+    fetchMock.mockImplementation(async (_url, init) => (init?.method === 'PUT' ? new Response(null, { status: 204 }) : ok()));
+    const tracker = createLrsTracker(course, launch, { retryDelayMs: 0 });
+
+    tracker.send(initialized(course, launch));
+    tracker.setState({ step: 1 });
+    tracker.setState({ step: 2 });
+    tracker.setState({ step: 3 });
+    expect(tracker.getLocalState()).toEqual({ step: 3 });
+    await tracker.idle();
+
+    expect(requests().map((r) => [r.method, r.body.step])).toEqual([
+      ['POST', undefined],
+      ['PUT', 3],
+    ]);
   });
 });
 

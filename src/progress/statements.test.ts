@@ -1,6 +1,7 @@
 import type { Statement } from '@xapi/xapi';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { course, type Module, type Screen, type ScreenOf } from '../content/index.ts';
+import { realScreen } from '../course/frame/fixture.ts';
 import type { ScreenEvent, Score } from '../screens/types.ts';
 import { LAUNCH_ACTIVITY_ID, REGISTRATION, sparkLaunch } from '../xapi/fixtures.ts';
 import type { Launch } from '../xapi/launch.ts';
@@ -18,9 +19,7 @@ function mod(slug: string): Module {
 }
 
 function screenOf<T extends Screen['type']>(module: Module, type: T, slug?: string): ScreenOf<T> {
-  const screen = module.screens.find((s): s is ScreenOf<T> => s.type === type && (slug === undefined || ('slug' in s && s.slug === slug)));
-  if (!screen) throw new Error(`module ${module.slug} has no ${type} ${slug ?? ''}`);
-  return screen;
+  return realScreen(module.slug, type, slug).screen;
 }
 
 /** A Check press on a choose: `answered` when scored, else `interacted` per pick, as ChooseScreen sends them. */

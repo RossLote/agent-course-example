@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { fillTemplate } from '../../content/copy.ts';
 import type { ScreenOf } from '../../content/index.ts';
 import { Copy } from '../scene/Copy.tsx';
 
@@ -38,7 +39,7 @@ export function BoxPanel({ box, up }: { box: Box; up: ReadonlySet<string> }) {
   const titleId = useId();
   const points = corners(Math.max(box.walls.length, 3));
   const count = box.walls.filter((w) => up.has(w.id)).length;
-  const caption = box.caption.replaceAll('{up}', String(count)).replaceAll('{total}', String(box.walls.length));
+  const caption = fillTemplate(box.caption, { up: count, total: box.walls.length });
   return (
     <figure className="choose-box">
       <svg className="choose-box-drawing" viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-labelledby={titleId}>

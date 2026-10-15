@@ -1,5 +1,6 @@
 import { expect, test, type Request } from '@playwright/test';
-import { COURSE_ID, heading, keepLocal, playModule00 } from '../course/play.ts';
+import { ACTOR_JSON, LAUNCH_ACTIVITY_ID, REGISTRATION, sparkSearch } from '../../src/xapi/fixtures.ts';
+import { COURSE_ID, heading, HOME_HEADING, keepLocal, playModule00 } from '../course/play.ts';
 
 // The course launched as SparkLMS launches it (D18, D19, D23): a launch query string whose
 // record store Playwright stands in for, so nothing reaches a server. Every request the course
@@ -7,11 +8,9 @@ import { COURSE_ID, heading, keepLocal, playModule00 } from '../course/play.ts';
 // Authorization value verbatim, the actor verbatim, the registration, the launch activity_id
 // as the course and course.yaml's id as the parent, and the State writes with the progress.
 
-// An invented learner and record store in SparkLMS's shape.
-const ACTOR = { objectType: 'Agent', name: 'A Learner', account: { homePage: 'https://lms.example.com', name: 'learner-1' } };
-const REGISTRATION = '7d1f2c3a-1b2c-4d5e-8f90-123456789abc';
+// The xAPI tests' invented learner and launch (src/xapi/fixtures.ts), with a record store of its own.
+const ACTOR: unknown = JSON.parse(ACTOR_JSON);
 const AUTH = `tincan e2e-token ${REGISTRATION}`;
-const LAUNCH_ACTIVITY_ID = 'http://evolve/abc';
 
 interface Recorded {
   method: string;
@@ -48,22 +47,17 @@ test('a launch sends every statement and State write to the record store with th
     return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(['ok']) });
   });
 
-  const search = new URLSearchParams({
-    endpoint,
-    auth: AUTH,
-    actor: JSON.stringify(ACTOR),
-    registration: REGISTRATION,
-    activity_id: LAUNCH_ACTIVITY_ID,
-  });
+  // SparkLMS's launch parameters, without its keydown and close messages.
+  const search = sparkSearch({ endpoint, auth: AUTH, 'keydown-message': null, 'close-message': null });
   await page.clock.install();
-  await page.goto(`/?${search}`);
+  await page.goto(`/${search}`);
   await expect(page.getByText('Your role: learning designer')).toBeVisible();
   // No preview with a launch: no badge, no drawer.
   await expect(page.getByText('PREVIEW', { exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: /^Statements/ })).toHaveCount(0);
 
   await page.getByRole('link', { name: 'Take the job' }).click();
-  await expect(heading(page)).toHaveText('Agents are better at reviewing than building.');
+  await expect(heading(page)).toHaveText(HOME_HEADING);
   await playModule00(page);
   await expect(page.getByRole('banner')).toContainText('1 of 8 done');
 

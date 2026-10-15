@@ -1,17 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { course, type ScreenOf } from '../../content/index.ts';
-import { NO_ANSWERS } from '../../course/frame/progress.ts';
+import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { MatchScreen } from './index.tsx';
 
 // The real modules, as authored.
 function renderMatch(slug: string, match: string, saved?: SavedAnswer) {
-  const module = course.modules.find((m) => m.slug === slug)!;
-  const shown = module.screens.find((s): s is ScreenOf<'match'> => s.type === 'match' && s.slug === match)!;
+  const { module, screen: shown } = realScreen(slug, 'match', match);
   const onEvent = vi.fn();
   const { container } = render(
-    <MatchScreen screen={shown} module={module} course={course} saved={saved} progress={{ items: NO_ANSWERS, score: { raw: 0, max: 0 } }} onEvent={onEvent} />,
+    <MatchScreen screen={shown} module={module} course={course} saved={saved} progress={NO_PROGRESS} onEvent={onEvent} />,
   );
   return { shown, onEvent, container };
 }

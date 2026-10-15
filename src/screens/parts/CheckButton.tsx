@@ -15,8 +15,8 @@ interface CheckButtonProps {
 
 /**
  * Check, and once checked Try again: one button that turns from one into the other and back, so
- * focus stays on it, as the choose screen's does. While there is nothing to check it is
- * aria-disabled (still focusable) and its hint says why. Match and order both use it.
+ * focus stays on it. While there is nothing to check it is aria-disabled (still focusable) and
+ * its hint says why. Choose, match and order all use it.
  */
 export function CheckButton({ checked, waiting = false, hint, label, onCheck, onTryAgain }: CheckButtonProps) {
   const hintId = useId();

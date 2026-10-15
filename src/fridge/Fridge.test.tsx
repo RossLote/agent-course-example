@@ -174,7 +174,7 @@ describe('Fridge, the accepted file', () => {
 describe('Fridge, the one-shot file as a plain fridge', () => {
   it('renders its 5 shelves and 14 items', () => {
     const f = renderFridge(oneShot, 'one-shot');
-    expect(f.container.querySelectorAll('[data-shelf]')).toHaveLength(5);
+    expect(f.container.querySelectorAll('[data-drop-target]')).toHaveLength(5);
     expect(f.trayNames()).toHaveLength(14);
     expect(screen.getByRole('button', { name: 'Reset' })).toBeTruthy();
   });

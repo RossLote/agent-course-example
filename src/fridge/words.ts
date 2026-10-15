@@ -1,5 +1,6 @@
 // The fridge's words: one function makes what the live region announces and the status line
 // shows, so a screen reader and a sighted learner get the same item, shelf and result (D14).
+import { plainText } from '../content/copy.ts';
 import type { Fridge } from '../content/index.ts';
 import type { FridgePlay } from './play.ts';
 
@@ -32,7 +33,7 @@ export function fridgeWords(fridge: Fridge, play: FridgePlay): string {
   if (last === null) return '';
   if (last.kind === 'reset') return 'Every item is back in the tray.';
   if (last.kind === 'no-timer') return 'Timer off.';
-  if (last.kind === 'time-up') return fridge.timer === 'none' ? '' : fridge.timer.message.replace(/\*/g, '');
+  if (last.kind === 'time-up') return fridge.timer === 'none' ? '' : plainText(fridge.timer.message);
   const item = fridge.items.find((candidate) => candidate.id === last.item);
   if (item === undefined) return '';
   const shelf = 'shelf' in last ? fridge.shelves.find((candidate) => candidate.id === last.shelf) : undefined;
@@ -50,9 +51,4 @@ export function fridgeWords(fridge: Fridge, play: FridgePlay): string {
         ? `${item.name} returned to the tray. ${item.reason}`
         : `${item.name} returned to the tray.`;
   }
-}
-
-/** A template from the fridge file with its `{name}` slots filled ("7 out of 8 right first time"). */
-export function fillTemplate(template: string, values: Readonly<Record<string, string | number>>): string {
-  return template.replace(/\{(\w+)\}/g, (slot, name: string) => (name in values ? String(values[name]) : slot));
 }

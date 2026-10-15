@@ -1,7 +1,4 @@
-import type { ReactNode, Ref } from 'react';
-// .scene-card, the white card the conversation sits on, and .sr-only.
-import '../scene/Blocks.css';
-import '../choose/Choose.css';
+import type { ReactNode } from 'react';
 import './Chat.css';
 
 /** Who said a message: the scripted agent (teal) or the learner (amber). */
@@ -32,15 +29,14 @@ export interface MessageProps {
   /** A bubble as wide as the conversation, for the brief's questions. */
   wide?: boolean;
   /** For a message focus moves to (the brief's closing message). */
-  ref?: Ref<HTMLLIElement>;
   tabIndex?: number;
 }
 
 /** One message: the speaker's avatar and name over the bubble, the learner's on the right. */
-export function Message({ who, children, wide = false, ref, tabIndex }: MessageProps) {
+export function Message({ who, children, wide = false, tabIndex }: MessageProps) {
   const speaker = SPEAKERS[who];
   return (
-    <li ref={ref} tabIndex={tabIndex} className={wide ? 'chat-msg chat-msg-wide' : 'chat-msg'} data-who={who}>
+    <li tabIndex={tabIndex} className={wide ? 'chat-msg chat-msg-wide' : 'chat-msg'} data-who={who}>
       <span className="chat-avatar" aria-hidden="true">
         {speaker.avatar}
       </span>

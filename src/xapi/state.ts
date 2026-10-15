@@ -1,7 +1,8 @@
 // The learner's progress document (D22, PLAN.md §6 "Resume"): one State document under the
 // course activity, the agent and the registration, and a copy in localStorage keyed by the
 // course id and the registration, so a preview run never leaks into a launched learner's.
-import { isObject, type Launch } from './launch.ts';
+import { isRecord } from '../screens/saved.ts';
+import type { Launch } from './launch.ts';
 
 /** A State document: a JSON object. The progress store (.9) decides what is in it. */
 export type StateDocument = { readonly [key: string]: unknown };
@@ -11,7 +12,7 @@ export const STATE_ID = 'progress';
 
 /** Whether a State read answered with a State document (not HTML, not a string, not an array). */
 export function isStateDocument(value: unknown): value is StateDocument {
-  return isObject(value);
+  return isRecord(value);
 }
 
 /**

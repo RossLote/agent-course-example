@@ -8,33 +8,26 @@ import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { zipSync } from 'fflate';
 import { build } from 'vite';
-import { parse } from 'yaml';
-import { validateContent } from '../../src/content/validate.ts';
+import { readContent } from '../content.ts';
 import { checkZip } from './check.ts';
 import { tincanXml } from './tincan.ts';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const contentDir = join(root, 'content');
 const outDir = join(root, 'dist', 'agent-course');
 const zipPath = join(root, 'dist', 'agent-course.zip');
 
 /** Every file under a folder, keyed by its path relative to it with forward slashes. */
-function readTree(dir: string, include: (path: string) => boolean = () => true): Record<string, Uint8Array> {
+function readTree(dir: string): Record<string, Uint8Array> {
   const files: Record<string, Uint8Array> = {};
   for (const entry of readdirSync(dir, { recursive: true, withFileTypes: true })) {
     if (!entry.isFile()) continue;
     const full = join(entry.parentPath, entry.name);
-    const path = relative(dir, full).split(sep).join('/');
-    if (include(path)) files[path] = readFileSync(full);
+    files[relative(dir, full).split(sep).join('/')] = readFileSync(full);
   }
   return files;
 }
 
-// content/ as src/content/index.ts globs it, parsed as the YAML plugin in vite.config.ts parses it.
-const yamlFiles = readTree(contentDir, (path) => path === 'course.yaml' || /^(modules|fridge)\/[^/]+\.yaml$/.test(path));
-const course = validateContent(
-  Object.fromEntries(Object.entries(yamlFiles).map(([path, bytes]) => [path, parse(Buffer.from(bytes).toString('utf8'), { prettyErrors: true })])),
-);
+const course = readContent();
 
 await build({ root, base: './', logLevel: 'warn', build: { outDir, emptyOutDir: true } });
 writeFileSync(join(outDir, 'tincan.xml'), tincanXml(course));

@@ -1,4 +1,5 @@
-/* The shared pieces every page uses: the page's layout, the buttons, the small type. */
+/* The shared pieces every page uses: the page's layout, the buttons, the white card, the small
+   type, and text for a screen reader only. */
 
 .page {
   display: flex;
@@ -56,6 +57,15 @@
   font-size: 18px;
 }
 
+/* A white card on the ground: a side block, a card item, a column, a screen's panel. */
+.scene-card {
+  min-width: 0;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 12px;
@@ -70,4 +80,17 @@
 
 .small {
   font-size: 14px;
+}
+
+/* Read by a screen reader, not shown. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }

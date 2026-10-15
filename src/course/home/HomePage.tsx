@@ -1,7 +1,8 @@
 import type { Course, ModuleEntry } from '../../content/index.ts';
 import type { HomeNext, ModuleStatus } from '../../progress/progress.ts';
+import { Quote } from '../../screens/parts/Quote.tsx';
 import { BoxDiagram } from '../box/BoxDiagram.tsx';
-import { formatRoute, type Route } from '../route.ts';
+import { formatRoute } from '../route.ts';
 import { TopBar } from '../TopBar.tsx';
 import { continueLabel, doneLabel, reviewLabel, STATUS_LABELS } from './labels.ts';
 import './HomePage.css';
@@ -39,28 +40,25 @@ export interface HomePageProps {
   done?: number;
   /** Each module card's status, by module slug; a card left out reads "Not started". */
   statuses?: Readonly<Record<string, ModuleStatus>>;
-  /** Where the primary button goes (src/progress/progress.ts, homeNext); the first module when left out. */
+  /** Where the primary button goes (src/progress/progress.ts, homeNext); start the first module when left out. */
   next?: HomeNext;
 }
 
-/** The primary button's label and where it goes, or null when the course has no modules. */
-function primary(course: HomePageProps['course'], next: HomeNext): { label: string; route: Route } | null {
-  const first = course.modules[0];
-  if (!first) return null;
+/** The primary button's label. */
+function primaryLabel(course: HomePageProps['course'], next: HomeNext): string {
   switch (next.action) {
     case 'start':
-      return { label: course.home.start, route: { page: 'module', slug: first.slug, screen: 1 } };
+      return course.home.start;
     case 'continue':
-      return { label: continueLabel(next.slug), route: { page: 'module', slug: next.slug, screen: next.screen } };
+      return continueLabel(next.slug);
     case 'review':
-      return { label: reviewLabel(first.slug), route: { page: 'module', slug: first.slug, screen: 1 } };
+      return reviewLabel(next.slug);
   }
 }
 
 /** The course home: the thesis, the open box, and every module, any of which opens (D22). */
-export function HomePage({ course, done = 0, statuses = {}, next = { action: 'start' } }: HomePageProps) {
+export function HomePage({ course, done = 0, statuses = {}, next = { action: 'start', slug: course.modules[0].slug, screen: 1 } }: HomePageProps) {
   const { home, modules } = course;
-  const button = primary(course, next);
   return (
     <div className="page">
       <TopBar title={course.title} subtitle={done > 0 ? doneLabel(done, modules.length) : home.meta}>
@@ -71,19 +69,12 @@ export function HomePage({ course, done = 0, statuses = {}, next = { action: 'st
           <div className="home-thesis">
             <p className="eyebrow">{home.eyebrow}</p>
             <h1>{home.heading}</h1>
-            <figure className="home-quote">
-              <blockquote>
-                <p>“{home.quote.text}”</p>
-              </blockquote>
-              <figcaption>{home.quote.attribution}</figcaption>
-            </figure>
+            <Quote className="home-quote" text={home.quote.text} attribution={home.quote.attribution} />
             <p className="home-line">{home.line}</p>
             <div className="home-actions">
-              {button && (
-                <a className="btn btn-primary" href={formatRoute(button.route)}>
-                  {button.label}
-                </a>
-              )}
+              <a className="btn btn-primary" href={formatRoute({ page: 'module', slug: next.slug, screen: next.screen })}>
+                {primaryLabel(course, next)}
+              </a>
               <a className="btn btn-ghost" href={formatRoute({ page: 'scenario' })}>
                 {home.scenarioLink}
               </a>

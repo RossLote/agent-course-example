@@ -118,33 +118,16 @@ const asideBlock = z.strictObject({
   text,
 });
 
-const innerBlock = z.discriminatedUnion('type', [
-  paragraphBlock,
-  cardsBlock,
-  quoteBlock,
-  listBlock,
-  tableBlock,
-  monoBlock,
-  statsBlock,
-  asideBlock,
-]);
+/** Every block but columns: what a column may hold. */
+const innerBlocks = [paragraphBlock, cardsBlock, quoteBlock, listBlock, tableBlock, monoBlock, statsBlock, asideBlock] as const;
+const innerBlock = z.discriminatedUnion('type', innerBlocks);
 
 const columnsBlock = z.strictObject({
   type: z.literal('columns'),
   columns: z.array(z.strictObject({ heading: text.optional(), blocks: z.array(innerBlock).min(1) })).length(2),
 });
 
-export const block = z.discriminatedUnion('type', [
-  paragraphBlock,
-  cardsBlock,
-  quoteBlock,
-  listBlock,
-  tableBlock,
-  columnsBlock,
-  monoBlock,
-  statsBlock,
-  asideBlock,
-]);
+export const block = z.discriminatedUnion('type', [...innerBlocks, columnsBlock]);
 export type Block = z.infer<typeof block>;
 export type StatsItem = z.infer<typeof statsItem>;
 export type ListItem = z.infer<typeof listItem>;
