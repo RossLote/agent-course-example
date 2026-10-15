@@ -1,0 +1,112 @@
+# Stub: placeholder screens, one of every type, so the frame can play this module before its
+# real screens arrive (bead .10 writes modules 00-03, bead .11 modules 04-07, from the
+# storyboard in docs/course/modules/). Every type is documented in content/README.md.
+slug: "04"
+screens:
+  - type: scene
+    eyebrow: Placeholder
+    heading: Module 04, placeholder scene
+    blocks:
+      - type: paragraph
+        text: Placeholder copy. This module's screens come from its storyboard.
+  - type: chat
+    slug: chat
+    heading: Placeholder chat
+    opening: A placeholder ask.
+    messages:
+      - A placeholder reply from the agent.
+    replies:
+      options:
+        - label: First reply
+          reply: The agent's scripted answer to the first reply.
+        - label: Second reply
+          reply: The agent's scripted answer to the second reply.
+  - type: brief
+    slug: brief
+    heading: Placeholder brief
+    opening: A placeholder request.
+    rounds:
+      - message: One question, with my recommended answer.
+        questions:
+          - text: The first question?
+            chips:
+              - label: The recommended answer
+                decision: The decision the recommended answer makes.
+                recommended: true
+              - label: Another answer
+                decision: The decision the other answer makes.
+      - message: Took your answer as D1. One more.
+        questions:
+          - text: The second question?
+            chips:
+              - label: The recommended answer
+                decision: The decision the recommended answer makes.
+                recommended: true
+              - label: Another answer
+                decision: The decision the other answer makes.
+    defaults:
+      label: Your defaults
+      reply: Your defaults.
+    closing: That's the brief. Two decisions on the record.
+    panel:
+      heading: The record
+      note: "{filled} of {total} decisions."
+  - type: choose
+    slug: check-1
+    eyebrow: Check · 1 of 2
+    heading: A placeholder question?
+    scored: true
+    mode: single
+    options:
+      - label: The right answer.
+        right: true
+        feedback: Yes. Placeholder feedback.
+      - label: A wrong answer.
+        right: false
+        feedback: Placeholder feedback on the wrong answer.
+  - type: match
+    slug: match
+    heading: Placeholder match
+    scored: false
+    targets:
+      - id: first
+        label: the first target
+      - id: second
+        label: the second target
+    rows:
+      - text: A row that matches the first target.
+        key: first
+        feedback: The first target.
+      - text: A row that matches the second target.
+        key: second
+        feedback: The second target.
+  - type: order
+    slug: order
+    heading: Placeholder order
+    cards:
+      - id: one
+        label: The first card.
+        feedback: This one comes first.
+      - id: two
+        label: The second card.
+        feedback: This one comes second.
+      - id: three
+        label: The third card.
+        feedback: This one comes last.
+    start: [three, one, two]
+  - type: fridge
+    heading: Placeholder fridge
+    fridge: one-shot
+  - type: compare
+    heading: Placeholder comparison
+    left: one-shot
+    right: accepted
+    table:
+      rows:
+        - aspect: Placeholder
+          left: The one-shot.
+          right: The accepted one.
+          wall: placeholder
+  - type: takeaway
+    text: "**Placeholder takeaway.** The module's own card comes from its storyboard."
+    caption: Placeholder line under the box.

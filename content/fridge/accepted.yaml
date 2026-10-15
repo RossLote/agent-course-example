@@ -1,0 +1,31 @@
+# Stub: a small fridge that validates, with the accepted fridge's settings. Bead .15 writes
+# the full fridge (four shelves, eight items, each with its reason) from
+# docs/course/modules/05 screen 5 and the M05-TwoFridges design board. Every field is
+# documented in content/README.md.
+title: "Module 05: what you accepted"
+caption: Placeholder. A wrong drop returns the item and says why.
+shelves:
+  - id: top
+    name: Top shelf
+    subtitle: ready to eat
+  - id: bottom
+    name: Bottom shelf
+    subtitle: raw meat and fish
+items:
+  - id: cheese
+    name: Cheese
+    shelf: top
+    reason: Dairy goes on the top shelf, away from raw meat.
+  - id: raw-chicken
+    name: Raw chicken
+    shelf: bottom
+    reason: Raw meat and fish go on the bottom shelf so they can't drip onto other food.
+feedback: reason
+score:
+  mode: right-first-time
+timer: none
+leaderboard: none
+confetti: false
+finish: "{right} out of {total} right first time"
+allRight: Every item on the right shelf first time.
+resetLabel: Try again

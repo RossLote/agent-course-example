@@ -1,0 +1,35 @@
+# Stub: a small fridge that validates, with the one-shot's settings switched on. Bead .15
+# writes the full fridge (five shelves, fourteen items) from docs/course/modules/05 screen 5
+# and the M05-TwoFridges design board. Every field is documented in content/README.md.
+title: 'Module 00: "Build me a fridge activity"'
+caption: Placeholder. A wrong drop flashes red and snaps back; no reason is given.
+shelves:
+  - id: top
+    name: Top shelf
+  - id: lower-middle
+    name: Lower middle
+items:
+  - id: cheese
+    name: Cheese
+    shelf: top
+  - id: raw-chicken
+    name: Raw chicken
+    shelf: lower-middle
+feedback: flash
+score:
+  mode: points
+  right: 100
+  wrong: -50
+timer:
+  seconds: 60
+  message: "**Time's up!** Better luck next time."
+leaderboard:
+  - name: Sam
+    score: 1400
+  - name: Priya
+    score: 1250
+  - name: You
+    learner: true
+confetti: true
+finish: You did it! Final score {score}.
+resetLabel: Reset
