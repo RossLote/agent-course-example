@@ -393,3 +393,42 @@ builds software. Nothing here changes the round-one epic.
 - Keep Tauri's surface small: a handful of plugins, the capabilities
   explicit, the Rust in your own crates. If a reason to leave ever appears,
   wry and tao are underneath and the Rust moves with you.
+
+## Ross: make the repo, name it, fill it with the plan and the skills
+
+- Create a new repo under the company's projects folder, double-nested
+  (`<name>/<name>`) so worktrees sit beside it in order. Think of a name for
+  an agent-first authoring tool that builds from pre-configured JavaScript
+  components, or give me a few and I'll pick. Initialise it with beads,
+  tracked in git; I'll sort the remote out later.
+- Fill it with a few plan documents covering what we've discussed, both
+  phases. Phase one is the component library, the player, and the rules
+  for piecing them into a course, driven from VS Code with Claude Code. It
+  needs its own set of skills in the repo: we have the ones we use now, but
+  this will need something slightly different.
+
+## Agent: Mortar, the repo made and filled
+
+- Four names offered, with their conflicts: Mortar (binds pre-made bricks
+  into a structure, with the mortarboard nod to learning; recommended),
+  Tessera (a tile of a mosaic), Trellis (a frame that guides growth; the
+  best metaphor, the worst conflicts) and Tenon (the joint that fits
+  pre-cut pieces). You picked Mortar.
+- The repo is at the company's projects folder, `mortar/mortar`, git on
+  main with the repo-level identity set to your company address, beads
+  with the prefix `mortar` and the JSONL export in every commit, the
+  session hook, and one commit. No remote; the recipe is in its memories.
+- What is in it: a README; PLAN.md in the usual shape (the occasion, the
+  idea, the shape, the phases, constraints, open questions for the brief,
+  proposals P1–P9 numbered so the brief can accept or reverse each, a log);
+  five plan documents: phase one, the component contract, the content
+  format and the repo convention, the skills, phase two with the facts
+  checked today and their sources; eight skill drafts (course-brief,
+  course-outline, course-build, course-preview, course-change,
+  course-review, course-package, new-component), each marked as written
+  before the library exists; this conversation as the first log; CLAUDE.md
+  and AGENTS.md with the conventions; two idea beads, phase one
+  (`mortar-cyt`) and phase two (`mortar-rsu`, blocked on the first); seven
+  memories carried over and adapted, including that Mortar is its own
+  thing and clients are never named.
+- Next in that repo: you set the remote; then `/brief mortar-cyt`.
