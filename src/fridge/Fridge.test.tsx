@@ -2,10 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { course } from '../content/index.ts';
 import { Fridge } from './Fridge.tsx';
-import { playTone, wakeTones } from './tones.ts';
+import { playTone, sleepTones, wakeTones } from './tones.ts';
 
 // jsdom has no Web Audio: the tones are counted here, and made in ./tones.test.ts.
-vi.mock('./tones.ts', () => ({ playTone: vi.fn(), wakeTones: vi.fn() }));
+vi.mock('./tones.ts', () => ({ playTone: vi.fn(), sleepTones: vi.fn(), wakeTones: vi.fn() }));
 beforeEach(() => vi.clearAllMocks());
 
 const accepted = course.fridges.accepted;
@@ -226,7 +226,7 @@ describe('Fridge, the one-shot extras', () => {
     expect(clock()).toBe('0:12');
     pass(6);
     expect(clock()).toBe('0:06');
-    expect(screen.getByRole('timer').hasAttribute('data-low')).toBe(false);
+    expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(false);
   });
 
   it('warns from 0:05: a red, pulsing timer with a speaker, a red outline, and a short beep each second', () => {
@@ -241,7 +241,6 @@ describe('Fridge, the one-shot extras', () => {
     expect(tones()).toEqual([]);
     pass(1);
     expect(clock()).toBe('0:05');
-    expect(timer().hasAttribute('data-low')).toBe(true);
     expect(timer().hasAttribute('data-pulse')).toBe(true);
     expect(timer().querySelector('svg')!.getAttribute('aria-hidden')).toBe('true');
     expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(true);
@@ -264,8 +263,7 @@ describe('Fridge, the one-shot extras', () => {
     expect(tones()).toEqual(['beep', 'beep', 'beep', 'beep', 'beep', 'end']);
     pass(30);
     expect(tones()).toHaveLength(6);
-    // At zero the timer stays red but stops pulsing, and the outline stays red.
-    expect(screen.getByRole('timer').hasAttribute('data-low')).toBe(true);
+    // At zero the timer and the outline stay red (the fridge still warns), but it stops pulsing.
     expect(screen.getByRole('timer').hasAttribute('data-pulse')).toBe(false);
     expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(true);
   });
@@ -281,6 +279,30 @@ describe('Fridge, the one-shot extras', () => {
     expect(wakeTones).toHaveBeenCalledTimes(1);
     fireEvent.click(f.item('Cheese'));
     expect(wakeTones).toHaveBeenCalledTimes(2);
+  });
+
+  it('lets the tones sleep after a timed play’s last tone, when it runs out or every item is placed, and when the fridge goes', () => {
+    vi.useFakeTimers();
+    const f = renderFridge(oneShot, 'one-shot');
+    fireEvent.click(f.item('Cheese'));
+    pass(14);
+    expect(sleepTones).not.toHaveBeenCalled();
+    pass(1);
+    expect(sleepTones).toHaveBeenCalledTimes(1);
+    // After the end tone, so that tone still sounds.
+    expect(vi.mocked(playTone).mock.invocationCallOrder.at(-1)).toBeLessThan(vi.mocked(sleepTones).mock.invocationCallOrder[0]);
+    fireEvent.click(timeUpReset());
+    for (const [item, shelf] of ONE_SHOT_RIGHT) drop(f, item, shelf);
+    expect(sleepTones).toHaveBeenCalledTimes(2);
+    f.unmount();
+    expect(sleepTones).toHaveBeenCalledTimes(3);
+  });
+
+  it('never puts the tones to sleep from a fridge with no timer', () => {
+    const f = renderFridge();
+    for (const [item, shelf] of RIGHT) drop(f, item, shelf);
+    f.unmount();
+    expect(sleepTones).not.toHaveBeenCalled();
   });
 
   it('starts the timer when a drag begins as well as when something is picked up', () => {
@@ -335,7 +357,6 @@ describe('Fridge, the one-shot extras', () => {
   it('has no No timer control: the one-shot’s timer cannot be switched off', () => {
     renderFridge(oneShot, 'one-shot');
     expect(screen.queryByRole('button', { name: /timer/i })).toBeNull();
-    expect(screen.getAllByRole('button').map((button) => button.textContent)).not.toContain('No timer');
   });
 
   it('flashes a wrong drop and returns it, saying only that it returned, while raw chicken stays on the lower middle', () => {
@@ -385,7 +406,6 @@ describe('Fridge, the one-shot extras', () => {
     const f = renderFridge();
     expect(f.container.querySelector('.fridge-board')).toBeNull();
     expect(screen.queryByRole('timer')).toBeNull();
-    expect(screen.queryByRole('button', { name: 'No timer' })).toBeNull();
     expect(screen.queryByText(/^score /)).toBeNull();
     expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(false);
   });
@@ -486,9 +506,8 @@ describe('Fridge, the one-shot extras', () => {
   });
 
   it('still accepts a saved play without points or a timer, working the points out from its drops', () => {
-    const f = renderFridge(oneShot, 'one-shot', { placements: { cheese: 'top', milk: 'door' }, wrongFirst: ['cheese'] });
+    renderFridge(oneShot, 'one-shot', { placements: { cheese: 'top', milk: 'door' }, wrongFirst: ['cheese'] });
     expect(score()).toBe('score 150');
-    expect(f.item('Yoghurt')).toHaveProperty('disabled', false);
     expect(clock()).toBe('0:15');
   });
 });

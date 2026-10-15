@@ -7,7 +7,7 @@ import { Blocks } from '../scene/Blocks.tsx';
 import { Copy } from '../scene/Copy.tsx';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
 import { BoxPanel } from './BoxPanel.tsx';
-import { isRightVerdict, summaryLabel, verdictOf, VERDICT_LABELS } from './labels.ts';
+import { isRightVerdict, summaryLabel, verdictOf, VERDICTS } from './labels.ts';
 import './Choose.css';
 
 type Choose = ScreenOf<'choose'>;
@@ -42,7 +42,7 @@ function SingleResult({ chosen }: { chosen: Option | undefined }) {
   );
 }
 
-/** Right or wrong, for a verdict's pill and the summary's band. */
+/** Right or wrong, for a single choice's marked pick and the summary's band. */
 const toneOf = (right: boolean): 'right' | 'wrong' => (right ? 'right' : 'wrong');
 
 /**
@@ -104,10 +104,11 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
           {options.map((option, i) => {
             const on = picked.includes(i);
             const verdict = verdicts?.[i];
-            // Once checked, a multi choice gives every option a verdict; a single one marks its pick.
+            const pill = verdict && VERDICTS[verdict];
+            // Once checked, a multi choice gives every option a verdict; a single one marks its pick
+            // and dims the rest.
             const marked = checked && (!single || on);
-            const state = verdict ?? (marked ? (option.right ? 'right' : 'wrong') : checked ? 'dim' : on ? 'on' : undefined);
-            const tone = verdict && toneOf(isRightVerdict(verdict));
+            const state = verdict ?? (checked ? (on ? toneOf(option.right) : 'dim') : on ? 'on' : undefined);
             const feedbackId = `${name}-${i}`;
             const verdictId = `${name}-${i}-verdict`;
             return (
@@ -137,10 +138,10 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
                       <Copy text={option.label} />
                     </span>
                     {/* Out of the option's name, read with its description instead. */}
-                    {verdict && tone && (
-                      <span id={verdictId} className="choice-verdict" data-tone={tone} aria-hidden="true">
-                        <ToneIcon tone={tone} size={16} />
-                        {VERDICT_LABELS[verdict]}
+                    {pill && (
+                      <span id={verdictId} className="choice-verdict" data-tone={pill.tone} aria-hidden="true">
+                        <ToneIcon tone={pill.tone} size={16} />
+                        {pill.label}
                       </span>
                     )}
                   </span>

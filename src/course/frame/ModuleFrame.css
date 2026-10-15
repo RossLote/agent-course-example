@@ -76,13 +76,3 @@
   justify-content: flex-end;
   gap: 8px 12px;
 }
-
-/* Next waiting on an answer: still focusable, so its reason is read out, but plainly off. */
-.frame-next .btn[aria-disabled='true'] {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.frame-next .btn-primary[aria-disabled='true']:hover {
-  background: var(--accent);
-}

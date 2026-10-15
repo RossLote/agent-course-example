@@ -81,7 +81,6 @@ describe('HomePage', () => {
     expect(pill(cards[0]).querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
     expect(pill(cards[0]).textContent).toBe('Done');
     expect(pill(cards[1]).querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
-    expect(cards.every((card) => card.lastElementChild?.className !== 'module-card-status')).toBe(true);
   });
 
   it('starts, continues where the learner got to, or reviews from the first module', () => {

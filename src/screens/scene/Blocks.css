@@ -30,8 +30,9 @@
   margin-top: -6px;
 }
 
-/* cards: balanced rows (cardColumns.ts), a short last row centred. The block is a container so
-   a narrow column, not only a narrow window, drops the count: a card keeps about 240px. */
+/* cards: balanced rows (cardColumns.ts, set on the list as --cards-columns), a short last row
+   centred. The block is a container so a narrow column, not only a narrow window, drops the
+   count: a card keeps about 240px. */
 .block-cards {
   container-type: inline-size;
 }
@@ -39,7 +40,6 @@
 .block-cards-list {
   --cards-gap: 16px;
   --cards-fit: 4;
-  --cards-columns: 1;
   --cards-used: min(var(--cards-columns), var(--cards-fit));
   display: flex;
   flex-wrap: wrap;
@@ -48,18 +48,6 @@
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.block-cards-list[data-columns='2'] {
-  --cards-columns: 2;
-}
-
-.block-cards-list[data-columns='3'] {
-  --cards-columns: 3;
-}
-
-.block-cards-list[data-columns='4'] {
-  --cards-columns: 4;
 }
 
 /* 240px a card and a 16px gap between: the widths at which four, three and two columns fit. */

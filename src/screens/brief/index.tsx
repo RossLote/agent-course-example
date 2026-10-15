@@ -1,7 +1,8 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 import { fillTemplate } from '../../content/copy.ts';
 import type { ScreenOf } from '../../content/index.ts';
 import { ChatLog, Chip, Message } from '../chat/Conversation.tsx';
+import { useFocusAfterRender } from '../parts/useFocusAfterRender.ts';
 import { Copy } from '../scene/Copy.tsx';
 import { fittingList, indexBelow, savedField } from '../saved.ts';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
@@ -19,7 +20,8 @@ type BriefAnswer = { picked: (number | null)[]; defaults: boolean };
 
 /**
  * The brief as it stands: its answer, and how many rounds are sent (rounds are sent in order, so
- * the first `sent` of them). Sending is not saved; a resumed brief works it out from the picks.
+ * the first `sent` of them). A round counts as sent once the agent has thought it over and its
+ * next turn is on screen. Sending is not saved; a resumed brief works it out from the picks.
  */
 type BriefState = BriefAnswer & { sent: number };
 
@@ -31,16 +33,23 @@ type Phase = 'showing' | 'leaving' | 'thinking';
 
 const ROUNDS = ['one', 'two', 'three', 'four', 'five'];
 
-/** The position, across the rounds, of each round's first question. */
+/** The position, across the rounds, of each round's first question: a running sum. */
 function roundStarts(rounds: readonly Round[]): number[] {
-  return rounds.map((_, r) => rounds.slice(0, r).reduce((n, round) => n + round.questions.length, 0));
+  let start = 0;
+  return rounds.map((round) => {
+    const first = start;
+    start += round.questions.length;
+    return first;
+  });
 }
 
-/** A round's picks, out of the picks across the rounds. */
-function roundPicks(picked: readonly (number | null)[], rounds: readonly Round[], r: number): (number | null)[] {
-  const start = roundStarts(rounds)[r];
-  return picked.slice(start, start + rounds[r].questions.length);
+/** Each round's picks, out of the picks across the rounds. */
+function byRound(picked: readonly (number | null)[], rounds: readonly Round[], starts: readonly number[]): (number | null)[][] {
+  return rounds.map((round, r) => picked.slice(starts[r], starts[r] + round.questions.length));
 }
+
+/** Whether every question in a round's picks is answered. */
+const allAnswered = (picks: readonly (number | null)[]) => picks.every((p) => p !== null);
 
 /**
  * The state a saved answer holds, or undefined when there is none or it does not fit the screen
@@ -55,11 +64,10 @@ function savedState(saved: SavedAnswer | undefined, rounds: readonly Round[]): B
   const picked = fittingList(savedField(saved, 'picked'), isPick, questions.length);
   const defaults = savedField(saved, 'defaults');
   if (picked === undefined || typeof defaults !== 'boolean') return undefined;
-  const answered = (r: number) => roundPicks(picked, rounds, r).every((p) => p !== null);
-  const untouched = (r: number) => roundPicks(picked, rounds, r).every((p) => p === null);
-  const unanswered = rounds.findIndex((_, r) => !answered(r));
+  const picks = byRound(picked, rounds, roundStarts(rounds));
+  const unanswered = picks.findIndex((round) => !allAnswered(round));
   const sent = unanswered === -1 ? rounds.length : unanswered;
-  const fits = (!defaults || sent === rounds.length) && rounds.every((_, r) => r <= sent || untouched(r));
+  const fits = (!defaults || sent === rounds.length) && picks.every((round, r) => r <= sent || round.every((p) => p === null));
   return fits ? { picked, defaults, sent } : undefined;
 }
 
@@ -74,16 +82,6 @@ function recommended(question: Question): number {
 /** Whether the learner asks for less motion: then a sent round goes without fading. */
 function reducedMotion(): boolean {
   return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-/**
- * Focus on a turn that has just arrived, with its top in view: it arrives where the sent round
- * was, so the page scrolls only when that top is above the window or low in it.
- */
-function focusArrived(turn: HTMLElement) {
-  turn.focus({ preventScroll: true });
-  const { top } = turn.getBoundingClientRect();
-  if (top < 0 || top > window.innerHeight / 2) turn.scrollIntoView({ block: 'start' });
 }
 
 /**
@@ -112,9 +110,8 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
   const [state, setState] = useState<BriefState>(() => savedState(saved, rounds) ?? { picked: questions.map(() => null), defaults: false, sent: 0 });
   const [phase, setPhase] = useState<Phase>('showing');
   const root = useRef<HTMLDivElement>(null);
-  const timers = useRef<number[]>([]);
-  // Set when Thinking gives way to the agent's next turn, so focus goes on to it once it renders.
-  const arrived = useRef(false);
+  // The agent's next turn, once it has rendered: focused with its top in view.
+  const focusNext = useFocusAfterRender(root);
   const panelId = useId();
   const sendHintId = useId();
   const defaultsHintId = useId();
@@ -123,36 +120,38 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
   const { picked, defaults, sent } = state;
   const last = rounds.length - 1;
   const closed = sent === rounds.length;
-  // The round on screen: the one being answered, or the one fading out after it was sent.
-  const current = phase === 'leaving' ? sent - 1 : sent;
-  const ready = current <= last && roundPicks(picked, rounds, current).every((p) => p !== null);
+  // The round on screen is the first not yet sent, whether answered, fading out or thought over.
+  const ready = sent <= last && allAnswered(byRound(picked, rounds, starts)[sent]);
+  const offerDefaults = sent === last && !ready;
   const filled = picked.filter((p) => p !== null).length;
   // The rounds whose questions have been on screen, for the record's waiting lines.
-  const reached = phase === 'showing' ? Math.min(sent + 1, rounds.length) : sent;
+  const reached = Math.min(sent + 1, rounds.length);
 
-  useEffect(() => {
-    const pending = timers.current;
-    return () => pending.forEach((t) => window.clearTimeout(t));
-  }, []);
-
-  useEffect(() => {
-    if (!arrived.current) return;
-    arrived.current = false;
-    const turn = root.current?.querySelector<HTMLElement>(closed ? '[data-message="closing"]' : `[data-message="round-${sent}"]`);
-    if (turn) focusArrived(turn);
+  // Thinking over: the round counts as sent, and the agent's next turn arrives with focus on it.
+  const arrive = useEffectEvent(() => {
+    const next = sent + 1;
+    setState({ ...state, sent: next });
+    setPhase('showing');
+    focusNext(next === rounds.length ? '[data-message="closing"]' : `[data-message="round-${next}"]`, { reveal: 'top' });
   });
 
-  /** The learner's line once `n` rounds are sent: the defaults reply, or the questions answered. */
-  const learnerLine = (n: number) => {
-    if (n === 0) return undefined;
-    if (n === rounds.length && defaults) return screen.defaults.reply;
-    return sentLine(starts[n - 1] + 1, starts[n - 1] + rounds[n - 1].questions.length);
-  };
-  const line = learnerLine(current);
+  // The one transition pending between rounds: the fade gives way to Thinking, Thinking to the
+  // agent's next turn. Leaving the screen clears it.
+  useEffect(() => {
+    if (phase === 'showing') return;
+    const timer = window.setTimeout(() => (phase === 'leaving' ? setPhase('thinking') : arrive()), phase === 'leaving' ? FADE_MS : THINKING_MS);
+    return () => window.clearTimeout(timer);
+  }, [phase]);
 
-  const later = (run: () => void, ms: number) => {
-    timers.current.push(window.setTimeout(run, ms));
-  };
+  // The learner's latest line, a round ahead while the agent thinks it over: the defaults reply,
+  // or the questions answered.
+  const lineRound = phase === 'thinking' ? sent + 1 : sent;
+  const line =
+    lineRound === 0 ? undefined : lineRound === rounds.length && defaults ? (
+      <Copy text={screen.defaults.reply} />
+    ) : (
+      sentLine(starts[lineRound - 1] + 1, starts[lineRound - 1] + rounds[lineRound - 1].questions.length)
+    );
 
   const report = (q: number, next: BriefState) => {
     const chip = questions[q].chips[next.picked[q] ?? 0];
@@ -168,45 +167,32 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
   };
 
   /** Sends the round on screen: it fades out (not under reduced motion), then the agent thinks. */
-  const send = (next: BriefState) => {
-    setState(next);
-    const think = () => {
-      setPhase('thinking');
-      later(() => {
-        arrived.current = true;
-        setPhase('showing');
-      }, THINKING_MS);
-    };
-    if (reducedMotion()) think();
-    else {
-      setPhase('leaving');
-      later(think, FADE_MS);
-    }
-  };
+  const send = () => setPhase(reducedMotion() ? 'thinking' : 'leaving');
 
   const sendAnswers = () => {
-    if (phase === 'showing' && ready) send({ ...state, sent: sent + 1 });
+    if (phase === 'showing' && ready) send();
   };
 
   const takeDefaults = () => {
     if (phase !== 'showing') return;
     const left = questions.flatMap((_, q) => (q >= starts[last] && picked[q] === null ? [q] : []));
-    const next = { picked: picked.map((p, q) => (left.includes(q) ? recommended(questions[q]) : p)), defaults: true, sent: rounds.length };
+    const next = { ...state, picked: picked.map((p, q) => (left.includes(q) ? recommended(questions[q]) : p)), defaults: true };
     for (const q of left) report(q, next);
-    send(next);
+    setState(next);
+    send();
   };
 
   const note = fillTemplate(panel.note, { filled, total: questions.length });
 
-  const roundTurn = (r: number) => {
-    const round = rounds[r];
+  const roundTurn = () => {
+    const round = rounds[sent];
     return (
-      <Message key={`round-${r}`} who="agent" wide anchor={`round-${r}`}>
+      <Message key={`round-${sent}`} who="agent" wide anchor={`round-${sent}`}>
         <p>
           <Copy text={round.message} />
         </p>
         {round.questions.map((question, i) => {
-          const q = starts[r] + i;
+          const q = starts[sent] + i;
           const labelId = `${id}-q${q}`;
           return (
             <div key={i} className="brief-question" role="group" aria-labelledby={labelId}>
@@ -238,14 +224,14 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
           <button type="button" className="btn btn-primary" aria-disabled={!ready || undefined} aria-describedby={sendHintId} onClick={sendAnswers}>
             {SEND_LABEL}
           </button>
-          {r === last && !ready && (
+          {offerDefaults && (
             <button type="button" className="btn btn-ghost" aria-describedby={screen.defaults.hint === undefined ? undefined : defaultsHintId} onClick={takeDefaults}>
               <Copy text={screen.defaults.label} />
             </button>
           )}
           <span className="muted small">
             <span id={sendHintId}>{SEND_HINT}</span>
-            {r === last && !ready && screen.defaults.hint !== undefined && (
+            {offerDefaults && screen.defaults.hint !== undefined && (
               <>
                 {' '}
                 <span id={defaultsHintId}>
@@ -261,7 +247,7 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
 
   return (
     <div ref={root} className="brief">
-      <div className="scene-card brief-chat" data-phase={phase}>
+      <div className="scene-card brief-chat" data-phase={phase} style={{ '--brief-fade': `${FADE_MS}ms` }}>
         <ChatLog label="The conversation">
           <Message who="learner">
             <p>
@@ -269,7 +255,7 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
             </p>
           </Message>
           {line !== undefined && (
-            <Message key={`line-${current}`} who="learner">
+            <Message key={`line-${lineRound}`} who="learner">
               <p>{line}</p>
             </Message>
           )}
@@ -280,8 +266,8 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
                 {THINKING}
               </p>
             </Message>
-          ) : current <= last ? (
-            roundTurn(current)
+          ) : sent <= last ? (
+            roundTurn()
           ) : (
             <Message key="closing" who="agent" anchor="closing">
               <p>
@@ -318,7 +304,7 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
             })}
           </ol>
         </section>
-        {closed && phase === 'showing' && screen.comparison !== undefined && (
+        {closed && screen.comparison !== undefined && (
           <div className="brief-comparison">
             <p>
               <Copy text={screen.comparison} />

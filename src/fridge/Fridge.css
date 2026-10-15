@@ -263,7 +263,7 @@
   gap: 6px;
 }
 
-.fridge-timer[data-low] {
+.fridge[data-warning] .fridge-timer {
   background: var(--wrong);
 }
 
@@ -275,9 +275,25 @@
   border-color: var(--wrong);
 }
 
+/* The pulse: the pill swells, and a red ring (the pill's shape drawn behind its text) grows out
+   of it and fades. Only transform and opacity move, so the browser can run it off the main
+   thread. The pill's own colour is the same red, so the ring shows only outside it. */
 @media (prefers-reduced-motion: no-preference) {
   .fridge-timer[data-pulse] {
+    position: relative;
+    isolation: isolate;
     animation: fridge-pulse 1s ease-in-out infinite;
+  }
+
+  .fridge-timer[data-pulse]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--wrong);
+    opacity: 0;
+    animation: fridge-ring 1s ease-in-out infinite;
   }
 }
 
@@ -285,11 +301,22 @@
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--wrong) 45%, transparent);
   }
   50% {
     transform: scale(1.08);
-    box-shadow: 0 0 0 8px color-mix(in srgb, var(--wrong) 0%, transparent);
+  }
+}
+
+/* 8px out on every side of the pill at its widest (it is about 73px by 27.5px while it pulses). */
+@keyframes fridge-ring {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.22, 1.58);
+    opacity: 0;
   }
 }
 

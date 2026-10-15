@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { readContent } from '../../scripts/content.ts';
-import { VERDICT_LABELS, type Verdict } from '../../src/screens/choose/labels.ts';
+import { VERDICTS, type Verdict } from '../../src/screens/choose/labels.ts';
 
 // The e2e specs' shared moves: the course id as course.yaml gives it, the home page's heading,
 // the guard that keeps every request on the local server, the frame's Next, a pointer drag, and
@@ -29,6 +29,14 @@ export async function keepLocal(page: Page, origin: string): Promise<string[]> {
 
 /** The page's only h1: a screen's heading, or a takeaway's card. */
 export const heading = (page: Page) => page.getByRole('heading', { level: 1 });
+
+/**
+ * Stops the page's clock (installed before the page loaded) a moment ahead, so timers move only
+ * when the test runs them: the one-shot's countdown, the brief's fade and Thinking.
+ */
+export async function pauseClock(page: Page): Promise<void> {
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+}
 
 /** Presses the frame's Next and waits for the next screen's heading. */
 export async function next(page: Page, to: string | RegExp): Promise<void> {
@@ -94,9 +102,8 @@ export async function tick(page: Page, labels: readonly string[], check = 'Check
  */
 export async function verdicts(page: Page, expected: readonly Verdict[], summary: string): Promise<void> {
   const options = page.locator('.choice');
-  await expect(options).toHaveCount(expected.length);
-  for (const [i, verdict] of expected.entries()) await expect(options.nth(i)).toHaveAttribute('data-state', verdict);
-  await expect(options.locator('.choice-verdict')).toHaveText(expected.map((verdict) => VERDICT_LABELS[verdict]));
+  await expect.poll(() => options.evaluateAll((rows) => rows.map((row) => row.getAttribute('data-state')))).toEqual(expected);
+  await expect(options.locator('.choice-verdict')).toHaveText(expected.map((verdict) => VERDICTS[verdict].label));
   await expect(page.locator('.choice-summary')).toHaveText(summary);
   await expect(page.getByRole('status').filter({ hasText: summary })).toBeVisible();
 }
@@ -140,7 +147,7 @@ export async function playModule00(page: Page): Promise<void> {
   // No switching the timer off.
   await expect(oneShot.root.getByRole('button', { name: /timer/i })).toHaveCount(0);
   // The page's clock stands still from here, so the countdown moves only when the test runs it.
-  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await pauseClock(page);
   await drag(page, oneShot.item('Raw chicken'), oneShot.shelf('lower-middle'));
   await expect(oneShot.onShelf('lower-middle')).toHaveText(['Raw chicken']);
   await drag(page, oneShot.item('Cheese'), oneShot.shelf('bottom'));
@@ -152,7 +159,6 @@ export async function playModule00(page: Page): Promise<void> {
   // Ten seconds on, the last five warn: the timer red and pulsing, the fridge outlined red.
   await page.clock.runFor(10_000);
   await expect(oneShot.timer).toHaveText('0:05');
-  await expect(oneShot.timer).toHaveAttribute('data-low', 'true');
   await expect(oneShot.timer).toHaveAttribute('data-pulse', 'true');
   await expect(oneShot.root).toHaveAttribute('data-warning', 'true');
   // At 0:00 the tray gives way to the file's message and one Reset.

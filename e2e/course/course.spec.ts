@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
-import { choose, COURSE_ID, drag, fridge, heading, HOME_HEADING, keepLocal, next, playModule00, solidWalls, tick, verdicts } from './play.ts';
+import { FADE_MS, THINKING_MS } from '../../src/screens/brief/labels.ts';
+import { choose, COURSE_ID, drag, fridge, heading, HOME_HEADING, keepLocal, next, pauseClock, playModule00, solidWalls, tick, verdicts } from './play.ts';
 
 // The whole course in preview, played as the ACCEPTANCE BAR plays it (steps 1 to 12), and the
 // statements drawer read at the end: every statement the play sent, oldest first, as D19 and
@@ -163,16 +164,16 @@ test('the whole course in preview sends every statement, in order, and comes bac
   await expect(decisions).toHaveCount(5);
   await expect(send).not.toHaveAttribute('aria-disabled');
   // The clock stands still, so the round's fade and the agent's Thinking move only when run.
-  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await pauseClock(page);
   await send.click();
   // The round fades out, then the learner's line takes its place and the agent thinks.
   await expect(page.locator('.brief-chat')).toHaveAttribute('data-phase', 'leaving');
-  await page.clock.runFor(400);
+  await page.clock.runFor(FADE_MS);
   await expect(learner).toHaveCount(2);
   await expect(learner.last()).toHaveText('My answers to 1 to 5.');
   await expect(chat).toContainText('Thinking…');
   await expect(page.getByRole('group', { name: '1. Who does this, and where?' })).toHaveCount(0);
-  await page.clock.runFor(1500);
+  await page.clock.runFor(THINKING_MS);
   // Round two in the same place, focus on its message; the learner line stays above it.
   await expect(page.locator('[data-message="round-1"]')).toBeFocused();
   await expect(chat).toContainText('Took your answers as D1 to D5 on the right.');
@@ -183,11 +184,11 @@ test('the whole course in preview sends every statement, in order, and comes bac
   await defaults.click();
   await expect(page.getByText('8 of 8 decisions.')).toBeVisible();
   await expect(decisions).toHaveCount(8);
-  await page.clock.runFor(400);
+  await page.clock.runFor(FADE_MS);
   await expect(learner).toHaveCount(2);
   await expect(learner.last()).toHaveText('Your defaults.');
   await expect(chat).toContainText('Thinking…');
-  await page.clock.runFor(1500);
+  await page.clock.runFor(THINKING_MS);
   await expect(page.locator('[data-message="closing"]')).toBeFocused();
   await page.clock.resume();
   await expect(page.getByText("That's the brief.")).toBeVisible();
@@ -384,7 +385,7 @@ test('the whole course in preview sends every statement, in order, and comes bac
   await expect(heading(page)).toHaveText(HOME_HEADING);
   await expect(page.getByRole('banner')).toContainText('8 of 8 done');
   await expect(pills).toHaveText(Array.from({ length: 8 }, () => 'Done'));
-  for (const card of await cards.all()) await expect(card).toHaveAttribute('data-status', 'done');
+  await expect(page.locator('.module-card[data-status="done"]')).toHaveCount(8);
   await open(page, '04', 'The build was green');
   await next(page, 'Three layers, three kinds of mistake');
   await next(page, 'Follow one finding');

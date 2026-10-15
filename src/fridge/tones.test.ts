@@ -1,29 +1,46 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+type FakeOscillator = {
+  type: string;
+  frequency: { value: number };
+  start: ReturnType<typeof vi.fn>;
+  stop: ReturnType<typeof vi.fn>;
+  connect: (node: unknown) => unknown;
+  disconnect: ReturnType<typeof vi.fn>;
+  onended: (() => void) | null;
+};
+
+type FakeGain = { gain: { setValueAtTime: ReturnType<typeof vi.fn>; exponentialRampToValueAtTime: ReturnType<typeof vi.fn> }; connect: (node: unknown) => unknown; disconnect: ReturnType<typeof vi.fn> };
+
 /** A stand-in for the Web Audio API, which jsdom has not got: it records what each tone made. */
 class FakeContext {
   static made: FakeContext[] = [];
   state: 'suspended' | 'running' = 'suspended';
   currentTime = 2;
   destination = {};
-  oscillators: { type: string; frequency: { value: number }; start: ReturnType<typeof vi.fn>; stop: ReturnType<typeof vi.fn>; connect: (node: unknown) => unknown }[] = [];
+  oscillators: FakeOscillator[] = [];
+  gains: FakeGain[] = [];
   resume = vi.fn(() => {
     this.state = 'running';
     return Promise.resolve();
   });
+  // Like a browser, it reports suspended only once the suspend has gone through.
+  suspend = vi.fn(() => Promise.resolve());
 
   constructor() {
     FakeContext.made.push(this);
   }
 
   createOscillator() {
-    const oscillator = { type: '', frequency: { value: 0 }, start: vi.fn(), stop: vi.fn(), connect: (node: unknown) => node };
+    const oscillator: FakeOscillator = { type: '', frequency: { value: 0 }, start: vi.fn(), stop: vi.fn(), connect: (node: unknown) => node, disconnect: vi.fn(), onended: null };
     this.oscillators.push(oscillator);
     return oscillator;
   }
 
   createGain() {
-    return { gain: { setValueAtTime: vi.fn(), exponentialRampToValueAtTime: vi.fn() }, connect: (node: unknown) => node };
+    const gain: FakeGain = { gain: { setValueAtTime: vi.fn(), exponentialRampToValueAtTime: vi.fn() }, connect: (node: unknown) => node, disconnect: vi.fn() };
+    this.gains.push(gain);
+    return gain;
   }
 }
 
@@ -40,12 +57,13 @@ describe('the last five seconds’ tones', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('does nothing, and throws nothing, where Web Audio is missing', async () => {
-    const { playTone, wakeTones } = await tones();
+    const { playTone, sleepTones, wakeTones } = await tones();
     expect(typeof globalThis.AudioContext).toBe('undefined');
     expect(() => {
       wakeTones();
       playTone('beep');
       playTone('end');
+      sleepTones();
     }).not.toThrow();
   });
 
@@ -81,6 +99,62 @@ describe('the last five seconds’ tones', () => {
     expect(length(end)).toBeGreaterThan(length(beep));
   });
 
+  it('lets go of each tone’s nodes when it ends', async () => {
+    vi.stubGlobal('AudioContext', FakeContext);
+    const { playTone, wakeTones } = await tones();
+    wakeTones();
+    playTone('beep');
+    const context = FakeContext.made[0];
+    expect(context.oscillators[0].disconnect).not.toHaveBeenCalled();
+    expect(context.gains[0].disconnect).not.toHaveBeenCalled();
+    context.oscillators[0].onended?.();
+    expect(context.oscillators[0].disconnect).toHaveBeenCalledTimes(1);
+    expect(context.gains[0].disconnect).toHaveBeenCalledTimes(1);
+  });
+
+  it('sleeps once the tones sounding have ended, and wakes again on the next play’s first pick up', async () => {
+    vi.stubGlobal('AudioContext', FakeContext);
+    const { playTone, sleepTones, wakeTones } = await tones();
+    wakeTones();
+    const context = FakeContext.made[0];
+    playTone('beep');
+    playTone('end');
+    sleepTones();
+    expect(context.suspend).not.toHaveBeenCalled();
+    context.oscillators[0].onended?.();
+    expect(context.suspend).not.toHaveBeenCalled();
+    context.oscillators[1].onended?.();
+    expect(context.suspend).toHaveBeenCalledTimes(1);
+    // Still reporting running while the suspend goes through, but asleep: the next wake resumes it.
+    wakeTones();
+    expect(context.resume).toHaveBeenCalledTimes(2);
+    playTone('beep');
+    context.oscillators[2].onended?.();
+    expect(context.suspend).toHaveBeenCalledTimes(1);
+  });
+
+  it('sleeps at once when no tone is sounding, and not at all when woken before the last tone ends', async () => {
+    vi.stubGlobal('AudioContext', FakeContext);
+    const { playTone, sleepTones, wakeTones } = await tones();
+    wakeTones();
+    const context = FakeContext.made[0];
+    sleepTones();
+    expect(context.suspend).toHaveBeenCalledTimes(1);
+    wakeTones();
+    playTone('end');
+    sleepTones();
+    wakeTones();
+    context.oscillators[0].onended?.();
+    expect(context.suspend).toHaveBeenCalledTimes(1);
+  });
+
+  it('does nothing on sleeping before it was ever woken', async () => {
+    vi.stubGlobal('AudioContext', FakeContext);
+    const { sleepTones } = await tones();
+    expect(() => sleepTones()).not.toThrow();
+    expect(FakeContext.made).toHaveLength(0);
+  });
+
   it('stays silent when the AudioContext refuses', async () => {
     vi.stubGlobal(
       'AudioContext',
@@ -90,10 +164,11 @@ describe('the last five seconds’ tones', () => {
         }
       },
     );
-    const { playTone, wakeTones } = await tones();
+    const { playTone, sleepTones, wakeTones } = await tones();
     expect(() => {
       wakeTones();
       playTone('end');
+      sleepTones();
     }).not.toThrow();
   });
 });

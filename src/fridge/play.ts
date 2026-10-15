@@ -6,6 +6,7 @@
 import type { Fridge } from '../content/index.ts';
 import { isRecord } from '../screens/saved.ts';
 import type { Json, SavedAnswer, Score } from '../screens/types.ts';
+import type { Tone } from './tones.ts';
 
 /** What just happened, for the words (./words.ts) and the status line's icon. */
 export type FridgeOutcome =
@@ -72,14 +73,14 @@ export function allPlaced(fridge: Fridge, play: FridgePlay): boolean {
 export const timedOut = (play: FridgePlay): boolean => play.timeLeft === 0;
 
 /** The last seconds of a timed fridge, which warn: red, a pulse and a tone each second (PLAN.md §6, "The last five seconds"). */
-export const WARNING_SECONDS = 5;
+const WARNING_SECONDS = 5;
 
 /**
- * Whether the play is in its last seconds or ran out: the timer and the fridge's outline read
- * red. A play with every item placed has nothing left to warn about.
+ * Whether a started play is in its timer's last seconds or ran out: unless every item is placed,
+ * which leaves nothing to warn about, the timer and the fridge's outline read red.
  */
-export function isWarning(fridge: Fridge, play: FridgePlay): boolean {
-  return play.started && play.timeLeft !== null && play.timeLeft <= WARNING_SECONDS && !allPlaced(fridge, play);
+export function inLastSeconds(play: FridgePlay): boolean {
+  return play.started && play.timeLeft !== null && play.timeLeft <= WARNING_SECONDS;
 }
 
 /**
@@ -87,7 +88,7 @@ export function isWarning(fridge: Fridge, play: FridgePlay): boolean {
  * seconds, a long one as it reaches zero, so a play that runs out sounds six. Null for any
  * action that does not count down.
  */
-export function toneOf(before: FridgePlay, after: FridgePlay): 'beep' | 'end' | null {
+export function soundOf(before: FridgePlay, after: FridgePlay): Tone | null {
   if (before.timeLeft === null || after.timeLeft === null || after.timeLeft >= before.timeLeft || after.timeLeft > WARNING_SECONDS) return null;
   return after.timeLeft === 0 ? 'end' : 'beep';
 }

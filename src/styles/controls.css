@@ -51,6 +51,17 @@
   color: var(--ink);
 }
 
+/* Off while it waits (Next, Check, Send answers): still focusable, so its reason is read out,
+   but plainly off, and a primary one keeps its colour under the pointer. */
+.btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary[aria-disabled='true']:hover {
+  background: var(--accent);
+}
+
 .btn-large {
   min-height: 48px;
   padding: 0 24px;

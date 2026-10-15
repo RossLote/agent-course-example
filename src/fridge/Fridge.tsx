@@ -8,8 +8,8 @@ import { useFocusAfterRender } from '../screens/parts/useFocusAfterRender.ts';
 import { usePointerDrag } from '../screens/parts/usePointerDrag.ts';
 import { Copy } from '../screens/scene/Copy.tsx';
 import type { SavedAnswer, ScreenEvent } from '../screens/types.ts';
-import { allPlaced, isFinished, isWarning, rightFirstTime, savedPlay, scoreOf, timedOut, toneOf, trayItems, type FridgeAction } from './play.ts';
-import { playTone, wakeTones } from './tones.ts';
+import { inLastSeconds, isFinished, rightFirstTime, savedPlay, scoreOf, soundOf, timedOut, trayItems, type FridgeAction } from './play.ts';
+import { playTone, sleepTones, wakeTones } from './tones.ts';
 import { useFridgePlay } from './useFridgePlay.ts';
 import { fridgeWords } from './words.ts';
 import './Fridge.css';
@@ -66,14 +66,18 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
     onEvent?.({ type: 'fridge-ended', slug: name, score: scoreOf(fridge, ended), answer: savedPlay(ended) }),
   );
 
-  const finished = isFinished(fridge, play);
+  const tray = trayItems(fridge, play);
+  const allPlaced = tray.length === 0;
   const timeUp = timedOut(play);
+  const finished = allPlaced || timeUp;
   const timer = fridge.timer === 'none' ? null : fridge.timer;
   // Time up: the tray gives way to the file's message and the one Reset.
   const timeUpMessage = timeUp && timer !== null ? timer.message : null;
   const running = play.timeLeft !== null && play.started && !finished;
-  const warning = isWarning(fridge, play);
-  const tray = trayItems(fridge, play);
+  // A play with every item placed has nothing left to warn about.
+  const warning = !allPlaced && inLastSeconds(play);
+  // The last seconds while the clock still runs: the timer pulses and shows the speaker.
+  const pulsing = warning && running;
   const words = fridgeWords(fridge, play);
   const held = play.held;
   const placed = fridge.items.length - tray.length;
@@ -83,13 +87,16 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
    * item in the tray (or the score card when the play ends), or on the item that came back;
    * after a put back, on the item. The shelves are off while nothing is held, so focus never
    * stays on one; time up takes the tray away, so focus inside the fridge goes to the Reset that
-   * replaces it. A play's first pick up or drag is the learner's gesture that wakes the tones.
+   * replaces it, and that Reset brings the tray back with focus on its first item. A play's first
+   * pick up or drag is the learner's gesture that wakes the tones; a timed play that ends lets
+   * them sleep once its last tone has sounded.
    */
   const act = (action: FridgeAction) => {
     const { before, after } = dispatch(action);
     if (!before.started && after.started && after.timeLeft !== null) wakeTones();
-    const sound = toneOf(before, after);
+    const sound = soundOf(before, after);
     if (sound !== null) playTone(sound);
+    if (timer !== null && !isFinished(fridge, before) && isFinished(fridge, after)) sleepTones();
     const last = after.last;
     if (after.turn === before.turn || last === null) return;
     if (last.kind === 'placed') {
@@ -99,9 +106,16 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
     } else if (last.kind === 'returned' || last.kind === 'put-back') {
       focusNext(`[data-item="${last.item}"]`);
     } else if (last.kind === 'time-up' && root.current?.contains(document.activeElement)) {
-      focusNext('.fridge-timeup .fridge-reset');
+      focusNext('.fridge-reset');
+    } else if (last.kind === 'reset' && timedOut(before)) {
+      // Only the Reset with the time-up message resets a play that ran out.
+      focusNext('.fridge-item');
     }
   };
+
+  // The tones sleep when a timed fridge goes, so the audio does not run on for the session.
+  const timed = timer !== null;
+  useEffect(() => (timed ? sleepTones : undefined), [timed]);
 
   // One tick a second while the countdown runs; leaving the screen mid-play clears it, and
   // nothing is sent.
@@ -143,6 +157,13 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
     act({ type: 'reset' });
   };
 
+  /** Reset: in the head while the play is on, with the time-up message (and primary) once it ran out. */
+  const resetButton = (primary: boolean) => (
+    <button type="button" className={`btn ${primary ? 'btn-primary' : 'btn-ghost'} fridge-reset`} onClick={reset}>
+      {fridge.resetLabel}
+    </button>
+  );
+
   const tone = play.last?.kind === 'placed' ? 'right' : play.last?.kind === 'returned' ? 'wrong' : undefined;
   const score = scoreOf(fridge, play);
   const wrong = fridge.items.filter((item) => play.wrongFirst.includes(item.id));
@@ -162,11 +183,7 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
           <Copy text={fridge.title} />
         </h2>
         {/* Time up puts a Reset with its message, and one Reset at a time keeps the name to one control. */}
-        {timeUpMessage === null && (
-          <button type="button" className="btn btn-ghost fridge-reset" onClick={reset}>
-            {fridge.resetLabel}
-          </button>
-        )}
+        {timeUpMessage === null && resetButton(false)}
       </div>
 
       <div className="fridge-hud">
@@ -175,8 +192,8 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
         </span>
         {fridge.score.mode === 'points' && <span className="fridge-pill">score {score.raw}</span>}
         {timer !== null && play.timeLeft !== null && (
-          <span className="fridge-pill fridge-timer" role="timer" aria-label="Time left" data-low={warning || undefined} data-pulse={(warning && running) || undefined}>
-            {warning && running && <SoundIcon />}
+          <span className="fridge-pill fridge-timer" role="timer" aria-label="Time left" data-pulse={pulsing || undefined}>
+            {pulsing && <SoundIcon />}
             {clock(play.timeLeft)}
           </span>
         )}
@@ -237,17 +254,7 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
           <p>
             <Copy text={timeUpMessage} />
           </p>
-          <button
-            type="button"
-            className="btn btn-primary fridge-reset"
-            onClick={() => {
-              // This Reset goes with the message, so focus goes on to the tray that comes back.
-              reset();
-              focusNext('.fridge-item');
-            }}
-          >
-            {fridge.resetLabel}
-          </button>
+          {resetButton(true)}
         </div>
       ) : (
         <>
@@ -288,7 +295,7 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
         </span>
       </Announce>
 
-      {allPlaced(fridge, play) && (
+      {allPlaced && (
         <div className="fridge-score" tabIndex={-1} aria-labelledby={`${id}-score`} data-confetti={fridge.confetti || undefined}>
           {fridge.confetti && (
             <span className="fridge-confetti" aria-hidden="true">

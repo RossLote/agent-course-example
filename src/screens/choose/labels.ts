@@ -11,16 +11,19 @@ export function verdictOf(right: boolean, ticked: boolean): Verdict {
   return right ? 'missed' : 'right-leave';
 }
 
-/** Whether a verdict is a right choice. */
-export const isRightVerdict = (verdict: Verdict) => verdict === 'right-tick' || verdict === 'right-leave';
-
-/** The pill beside an option's label. */
-export const VERDICT_LABELS: Readonly<Record<Verdict, string>> = {
-  'right-tick': 'Right to tick',
-  'right-leave': 'Right to leave it',
-  'wrong-tick': "Shouldn't be ticked",
-  missed: 'Missed: should be ticked',
+/**
+ * The pill beside an option's label: its words, and its tone, right (green, a tick) for a right
+ * choice and wrong (red, a cross) for the others.
+ */
+export const VERDICTS: Readonly<Record<Verdict, { label: string; tone: 'right' | 'wrong' }>> = {
+  'right-tick': { label: 'Right to tick', tone: 'right' },
+  'right-leave': { label: 'Right to leave it', tone: 'right' },
+  'wrong-tick': { label: "Shouldn't be ticked", tone: 'wrong' },
+  missed: { label: 'Missed: should be ticked', tone: 'wrong' },
 };
+
+/** Whether a verdict is a right choice. */
+export const isRightVerdict = (verdict: Verdict) => VERDICTS[verdict].tone === 'right';
 
 /**
  * The summary under the list: "5 of 5 right." when every choice is right, else how many are
@@ -28,10 +31,10 @@ export const VERDICT_LABELS: Readonly<Record<Verdict, string>> = {
  */
 export function summaryLabel(verdicts: readonly Verdict[]): string {
   const total = verdicts.length;
-  const right = verdicts.filter(isRightVerdict).length;
-  if (right === total) return `${total} of ${total} right.`;
   const wrongTicks = verdicts.filter((v) => v === 'wrong-tick').length;
   const missed = verdicts.filter((v) => v === 'missed').length;
+  const right = total - wrongTicks - missed;
+  if (right === total) return `${total} of ${total} right.`;
   const parts: string[] = [];
   if (wrongTicks > 0) parts.push(wrongTicks === 1 ? "one tick shouldn't be there" : `${wrongTicks} ticks shouldn't be there`);
   if (missed > 0) parts.push(missed === 1 ? 'one missed' : `${missed} missed`);

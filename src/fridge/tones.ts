@@ -1,8 +1,10 @@
 // The last five seconds' tones (PLAN.md §6, "The last five seconds"): made in the page with the
 // Web Audio API, so there is no audio file and nothing is fetched. Every tone goes through
 // `playTone`, and each is one oscillator on the page's one AudioContext, so a test can stub this
-// module and a walkthrough can count the oscillators. Where Web Audio is missing (jsdom, an old
-// browser) or refuses, nothing sounds and nothing else changes.
+// module and a walkthrough can count the oscillators. Each tone lets go of its nodes when it ends,
+// and the context sleeps (is suspended) when a timed play ends or its fridge goes, so the audio
+// does not run on for the rest of the session; the next play's first pick up wakes it. Where Web
+// Audio is missing (jsdom, an old browser) or refuses, nothing sounds and nothing else changes.
 
 /** A short high beep for each of the last five seconds, a long low tone at zero. */
 export type Tone = 'beep' | 'end';
@@ -16,16 +18,44 @@ const TONES: Record<Tone, { frequency: number; seconds: number }> = {
 const PEAK = 0.18;
 
 let context: AudioContext | null = null;
+/** How many tones are sounding now. */
+let sounding = 0;
+/** Whether the context is to sleep once the tones sounding now have ended. */
+let drowsy = false;
+/** Whether the context was put to sleep, which it may not report as suspended yet. */
+let asleep = false;
+
+/** Suspends the context when it is to sleep and no tone is sounding. */
+function settle(): void {
+  if (context === null || !drowsy || sounding > 0) return;
+  drowsy = false;
+  asleep = true;
+  context.suspend().catch(() => undefined);
+}
 
 /**
  * Makes the page's AudioContext, or resumes it, on a learner's gesture (a fridge's first pick
- * up), which is when a browser lets a page make sound.
+ * up), which is when a browser lets a page make sound. A sleep still waiting on a tone is off.
  */
 export function wakeTones(): void {
   try {
     if (typeof AudioContext === 'undefined') return;
+    drowsy = false;
     context ??= new AudioContext();
-    if (context.state === 'suspended') context.resume().catch(() => undefined);
+    if (context.state === 'suspended' || asleep) {
+      asleep = false;
+      context.resume().catch(() => undefined);
+    }
+  } catch {
+    // No sound where audio is unavailable.
+  }
+}
+
+/** Puts the context to sleep once every tone sounding now has ended; before it exists, nothing. */
+export function sleepTones(): void {
+  drowsy = true;
+  try {
+    settle();
   } catch {
     // No sound where audio is unavailable.
   }
@@ -46,8 +76,20 @@ export function playTone(tone: Tone): void {
     gain.gain.exponentialRampToValueAtTime(PEAK, now + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + seconds);
     oscillator.connect(gain).connect(context.destination);
+    // Done, the tone lets go of its nodes, and the context sleeps if it is to.
+    oscillator.onended = () => {
+      oscillator.disconnect();
+      gain.disconnect();
+      sounding -= 1;
+      try {
+        settle();
+      } catch {
+        // No sound where audio is unavailable.
+      }
+    };
     oscillator.start(now);
     oscillator.stop(now + seconds + 0.02);
+    sounding += 1;
   } catch {
     // No sound where audio is unavailable.
   }

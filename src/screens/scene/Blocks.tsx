@@ -61,10 +61,11 @@ function BlockView({ block, progress, level }: { block: Block; progress: ModuleP
       );
     case 'cards': {
       const List = block.numbered ? 'ol' : 'ul';
+      const columns = cardColumns(block.items.length);
       return (
         <div className="block block-cards">
           {heading}
-          <List className="block-cards-list" data-columns={cardColumns(block.items.length)}>
+          <List className="block-cards-list" data-columns={columns} style={{ '--cards-columns': columns }}>
             {block.items.map((item, i) => (
               <li key={i} className="scene-card block-card">
                 {block.numbered && (

@@ -15,6 +15,7 @@
   --accent: #2f4bd6;
   --accent-strong: #1f37a8;
   --accent-soft: #eef1fd;
+  --accent-line: #c9d2f7;
 
   --agent: #0e7c86;
   --agent-soft: #e8f4f5;
@@ -25,6 +26,7 @@
   --learner-line: #f3d9a4;
 
   --right: #1b7f4b;
+  --right-strong: #145f38;
   --right-soft: #eaf6ee;
   --right-line: #bfe3cb;
   --wrong: #b42318;

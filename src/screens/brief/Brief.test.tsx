@@ -184,7 +184,8 @@ describe('BriefScreen, the fridge brief (module 01)', () => {
     fireEvent.click(chipsOf(questions()[0])[1]);
     fireEvent.click(sendButton()!);
     expect(onEvent).not.toHaveBeenCalled();
-    wait(FADE_MS + THINKING_MS);
+    wait(FADE_MS);
+    wait(THINKING_MS);
     expect(questionTexts()).toEqual(round2.questions.map((q, i) => `${i + 6}. ${q.text}`));
   });
 
