@@ -15,7 +15,8 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "gate:fast": "npm run lint && npm run typecheck && npm run test",
-    "gate": "npm run gate:fast && npm run e2e",
+    "gate": "npm run gate:fast && npm run e2e && npm run package",
+    "package": "tsc -b && node scripts/package/package.ts",
     "walkthrough": "playwright test --config playwright.walkthrough.config.ts"
   },
   "dependencies": {
@@ -38,6 +39,7 @@
     "eslint": "^10.12.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
+    "fflate": "^0.8.3",
     "globals": "^17.13.0",
     "jsdom": "^30.1.2",
     "typescript": "~6.0.3",

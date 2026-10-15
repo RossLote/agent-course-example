@@ -27,7 +27,7 @@ export default defineConfig({
   plugins: [react(), yamlContent()],
   test: {
     environment: 'jsdom',
-    include: ['src/**/*.test.{ts,tsx}'],
+    include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts'],
     setupFiles: ['src/testSetup.ts'],
   },
 });
