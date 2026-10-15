@@ -54,7 +54,7 @@ screens:
       Same agent as module 00. This time it asks before it builds. Each question comes with its
       recommended answer (dashed); pick it or pick differently. Every answer becomes a decision on
       the right.
-    nav: The fridge brief
+    nav: the fridge brief
     opening: >-
       A fridge activity for a client's food-hygiene course. Learners drag food onto the right
       shelf and get told why when they're wrong. It's for kitchen staff. The authoring tool can't
@@ -186,7 +186,7 @@ screens:
     eyebrow: Check · 1 of 2
     heading: The agent asks five questions. You have time to answer two. What do you do?
     intro: Every module ends with two of these. Each option tells you why, right or wrong.
-    nav: Check · 1 of 2
+    nav: check
     options:
       - label: Answer two and let it guess the rest.
         right: false
@@ -206,7 +206,7 @@ screens:
     heading: >-
       Halfway through round two the agent recommends a leaderboard "to drive engagement". What is
       the right move?
-    nav: Check · 2 of 2
+    nav: question 2
     options:
       - label: Accept it; the agent knows what works.
         right: false
@@ -221,7 +221,7 @@ screens:
 
   - type: takeaway
     eyebrow: Takeaway
-    nav: Takeaway
+    nav: takeaway
     text: >-
       **The agent asks, you decide, the decisions are written down.** The builder works from the
       record, not from your memory of a conversation.

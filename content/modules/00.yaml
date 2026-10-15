@@ -16,7 +16,7 @@ screens:
     eyebrow: Try it
     heading: Just ask
     intro: The client wants a fridge activity. You have an agent. Let's do what most people do first.
-    nav: Just ask
+    nav: just ask
     opening: Build a drag-and-drop fridge activity for the food hygiene course.
     messages:
       - >-
@@ -37,7 +37,7 @@ screens:
     mode: multi
     eyebrow: Try it
     heading: Tick everything that went wrong here.
-    nav: Tick everything that went wrong
+    nav: tick everything that went wrong
     body:
       - type: quote
         text: >-
@@ -98,7 +98,7 @@ screens:
     eyebrow: Check · 1 of 2
     heading: Your agent built a feature you never mentioned. What most likely happened?
     intro: Every module ends with two of these. Each option tells you why, right or wrong.
-    nav: Check · 1 of 2
+    nav: check
     options:
       - label: It misread your message.
         right: false
@@ -116,7 +116,7 @@ screens:
     mode: single
     eyebrow: Check · 2 of 2
     heading: The agent says "I tested it myself and it all works." What is that worth?
-    nav: Check · 2 of 2
+    nav: question 2
     options:
       - label: "A lot: it has run the code and you have not."
         right: false
@@ -130,7 +130,7 @@ screens:
 
   - type: takeaway
     eyebrow: Takeaway
-    nav: Takeaway
+    nav: takeaway
     text: >-
       **The builder is the worst judge of its own work.** Everything that follows is about putting
       walls round the builder and letting the reviewers in.

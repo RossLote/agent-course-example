@@ -64,7 +64,7 @@ screens:
       Eight decisions become five beads. Each says what it is, which decisions bind it, what it may
       touch, and how a reviewer will know it is done. The demo script on the right is what done
       means for the whole thing.
-    nav: The fridge epic
+    nav: the fridge epic
     blocks:
       - type: cards
         items:
@@ -118,7 +118,7 @@ screens:
     mode: multi
     eyebrow: Try it
     heading: Bead .3 has no acceptance yet. Pick the three lines a reviewer could check.
-    nav: Write the acceptance
+    nav: write the acceptance
     options:
       - label: Pressing Enter on the focused tomatoes, then arrow down three times, then Enter, places them in the salad drawer.
         right: true
@@ -189,7 +189,7 @@ screens:
     eyebrow: Check · 1 of 2
     heading: Which of these is acceptance a reviewer can check?
     intro: Every module ends with two of these. Each option tells you why, right or wrong.
-    nav: Check · 1 of 2
+    nav: check
     options:
       - label: '"The feedback is clear and helpful."'
         right: false
@@ -209,7 +209,7 @@ screens:
     mode: single
     eyebrow: Check · 2 of 2
     heading: Two beads are set to run at the same time. What has to be true?
-    nav: Check · 2 of 2
+    nav: question 2
     options:
       - label: They are about different features.
         right: false
@@ -223,7 +223,7 @@ screens:
 
   - type: takeaway
     eyebrow: Takeaway
-    nav: Takeaway
+    nav: takeaway
     text: >-
       **Done is defined before the build starts, as things a reviewer can do and see.** The epic
       review finds the gaps while they still cost a sentence.

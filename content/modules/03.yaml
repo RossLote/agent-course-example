@@ -66,7 +66,7 @@ screens:
     intro: >-
       Bead .4 is about to start. Choose what goes round the builder. Tick everything that is a
       wall; the box on the right draws itself as you go.
-    nav: Build the box
+    nav: build the box
     checkLabel: Check my box
     options:
       - label: A unit test that every item has exactly one right shelf and a reason.
@@ -173,7 +173,7 @@ screens:
     eyebrow: Check · 1 of 2
     heading: The gate is red. What happens?
     intro: Every module ends with two of these. Each option tells you why, right or wrong.
-    nav: Check · 1 of 2
+    nav: check
     options:
       - label: The builder explains why the failure does not matter and hands back.
         right: false
@@ -195,7 +195,7 @@ screens:
     heading: >-
       The builder's report says "I tested it manually and everything works." The gate output is not
       in the report. What do you do?
-    nav: Check · 2 of 2
+    nav: question 2
     options:
       - label: Accept it; it tested it.
         right: false
@@ -211,7 +211,7 @@ screens:
 
   - type: takeaway
     eyebrow: Takeaway
-    nav: Takeaway
+    nav: takeaway
     text: >-
       **A builder needs walls, not advice.** Its own area, the files it may touch, a gate that must
       be green, and done written in. The gate's output is the proof, never the builder's word.
