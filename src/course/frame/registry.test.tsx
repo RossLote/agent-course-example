@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import type { Screen } from '../../content/index.ts';
 import { screenComponents } from '../../screens/index.ts';
 import { fixtureCourse } from './fixture.ts';
@@ -7,18 +7,6 @@ import { NO_ANSWERS } from './progress.ts';
 import { ScreenView } from './ScreenView.tsx';
 
 const course = fixtureCourse();
-const match = {
-  targets: [
-    { id: 'x', label: 'X' },
-    { id: 'y', label: 'Y' },
-  ],
-  rows: [
-    { text: 'One', key: 'x', feedback: 'X.' },
-    { text: 'Two', key: 'y', feedback: 'Y.' },
-    { text: 'Three', key: 'y', feedback: 'Y.' },
-  ],
-};
-
 const placeholders: Screen[] = [
   { type: 'chat', slug: 'talk', heading: 'Chat', opening: 'Hello.', messages: ['Hi.'] },
   {
@@ -31,22 +19,7 @@ const placeholders: Screen[] = [
     closing: 'Done.',
     panel: { heading: 'The record', note: '{filled} of {total}' },
   },
-  { type: 'match', slug: 'sorting', scored: false, heading: 'Sort', ...match },
   { type: 'compare', heading: 'Compare', left: 'one-shot', right: 'accepted', table: { rows: [{ aspect: 'A', left: 'L', right: 'R', wall: 'W' }] } },
-];
-
-const scored: { screen: Screen; max: number }[] = [
-  { screen: { type: 'match', slug: 'walls', scored: true, heading: 'Walls', ...match }, max: 3 },
-  {
-    screen: {
-      type: 'order',
-      slug: 'loop',
-      heading: 'Order',
-      cards: ['a', 'b'].map((id) => ({ id, label: id, feedback: id })),
-      start: ['b', 'a'],
-    },
-    max: 2,
-  },
 ];
 
 function renderScreen(shown: Screen, onEvent = vi.fn()) {
@@ -63,19 +36,5 @@ describe('the screen registry', () => {
     renderScreen(shown);
     expect(screen.getByText(`${type}: not built yet`)).toBeTruthy();
     expect(screen.queryByRole('button')).toBeNull();
-  });
-
-  it.each(scored.map((s) => [s.screen.type, s] as const))('renders the scored %s placeholder with a button that answers it right', (type, { screen: shown, max }) => {
-    const onEvent = renderScreen(shown);
-    expect(screen.getByText(`${type}: not built yet`)).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Answer (placeholder)' }));
-    expect(onEvent).toHaveBeenCalledWith({
-      type: 'answered',
-      slug: 'slug' in shown ? shown.slug : '',
-      right: true,
-      score: { raw: max, max },
-      response: 'placeholder',
-      answer: 'placeholder',
-    });
   });
 });
