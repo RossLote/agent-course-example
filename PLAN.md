@@ -268,9 +268,10 @@ an earlier rule, only the final rule is here. All of them bind every bead.
   localStorage; in preview localStorage alone. State is keyed by the launch activity_id when
   present, else course.yaml's id; a State read that fails or returns anything but a JSON
   State document counts as no State. localStorage is keyed by course id and registration
-  ("preview" when there is none), and a launched registration never loads preview's
-  progress. *Reason:* D22, and a dead endpoint or a preview run must not leak into a real
-  learner's record.
+  ("preview" in preview; "launch" for a launch that carries no registration, reversed on
+  2026-10-15 from "preview" for both), and a launch never loads preview's progress.
+  *Reason:* D22, and a dead endpoint or a preview run must not leak into a real learner's
+  record; sharing the "preview" key let exactly that happen.
 - **Preview mode.** No endpoint in the URL, or an endpoint without actor or auth, means an
   in-memory store, a PREVIEW badge in the top bar and a statements drawer, newest first,
   with verb, object and result; with a launch neither shows. *Reason:* D18, and a designer
