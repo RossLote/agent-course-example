@@ -67,7 +67,7 @@ describe('the last five seconds’ tones', () => {
     }).not.toThrow();
   });
 
-  it('makes no sound before the first pick up wakes it', async () => {
+  it('makes no sound before a gesture wakes it', async () => {
     vi.stubGlobal('AudioContext', FakeContext);
     const { playTone } = await tones();
     playTone('beep');
@@ -112,7 +112,7 @@ describe('the last five seconds’ tones', () => {
     expect(context.gains[0].disconnect).toHaveBeenCalledTimes(1);
   });
 
-  it('sleeps once the tones sounding have ended, and wakes again on the next play’s first pick up', async () => {
+  it('sleeps once the tones sounding have ended, and wakes again on the next play’s first gesture', async () => {
     vi.stubGlobal('AudioContext', FakeContext);
     const { playTone, sleepTones, wakeTones } = await tones();
     wakeTones();
@@ -146,6 +146,37 @@ describe('the last five seconds’ tones', () => {
     wakeTones();
     context.oscillators[0].onended?.();
     expect(context.suspend).toHaveBeenCalledTimes(1);
+  });
+
+  it('sounds nothing while the context is suspended, and only the tones after a later wake resumes it', async () => {
+    vi.stubGlobal('AudioContext', FakeContext);
+    const { playTone, wakeTones } = await tones();
+    wakeTones();
+    const context = FakeContext.made[0];
+    // A wake outside a gesture (a touch drag's pointermove): the browser keeps it suspended.
+    context.state = 'suspended';
+    playTone('beep');
+    playTone('beep');
+    expect(context.oscillators).toHaveLength(0);
+    // The next gesture's wake resumes it; the tones due before it never sound.
+    wakeTones();
+    expect(context.resume).toHaveBeenCalledTimes(2);
+    playTone('beep');
+    expect(context.oscillators).toHaveLength(1);
+  });
+
+  it('sounds nothing once put to sleep, while the context still reports running, until woken', async () => {
+    vi.stubGlobal('AudioContext', FakeContext);
+    const { playTone, sleepTones, wakeTones } = await tones();
+    wakeTones();
+    const context = FakeContext.made[0];
+    sleepTones();
+    expect(context.state).toBe('running');
+    playTone('beep');
+    expect(context.oscillators).toHaveLength(0);
+    wakeTones();
+    playTone('beep');
+    expect(context.oscillators).toHaveLength(1);
   });
 
   it('does nothing on sleeping before it was ever woken', async () => {

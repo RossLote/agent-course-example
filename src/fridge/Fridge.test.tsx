@@ -250,7 +250,7 @@ describe('Fridge, the one-shot extras', () => {
     expect(tones()).toEqual(['beep', 'beep', 'beep', 'beep', 'beep']);
   });
 
-  it('plays six tones in a play that runs out, five short and one long, made after the first pick up', () => {
+  it('plays six tones in a play that runs out, five short and one long, woken by every gesture of the play', () => {
     vi.useFakeTimers();
     const f = renderFridge(oneShot, 'one-shot');
     expect(wakeTones).not.toHaveBeenCalled();
@@ -258,8 +258,12 @@ describe('Fridge, the one-shot extras', () => {
     expect(wakeTones).toHaveBeenCalledTimes(1);
     fireEvent.click(f.item('Cheese'));
     fireEvent.click(f.item('Butter'));
-    expect(wakeTones).toHaveBeenCalledTimes(1);
-    pass(15);
+    expect(wakeTones).toHaveBeenCalledTimes(3);
+    // Keys that act are gestures too; ticks are not.
+    fireEvent.keyDown(f.item('Butter'), { key: 'ArrowDown' });
+    pass(5);
+    expect(wakeTones).toHaveBeenCalledTimes(4);
+    pass(10);
     expect(tones()).toEqual(['beep', 'beep', 'beep', 'beep', 'beep', 'end']);
     pass(30);
     expect(tones()).toHaveLength(6);
@@ -268,17 +272,32 @@ describe('Fridge, the one-shot extras', () => {
     expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(true);
   });
 
-  it('wakes the tones again on a new play’s first pick up, and plays none when every item is placed in time', () => {
+  it('wakes the tones on a running play’s gestures only, again on a new play’s first, and plays none when every item is placed in time', () => {
     vi.useFakeTimers();
     const f = renderFridge(oneShot, 'one-shot');
     for (const [item, shelf] of ONE_SHOT_RIGHT) drop(f, item, shelf);
+    // Each pick and each drop but the last, which ends the play.
+    const woken = vi.mocked(wakeTones).mock.calls.length;
+    expect(woken).toBe(ONE_SHOT_RIGHT.length * 2 - 1);
     pass(30);
     expect(tones()).toEqual([]);
     expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(false);
+    // A gesture once the play is over wakes nothing, nor does the Reset.
+    fireEvent.click(f.shelf('The door'));
     fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
-    expect(wakeTones).toHaveBeenCalledTimes(1);
+    expect(wakeTones).toHaveBeenCalledTimes(woken);
     fireEvent.click(f.item('Cheese'));
-    expect(wakeTones).toHaveBeenCalledTimes(2);
+    expect(wakeTones).toHaveBeenCalledTimes(woken + 1);
+  });
+
+  it('never wakes the tones from a fridge with no timer', () => {
+    const f = renderFridge();
+    const cheese = f.item('Cheese');
+    cheese.setPointerCapture = vi.fn();
+    fireEvent.pointerDown(cheese, { pointerId: 1, isPrimary: true, button: 0, clientX: 0, clientY: 0 });
+    fireEvent.pointerUp(cheese, { pointerId: 1, clientX: 0, clientY: 0 });
+    for (const [item, shelf] of RIGHT) drop(f, item, shelf);
+    expect(wakeTones).not.toHaveBeenCalled();
   });
 
   it('lets the tones sleep after a timed play’s last tone, when it runs out or every item is placed, and when the fridge goes', () => {
@@ -292,10 +311,27 @@ describe('Fridge, the one-shot extras', () => {
     // After the end tone, so that tone still sounds.
     expect(vi.mocked(playTone).mock.invocationCallOrder.at(-1)).toBeLessThan(vi.mocked(sleepTones).mock.invocationCallOrder[0]);
     fireEvent.click(timeUpReset());
-    for (const [item, shelf] of ONE_SHOT_RIGHT) drop(f, item, shelf);
     expect(sleepTones).toHaveBeenCalledTimes(2);
-    f.unmount();
+    for (const [item, shelf] of ONE_SHOT_RIGHT) drop(f, item, shelf);
     expect(sleepTones).toHaveBeenCalledTimes(3);
+    f.unmount();
+    expect(sleepTones).toHaveBeenCalledTimes(4);
+  });
+
+  it('lets the tones sleep on a Reset mid-play, and wakes them on the new play’s first gesture', () => {
+    vi.useFakeTimers();
+    const f = renderFridge(oneShot, 'one-shot');
+    fireEvent.click(f.item('Cheese'));
+    pass(12);
+    expect(tones()).toEqual(['beep', 'beep', 'beep']);
+    const woken = vi.mocked(wakeTones).mock.calls.length;
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+    expect(sleepTones).toHaveBeenCalledTimes(1);
+    expect(wakeTones).toHaveBeenCalledTimes(woken);
+    pass(5);
+    expect(tones()).toHaveLength(3);
+    fireEvent.click(f.item('Cheese'));
+    expect(wakeTones).toHaveBeenCalledTimes(woken + 1);
   });
 
   it('never puts the tones to sleep from a fridge with no timer', () => {
@@ -315,9 +351,25 @@ describe('Fridge, the one-shot extras', () => {
     fireEvent.pointerDown(cheese, { pointerId: 1, isPrimary: true, button: 0, clientX: 0, clientY: 0 });
     pass(2);
     expect(clock()).toBe('0:15');
-    expect(wakeTones).not.toHaveBeenCalled();
     fireEvent.pointerMove(cheese, { pointerId: 1, clientX: 40, clientY: 40 });
+    pass(2);
+    expect(clock()).toBe('0:13');
+  });
+
+  it('wakes the tones on a touch drag’s press and its let go, not on the move that starts the play', () => {
+    vi.useFakeTimers();
+    const f = renderFridge(oneShot, 'one-shot');
+    const cheese = f.item('Cheese');
+    cheese.setPointerCapture = vi.fn();
+    cheese.hasPointerCapture = () => false;
+    document.elementFromPoint = () => null;
+    fireEvent.pointerDown(cheese, { pointerId: 1, pointerType: 'touch', isPrimary: true, clientX: 0, clientY: 0 });
     expect(wakeTones).toHaveBeenCalledTimes(1);
+    fireEvent.pointerMove(cheese, { pointerId: 1, pointerType: 'touch', clientX: 40, clientY: 40 });
+    expect(wakeTones).toHaveBeenCalledTimes(1);
+    // Let go over no shelf: nothing is dropped, but the let go is a gesture that wakes them.
+    fireEvent.pointerUp(cheese, { pointerId: 1, pointerType: 'touch', clientX: 40, clientY: 40 });
+    expect(wakeTones).toHaveBeenCalledTimes(2);
     pass(2);
     expect(clock()).toBe('0:13');
   });

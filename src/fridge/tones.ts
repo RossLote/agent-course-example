@@ -2,9 +2,11 @@
 // Web Audio API, so there is no audio file and nothing is fetched. Every tone goes through
 // `playTone`, and each is one oscillator on the page's one AudioContext, so a test can stub this
 // module and a walkthrough can count the oscillators. Each tone lets go of its nodes when it ends,
-// and the context sleeps (is suspended) when a timed play ends or its fridge goes, so the audio
-// does not run on for the rest of the session; the next play's first pick up wakes it. Where Web
-// Audio is missing (jsdom, an old browser) or refuses, nothing sounds and nothing else changes.
+// and the context sleeps (is suspended) when a timed play ends or resets or its fridge goes, so
+// the audio does not run on for the rest of the session; the next play's first gesture wakes it.
+// A tone sounds only while the context runs, so tones due while it was still waking or asleep do
+// not all sound at once when it resumes. Where Web Audio is missing (jsdom, an old browser) or
+// refuses, nothing sounds and nothing else changes.
 
 /** A short high beep for each of the last five seconds, a long low tone at zero. */
 export type Tone = 'beep' | 'end';
@@ -34,8 +36,9 @@ function settle(): void {
 }
 
 /**
- * Makes the page's AudioContext, or resumes it, on a learner's gesture (a fridge's first pick
- * up), which is when a browser lets a page make sound. A sleep still waiting on a tone is off.
+ * Makes the page's AudioContext, or resumes it, on a learner's gesture (each one in a timed
+ * fridge's play), which is when a browser lets a page make sound; a wake outside a gesture leaves
+ * the context suspended, for the next gesture to resume. A sleep still waiting on a tone is off.
  */
 export function wakeTones(): void {
   try {
@@ -61,9 +64,12 @@ export function sleepTones(): void {
   }
 }
 
-/** Sounds one tone, once the AudioContext is awake; before that, nothing. */
+/**
+ * Sounds one tone while the AudioContext runs; otherwise nothing, since a tone made on a
+ * suspended context would wait and sound with every other waiting one when it resumes.
+ */
 export function playTone(tone: Tone): void {
-  if (context === null) return;
+  if (context === null || asleep || context.state !== 'running') return;
   try {
     const { frequency, seconds } = TONES[tone];
     const now = context.currentTime;

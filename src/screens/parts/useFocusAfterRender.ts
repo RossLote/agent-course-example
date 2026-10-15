@@ -9,6 +9,18 @@ export interface FocusOptions {
    * round was). Without it the browser scrolls as focus does.
    */
   reveal?: 'top';
+  /**
+   * Moves focus only if it has not gone elsewhere meanwhile: when the render comes, focus must be
+   * on nothing (<body>, as when the focused element was removed) or on an element this selector
+   * names. Without it focus moves wherever it is.
+   */
+  from?: string;
+}
+
+/** Whether focus is on nothing, or on an element `from` names. */
+function focusIsFrom(from: string): boolean {
+  const active = document.activeElement;
+  return active === null || active === document.body || active.matches(from);
 }
 
 /** Focuses `target`, revealing it as `options` asks. */
@@ -24,7 +36,8 @@ function focusOn(target: HTMLElement, { reveal }: FocusOptions) {
 
 /**
  * Returns `focusNext(selector, options)`: once the render now coming has happened, focus moves to
- * the element inside `root` the selector names, if there is one.
+ * the element inside `root` the selector names, if there is one (and, with `from`, if focus has
+ * not gone elsewhere).
  */
 export function useFocusAfterRender(root: RefObject<HTMLElement | null>): (selector: string, options?: FocusOptions) => void {
   const next = useRef<{ selector: string; options: FocusOptions } | null>(null);
@@ -32,7 +45,7 @@ export function useFocusAfterRender(root: RefObject<HTMLElement | null>): (selec
     const pending = next.current;
     next.current = null;
     const target = pending && root.current?.querySelector<HTMLElement>(pending.selector);
-    if (pending && target) focusOn(target, pending.options);
+    if (pending && target && (pending.options.from === undefined || focusIsFrom(pending.options.from))) focusOn(target, pending.options);
   });
   return (selector, options = {}) => {
     next.current = { selector, options };

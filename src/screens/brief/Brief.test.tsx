@@ -201,6 +201,64 @@ describe('BriefScreen, the fridge brief (module 01)', () => {
     expect(screen.getByText(round2.message)).toBeTruthy();
   });
 
+  /** The learner's line in the conversation, "My answers to 1 to 5." while the agent thinks. */
+  const learnerLine = (text: string) => screen.getByText(text).closest('li');
+
+  it('moves focus from Send answers to the learner’s line while the agent thinks, never to the page, then to the next round’s message', () => {
+    renderBrief();
+    pickFirstOfEach();
+    sendButton()!.focus();
+    fireEvent.click(sendButton()!);
+    // Fading: focus stays on Send answers while the round is still there.
+    expect(document.activeElement).toBe(sendButton());
+    wait(FADE_MS);
+    const line = learnerLine('My answers to 1 to 5.');
+    expect(line?.getAttribute('tabindex')).toBe('-1');
+    expect(document.activeElement).toBe(line);
+    wait(THINKING_MS);
+    expect(document.activeElement).toBe(screen.getByText(round2.message).closest('li'));
+  });
+
+  it('does the same under reduced motion, from Your defaults to the closing', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({ matches: query === '(prefers-reduced-motion: reduce)' }));
+    renderBrief();
+    toRoundTwo();
+    defaultsButton()!.focus();
+    fireEvent.click(defaultsButton()!);
+    expect(document.activeElement).toBe(learnerLine('Your defaults.'));
+    wait(THINKING_MS);
+    expect(document.activeElement).toBe(screen.getByText(brief.closing).closest('li'));
+  });
+
+  it('leaves focus where the learner moved it while the agent thinks', () => {
+    renderBrief();
+    pickFirstOfEach();
+    const elsewhere = document.body.appendChild(document.createElement('button'));
+    sendButton()!.focus();
+    fireEvent.click(sendButton()!);
+    wait(FADE_MS);
+    expect(document.activeElement).toBe(learnerLine('My answers to 1 to 5.'));
+    elsewhere.focus();
+    wait(THINKING_MS);
+    expect(screen.getByText(round2.message)).toBeTruthy();
+    expect(document.activeElement).toBe(elsewhere);
+    elsewhere.remove();
+  });
+
+  it('leaves focus where the learner moved it while the round fades', () => {
+    renderBrief();
+    pickFirstOfEach();
+    const elsewhere = document.body.appendChild(document.createElement('button'));
+    sendButton()!.focus();
+    fireEvent.click(sendButton()!);
+    elsewhere.focus();
+    wait(FADE_MS);
+    expect(document.activeElement).toBe(elsewhere);
+    wait(THINKING_MS);
+    expect(document.activeElement).toBe(elsewhere);
+    elsewhere.remove();
+  });
+
   it('"Your defaults" fills D6-D8 with the recommended chips, sends 3 interacted, replies "Your defaults.", thinks, and closes the brief', () => {
     const onEvent = renderBrief();
     toRoundTwo();

@@ -8,8 +8,11 @@ export const SEND_LABEL = 'Send answers';
 /** Beside Send answers, saying what turns it on. */
 export const SEND_HINT = 'Answer every question, then send.';
 
-/** The learner's line once a round is sent, numbering its questions across the rounds. */
-export const sentLine = (first: number, last: number) => `My answers to ${first} to ${last}.`;
+/**
+ * The learner's line once a round is sent, numbering its questions across the rounds; a round of
+ * one question reads "My answer to 6." rather than "My answers to 6 to 6.".
+ */
+export const sentLine = (first: number, last: number) => (first === last ? `My answer to ${first}.` : `My answers to ${first} to ${last}.`);
 
 /** The agent's turn while it thinks over the answers. */
 export const THINKING = 'Thinking…';

@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useId, useRef, type KeyboardEvent } from 'react';
+import { useEffect, useEffectEvent, useId, useRef, type KeyboardEvent, type PointerEvent } from 'react';
 import { fillTemplate } from '../content/copy.ts';
 import type { Fridge as FridgeFile } from '../content/index.ts';
 import { Announce } from '../screens/parts/Announce.tsx';
@@ -8,7 +8,7 @@ import { useFocusAfterRender } from '../screens/parts/useFocusAfterRender.ts';
 import { usePointerDrag } from '../screens/parts/usePointerDrag.ts';
 import { Copy } from '../screens/scene/Copy.tsx';
 import type { SavedAnswer, ScreenEvent } from '../screens/types.ts';
-import { inLastSeconds, isFinished, rightFirstTime, savedPlay, scoreOf, soundOf, timedOut, trayItems, type FridgeAction } from './play.ts';
+import { allPlaced, inLastSeconds, isFinished, rightFirstTime, savedPlay, scoreOf, soundOf, timedOut, trayItems, type FridgeAction, type FridgePlay } from './play.ts';
 import { playTone, sleepTones, wakeTones } from './tones.ts';
 import { useFridgePlay } from './useFridgePlay.ts';
 import { fridgeWords } from './words.ts';
@@ -42,6 +42,9 @@ function SoundIcon() {
 /** The confetti banner's pieces: decorative, so each is hidden from a screen reader. */
 const CONFETTI = ['#ffb547', '#4fd6ff', '#ff6b9a', '#7cf29c', '#ffb547', '#4fd6ff', '#ff6b9a', '#7cf29c'];
 
+/** The actions that are a learner's gesture, each of which wakes the tones in a timed play. */
+const GESTURES: ReadonlySet<FridgeAction['type']> = new Set(['pick', 'move', 'place', 'drop', 'put-back']);
+
 const HINT = 'Drag an item onto a shelf, or click it and then a shelf. With the keyboard: Enter picks it up, the arrow keys choose a shelf, Enter places it, Escape puts it back.';
 
 /**
@@ -67,15 +70,13 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
   );
 
   const tray = trayItems(fridge, play);
-  const allPlaced = tray.length === 0;
-  const timeUp = timedOut(play);
-  const finished = allPlaced || timeUp;
+  const done = allPlaced(fridge, play);
+  const finished = isFinished(fridge, play);
   const timer = fridge.timer === 'none' ? null : fridge.timer;
   // Time up: the tray gives way to the file's message and the one Reset.
-  const timeUpMessage = timeUp && timer !== null ? timer.message : null;
+  const timeUpMessage = timedOut(play) && timer !== null ? timer.message : null;
   const running = play.timeLeft !== null && play.started && !finished;
-  // A play with every item placed has nothing left to warn about.
-  const warning = !allPlaced && inLastSeconds(play);
+  const warning = inLastSeconds(fridge, play);
   // The last seconds while the clock still runs: the timer pulses and shows the speaker.
   const pulsing = warning && running;
   const words = fridgeWords(fridge, play);
@@ -83,17 +84,27 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
   const placed = fridge.items.length - tray.length;
 
   /**
+   * Wakes the tones on a learner's gesture during a timed play not yet over (`now`, the play as
+   * the gesture left it): every gesture, since a browser lets a page start audio only in a
+   * gesture's handler, and a play begun by a touch drag begins in a pointermove, which is not one.
+   * Waking is cheap and does nothing when awake.
+   */
+  const wake = (now: FridgePlay = play) => {
+    if (timer !== null && !isFinished(fridge, now)) wakeTones();
+  };
+
+  /**
    * Dispatches an action, sounds its tone, and keeps focus sensible: after a drop, on the next
    * item in the tray (or the score card when the play ends), or on the item that came back;
    * after a put back, on the item. The shelves are off while nothing is held, so focus never
    * stays on one; time up takes the tray away, so focus inside the fridge goes to the Reset that
-   * replaces it, and that Reset brings the tray back with focus on its first item. A play's first
-   * pick up or drag is the learner's gesture that wakes the tones; a timed play that ends lets
+   * replaces it, and that Reset brings the tray back with focus on its first item. A learner's
+   * pick, move, place, drop or put back wakes the tones (see `wake`); a timed play that ends lets
    * them sleep once its last tone has sounded.
    */
   const act = (action: FridgeAction) => {
     const { before, after } = dispatch(action);
-    if (!before.started && after.started && after.timeLeft !== null) wakeTones();
+    if (GESTURES.has(action.type)) wake(after);
     const sound = soundOf(before, after);
     if (sound !== null) playTone(sound);
     if (timer !== null && !isFinished(fridge, before) && isFinished(fridge, after)) sleepTones();
@@ -151,10 +162,29 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
     act(held?.item === item ? { type: 'place' } : { type: 'pick', item });
   };
 
-  // A drag still going when the play resets drops nothing into the new one.
+  // A drag still going when the play resets drops nothing into the new one, and a timed fridge's
+  // tones sleep until the new play's first gesture.
   const reset = () => {
     cancel();
     act({ type: 'reset' });
+    if (timed) sleepTones();
+  };
+
+  // A press on an item and a let go of one are gestures too: the press before a drag, and on a
+  // touch screen the let go that ends it.
+  const itemHandlers = (item: string) => {
+    const press = handlers(item);
+    return {
+      ...press,
+      onPointerDown(event: PointerEvent<HTMLElement>) {
+        wake();
+        press.onPointerDown(event);
+      },
+      onPointerUp(event: PointerEvent<HTMLElement>) {
+        wake();
+        press.onPointerUp(event);
+      },
+    };
   };
 
   /** Reset: in the head while the play is on, with the time-up message (and primary) once it ran out. */
@@ -273,7 +303,7 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
                 data-returned={play.last?.kind === 'returned' && play.last.item === item.id ? (play.turn % 2 === 0 ? 'even' : 'odd') : undefined}
                 aria-pressed={held?.item === item.id}
                 aria-describedby={`${id}-hint`}
-                {...handlers(item.id)}
+                {...itemHandlers(item.id)}
                 onClick={() => {
                   if (!swallowClick()) act({ type: 'pick', item: item.id });
                 }}
@@ -295,7 +325,7 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
         </span>
       </Announce>
 
-      {allPlaced && (
+      {done && (
         <div className="fridge-score" tabIndex={-1} aria-labelledby={`${id}-score`} data-confetti={fridge.confetti || undefined}>
           {fridge.confetti && (
             <span className="fridge-confetti" aria-hidden="true">

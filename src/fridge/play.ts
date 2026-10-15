@@ -76,11 +76,11 @@ export const timedOut = (play: FridgePlay): boolean => play.timeLeft === 0;
 const WARNING_SECONDS = 5;
 
 /**
- * Whether a started play is in its timer's last seconds or ran out: unless every item is placed,
- * which leaves nothing to warn about, the timer and the fridge's outline read red.
+ * Whether a started play is in its timer's last seconds or ran out, so the timer and the fridge's
+ * outline read red: never once every item is placed, which leaves nothing to warn about.
  */
-export function inLastSeconds(play: FridgePlay): boolean {
-  return play.started && play.timeLeft !== null && play.timeLeft <= WARNING_SECONDS;
+export function inLastSeconds(fridge: Fridge, play: FridgePlay): boolean {
+  return play.started && play.timeLeft !== null && play.timeLeft <= WARNING_SECONDS && !allPlaced(fridge, play);
 }
 
 /**

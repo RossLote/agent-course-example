@@ -33,6 +33,9 @@ type Phase = 'showing' | 'leaving' | 'thinking';
 
 const ROUNDS = ['one', 'two', 'three', 'four', 'five'];
 
+/** The learner's latest line, which holds focus while the agent thinks. */
+const SENT_LINE = '[data-message="sent"]';
+
 /** The position, across the rounds, of each round's first question: a running sum. */
 function roundStarts(rounds: readonly Round[]): number[] {
   let start = 0;
@@ -91,8 +94,9 @@ function reducedMotion(): boolean {
  * Dn, numbered across the rounds, and reports `interacted`; another pick replaces the line and
  * reports again. Send answers is off until every question in the round is answered; sending
  * fades the round out, puts the learner's one line in its place ("My answers to 1 to 5."), and
- * the agent thinks for a moment before its next round arrives in the same place, focus on its
- * message. "Your defaults" on the last round picks the recommended chip of every question left,
+ * the agent thinks for a moment before its next round arrives in the same place. Focus goes from
+ * the sent round to the learner's line, then to the next round's message, unless the learner has
+ * moved it elsewhere meanwhile. "Your defaults" on the last round picks the recommended chip of every question left,
  * reports one `interacted` per decision it fills, and sends with the learner's one-line reply;
  * it goes once every question in the round is answered, leaving Send answers the way on.
  * After the last round the agent thinks, then its closing message and the comparison card
@@ -110,7 +114,7 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
   const [state, setState] = useState<BriefState>(() => savedState(saved, rounds) ?? { picked: questions.map(() => null), defaults: false, sent: 0 });
   const [phase, setPhase] = useState<Phase>('showing');
   const root = useRef<HTMLDivElement>(null);
-  // The agent's next turn, once it has rendered: focused with its top in view.
+  // The learner's line once the round has gone, then the agent's next turn with its top in view.
   const focusNext = useFocusAfterRender(root);
   const panelId = useId();
   const sendHintId = useId();
@@ -127,19 +131,32 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
   // The rounds whose questions have been on screen, for the record's waiting lines.
   const reached = Math.min(sent + 1, rounds.length);
 
-  // Thinking over: the round counts as sent, and the agent's next turn arrives with focus on it.
+  /**
+   * The sent round gone, the agent thinks. Focus, on Send answers or Your defaults as it went,
+   * goes to the learner's line in its place rather than falling to the page; focus the learner
+   * moved elsewhere meanwhile stays where it is.
+   */
+  const think = () => {
+    setPhase('thinking');
+    focusNext(SENT_LINE, { from: SENT_LINE });
+  };
+  // The same, from the fade's timer.
+  const faded = useEffectEvent(think);
+
+  // Thinking over: the round counts as sent, and the agent's next turn arrives with focus on it,
+  // if focus is still on the learner's line (or nowhere): focus moved elsewhere stays there.
   const arrive = useEffectEvent(() => {
     const next = sent + 1;
     setState({ ...state, sent: next });
     setPhase('showing');
-    focusNext(next === rounds.length ? '[data-message="closing"]' : `[data-message="round-${next}"]`, { reveal: 'top' });
+    focusNext(next === rounds.length ? '[data-message="closing"]' : `[data-message="round-${next}"]`, { reveal: 'top', from: SENT_LINE });
   });
 
   // The one transition pending between rounds: the fade gives way to Thinking, Thinking to the
   // agent's next turn. Leaving the screen clears it.
   useEffect(() => {
     if (phase === 'showing') return;
-    const timer = window.setTimeout(() => (phase === 'leaving' ? setPhase('thinking') : arrive()), phase === 'leaving' ? FADE_MS : THINKING_MS);
+    const timer = window.setTimeout(() => (phase === 'leaving' ? faded() : arrive()), phase === 'leaving' ? FADE_MS : THINKING_MS);
     return () => window.clearTimeout(timer);
   }, [phase]);
 
@@ -167,7 +184,10 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
   };
 
   /** Sends the round on screen: it fades out (not under reduced motion), then the agent thinks. */
-  const send = () => setPhase(reducedMotion() ? 'thinking' : 'leaving');
+  const send = () => {
+    if (reducedMotion()) think();
+    else setPhase('leaving');
+  };
 
   const sendAnswers = () => {
     if (phase === 'showing' && ready) send();
@@ -255,7 +275,7 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
             </p>
           </Message>
           {line !== undefined && (
-            <Message key={`line-${lineRound}`} who="learner">
+            <Message key={`line-${lineRound}`} who="learner" anchor="sent">
               <p>{line}</p>
             </Message>
           )}
