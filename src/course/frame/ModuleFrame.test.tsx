@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { Screen } from '../../content/index.ts';
 import { moduleAnswers } from '../../progress/progress.ts';
 import { createProgressStore } from '../../progress/store.ts';
@@ -73,6 +73,11 @@ const screens: Screen[] = [
 ];
 const course = fixtureCourse({ '01': screens });
 const module = course.modules[1];
+/** Both scored screens answered, so every screen of the module can be shown. */
+const ANSWERED: ModuleAnswers = {
+  'check-one': { answer: { picked: [0] }, score: { raw: 1, max: 1 }, right: true },
+  loop: { answer: { order: ['a', 'b', 'c'] }, score: { raw: 3, max: 3 }, right: true },
+};
 
 function renderFrame(props: Partial<ModuleFrameProps> = {}) {
   return render(<ModuleFrame course={course} module={module} screen={1} answers={NO_ANSWERS} onEvent={() => {}} {...props} />);
@@ -110,12 +115,12 @@ describe('ModuleFrame', () => {
     expect(window.location.hash).toBe('#/modules/01/2');
 
     first.unmount();
-    renderFrame({ screen: 3 });
+    renderFrame({ screen: 3, answers: ANSWERED });
     expect(next().textContent).toBe('Next: Order them');
   });
 
   it('goes back a screen on Back, and home from the first screen', () => {
-    const third = renderFrame({ screen: 3 });
+    const third = renderFrame({ screen: 3, answers: ANSWERED });
     fireEvent.click(back());
     expect(window.location.hash).toBe('#/modules/01/2');
 
@@ -127,7 +132,7 @@ describe('ModuleFrame', () => {
 
   it('shows the takeaway with its card as the h1, and Next goes home', () => {
     window.location.hash = '#/modules/01/6';
-    renderFrame({ screen: 6 });
+    renderFrame({ screen: 6, answers: ANSWERED });
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('The card. Its line.');
     expect(screen.getByText('Screen 6 of 6')).toBeTruthy();
     expect(next().textContent).toBe('Next: home');
@@ -136,9 +141,65 @@ describe('ModuleFrame', () => {
   });
 
   it('shows the last screen for a screen past the end', () => {
-    renderFrame({ screen: 9 });
+    renderFrame({ screen: 9, answers: ANSWERED });
     expect(screen.getByText('Screen 6 of 6')).toBeTruthy();
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('The card. Its line.');
+  });
+
+  it('shows the first scored screen still unanswered for a route past it, replacing the hash and keeping the query string', async () => {
+    window.history.replaceState(null, '', '/?registration=r1#/modules/01/6');
+    const entries = window.history.length;
+    const onEvent = vi.fn();
+    renderFrame({ screen: 6, onEvent });
+    expect(screen.getByText('Screen 2 of 6')).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Check one');
+    expect(onEvent).not.toHaveBeenCalled();
+    await waitFor(() => expect(window.location.hash).toBe('#/modules/01/2'));
+    expect(window.location.search).toBe('?registration=r1');
+    expect(window.history.length).toBe(entries);
+
+    fireEvent.click(back());
+    expect(window.location.hash).toBe('#/modules/01/1');
+  });
+
+  it('shows a later scored screen still unanswered once the earlier ones are answered, and leaves a route before it alone', async () => {
+    window.history.replaceState(null, '', '/#/modules/01/9');
+    const answers: ModuleAnswers = { 'check-one': ANSWERED['check-one'] };
+    const late = renderFrame({ screen: 9, answers });
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Order them');
+    await waitFor(() => expect(window.location.hash).toBe('#/modules/01/4'));
+
+    late.unmount();
+    window.history.replaceState(null, '', '/#/modules/01/3');
+    renderFrame({ screen: 3, answers });
+    expect(screen.getByText('Screen 3 of 6')).toBeTruthy();
+    expect(window.location.hash).toBe('#/modules/01/3');
+  });
+
+  it('renders emphasis in the eyebrow and in the Next label, with no asterisks', () => {
+    const options = [{ label: 'Right', right: true, feedback: 'Yes.' }];
+    const marked = fixtureCourse({
+      '01': [
+        { type: 'scene', eyebrow: 'A *marked* eyebrow', heading: 'First', blocks: [] },
+        { type: 'choose', slug: 'who', scored: true, mode: 'single', heading: 'who *catches* it?', options },
+      ],
+    });
+    render(<ModuleFrame course={marked} module={marked.modules[1]} screen={1} answers={NO_ANSWERS} onEvent={() => {}} />);
+    expect(document.querySelector('.eyebrow')?.innerHTML).toBe('A <em>marked</em> eyebrow');
+    expect(next().textContent).toBe('Next: who catches it?');
+    expect(next().querySelector('em')?.textContent).toBe('catches');
+  });
+
+  it('remounts the screen when the store adopts a loaded document (its generation), and not otherwise', () => {
+    // A screen reads its saved answer once, when it mounts; the probe's own element tells a remount.
+    const view = renderFrame({ screen: 3, answers: ANSWERED });
+    const mounted = screen.getByText('saved: none');
+    const loaded: ModuleAnswers = { ...ANSWERED, talk: { answer: [1] } };
+    view.rerender(<ModuleFrame course={course} module={module} screen={3} answers={loaded} onEvent={() => {}} />);
+    expect(mounted.isConnected).toBe(true);
+    view.rerender(<ModuleFrame course={course} module={module} screen={3} answers={loaded} generation={1} onEvent={() => {}} />);
+    expect(mounted.isConnected).toBe(false);
+    expect(screen.getByText('saved: [1]')).toBeTruthy();
   });
 
   it('keeps Next off on a scored screen until it is answered, saying why', () => {

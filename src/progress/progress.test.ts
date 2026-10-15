@@ -9,6 +9,7 @@ import {
   courseScore,
   EMPTY_PROGRESS,
   homeNext,
+  isNewer,
   moduleAnswers,
   moduleRecord,
   modulesDone,
@@ -48,6 +49,8 @@ function from(module: Module, event: ScreenEvent): ProgressCause {
 }
 const visit = (module: Module, screen: number): ProgressCause => ({ type: 'visit', module, screen });
 const play = (causes: ProgressCause[], doc: ProgressDoc = EMPTY_PROGRESS) => causes.reduce(takeCause, doc);
+/** Module 00's two checks answered, so its takeaway completes it. */
+const checked = play([from(m00, answered('check-1', true)), from(m00, answered('check-2', false))]);
 
 /** Every scored screen of these modules answered with full marks, then (unless told not to) each takeaway reached. */
 function playAll(of: ProgressCourse, doc: ProgressDoc = EMPTY_PROGRESS, { complete = true } = {}): ProgressDoc {
@@ -82,9 +85,16 @@ describe('takeCause', () => {
   });
 
   it('completes the module at its takeaway, once: reaching it again changes nothing', () => {
-    const doc = play([visit(m00, 4), from(m00, takeaway)]);
+    const doc = play([visit(m00, 4), from(m00, takeaway)], checked);
     expect(moduleRecord(doc, '00').completed).toBe(true);
     expect(takeCause(doc, from(m00, takeaway))).toBe(doc);
+  });
+
+  it('does not complete the module at its takeaway while a scored screen in it has no score', () => {
+    const one = play([from(m00, answered('check-1', true)), from(m00, takeaway)]);
+    expect(moduleRecord(one, '00')).toMatchObject({ reached: 4, completed: false });
+    expect(moduleRecord(play([from(m00, takeaway)]), '00').completed).toBe(false);
+    expect(moduleRecord(play([from(m00, answered('check-2', true)), from(m00, takeaway)], one), '00').completed).toBe(true);
   });
 });
 
@@ -94,7 +104,7 @@ describe('the views', () => {
     const reached = play([visit(m00, 1)]);
     expect(moduleStatus(reached, '00')).toBe('in-progress');
     expect(moduleStatus(reached, '01')).toBe('not-started');
-    const done = play([from(m00, takeaway)], reached);
+    const done = play([from(m00, takeaway)], play([visit(m00, 1)], checked));
     expect(moduleStatus(done, '00')).toBe('done');
     expect(modulesDone(course, done)).toBe(1);
   });
@@ -103,6 +113,15 @@ describe('the views', () => {
     expect(courseScore(course, EMPTY_PROGRESS)).toEqual({ raw: 0, max: 2 });
     const doc = play([from(m00, answered('check-1', true)), from(m00, answered('check-2', false)), from(m00, answered('check-2', true))]);
     expect(courseScore(course, doc)).toEqual({ raw: 2, max: 2 });
+  });
+
+  it('counts each stored raw between 0 and what its screen is worth now', () => {
+    const stored = (raw: number, max = 1): ProgressDoc => ({ version: 1, modules: { '00': { answers: { 'check-1': { score: { raw, max } }, 'check-2': { score: { raw: 1, max: 1 } } }, reached: 3, completed: false } } });
+    // A score saved when the screen was worth more counts no more than it is worth now.
+    expect(courseScore(course, stored(6, 6))).toEqual({ raw: 2, max: 2 });
+    expect(courseScore(course, stored(-3))).toEqual({ raw: 1, max: 2 });
+    expect(courseScore(course, stored(Number.NaN))).toEqual({ raw: 1, max: 2 });
+    expect(courseScore(course, stored(Number.POSITIVE_INFINITY))).toEqual({ raw: 1, max: 2 });
   });
 
   it('completes the real course at 28 of 28, scaled 1, once all eight modules are done', () => {
@@ -133,7 +152,7 @@ describe('homeNext', () => {
   });
 
   it('continues module 01 at its first screen once module 00 is done', () => {
-    expect(homeNext(course, play([visit(m00, 4), from(m00, takeaway)]))).toEqual({ action: 'continue', slug: '01', screen: 1 });
+    expect(homeNext(course, play([visit(m00, 4), from(m00, takeaway)], checked))).toEqual({ action: 'continue', slug: '01', screen: 1 });
   });
 
   it('reviews from the first module once every module is done', () => {
@@ -148,7 +167,7 @@ describe('step: the changes surfaced for the statements', () => {
   });
 
   it('surfaces a module completed once, the first time its takeaway is reached', () => {
-    const first = step(course, EMPTY_PROGRESS, from(m00, takeaway));
+    const first = step(course, checked, from(m00, takeaway));
     expect(first.effects).toEqual([{ type: 'module-completed', module: m00 }]);
     expect(step(course, first.doc, from(m00, takeaway))).toEqual({ doc: first.doc, effects: [] });
   });
@@ -179,10 +198,12 @@ describe('step: the changes surfaced for the statements', () => {
 });
 
 describe('parseProgress', () => {
-  it('takes a progress document back as it was written', () => {
+  it('takes a progress document back as it was written, with or without when it was saved', () => {
     const doc = playAll(course);
     expect(parseProgress(JSON.parse(JSON.stringify(doc)))).toEqual(doc);
     expect(parseProgress(EMPTY_PROGRESS)).toEqual(EMPTY_PROGRESS);
+    const saved = { ...doc, savedAt: '2026-10-15T10:00:00.000Z' };
+    expect(parseProgress(JSON.parse(JSON.stringify(saved)))).toEqual(saved);
   });
 
   it('ignores a corrupt or foreign document', () => {
@@ -201,8 +222,26 @@ describe('parseProgress', () => {
       { version: 1, modules: { '00': { ...record, answers: [] } } },
       { version: 1, modules: { '00': { ...record, answers: { c: { score: { raw: '1', max: 1 } } } } } },
       { version: 1, modules: { '00': { ...record, answers: { c: { right: 'yes' } } } } },
+      { version: 1, savedAt: 1, modules: {} },
     ]) {
       expect(parseProgress(value), JSON.stringify(value)).toBeNull();
     }
+  });
+});
+
+describe('isNewer', () => {
+  const at = (savedAt?: string): ProgressDoc => ({ version: 1, ...(savedAt !== undefined && { savedAt }), modules: {} });
+
+  it('says a document saved later is newer, and a tie is not', () => {
+    expect(isNewer(at('2026-10-15T10:00:01.000Z'), at('2026-10-15T10:00:00.000Z'))).toBe(true);
+    expect(isNewer(at('2026-10-15T10:00:00.000Z'), at('2026-10-15T10:00:01.000Z'))).toBe(false);
+    expect(isNewer(at('2026-10-15T10:00:00.000Z'), at('2026-10-15T10:00:00.000Z'))).toBe(false);
+  });
+
+  it('counts a document that does not say when it was saved, or says nothing a date parses from, as the oldest', () => {
+    expect(isNewer(at('2026-10-15T10:00:00.000Z'), at())).toBe(true);
+    expect(isNewer(at(), at('2026-10-15T10:00:00.000Z'))).toBe(false);
+    expect(isNewer(at('yesterday'), at())).toBe(false);
+    expect(isNewer(at(), at())).toBe(false);
   });
 });

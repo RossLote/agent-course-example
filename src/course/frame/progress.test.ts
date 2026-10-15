@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Screen } from '../../content/index.ts';
 import type { ModuleAnswers, ScreenEvent } from '../../screens/types.ts';
-import { answerKey, awaitsAnswer, moduleProgress, NO_ANSWERS, recordEvent, scoredItem } from './progress.ts';
+import { answerKey, awaitsAnswer, firstAwaiting, moduleProgress, NO_ANSWERS, recordEvent, scoredItem, shownScreen } from './progress.ts';
 
 const options = [
   { label: 'Right', right: true, feedback: 'Yes.' },
@@ -63,6 +63,33 @@ describe('moduleProgress', () => {
       'one-shot': { score: { raw: 6, max: 8 } },
     };
     expect(moduleProgress(module, answers)).toEqual({ items: answers, score: { raw: 4, max: 7 } });
+  });
+
+  it('counts a stored raw no higher than its screen is worth now, and a negative one as 0', () => {
+    const answers: ModuleAnswers = {
+      c1: { score: { raw: 5, max: 5 } },
+      c2: { score: { raw: -2, max: 1 } },
+      loop: { score: { raw: 6, max: 6 } },
+      walls: { score: { raw: 2, max: 2 } },
+    };
+    expect(moduleProgress(module, answers).score).toEqual({ raw: 6, max: 7 });
+  });
+});
+
+describe('shownScreen', () => {
+  const module = { screens: [scene, check('c1'), tick, check('c2'), takeaway] };
+  const answered = { c1: { score: { raw: 1, max: 1 } } };
+
+  it('shows the screen asked for, one past the last the last, and never one past the first scored screen unanswered', () => {
+    expect(firstAwaiting(module, NO_ANSWERS)).toBe(1);
+    expect(shownScreen(module, NO_ANSWERS, 1)).toBe(1);
+    expect(shownScreen(module, NO_ANSWERS, 2)).toBe(2);
+    expect(shownScreen(module, NO_ANSWERS, 5)).toBe(2);
+    expect(shownScreen(module, answered, 5)).toBe(4);
+    expect(shownScreen(module, answered, 3)).toBe(3);
+    const all = { ...answered, c2: { score: { raw: 0, max: 1 } } };
+    expect(firstAwaiting(module, all)).toBe(-1);
+    expect(shownScreen(module, all, 99)).toBe(5);
   });
 });
 

@@ -255,21 +255,35 @@ an earlier rule, only the final rule is here. All of them bind every bead.
   30 points, which counted checks module 07 does not have. *Reason:* the point is the
   practice, as in the fake brief's own D7 for the fridge (module 01: the latest attempt is
   what the LMS gets).
-- **Module completion.** A module is complete when its takeaway is reached; Next is disabled
-  on a scored screen until it is answered, so reaching the takeaway means every check is
-  done; unscored interactions can be skipped. Back always works; Back on a module's first
-  screen and Next on its takeaway go home. The course is complete when all eight modules
-  are. *Reason:* one event marks completion, and it still reconciles with D11's checks.
+- **Module completion.** A module is complete when its takeaway is reached with every scored
+  screen in it answered; Next is disabled on a scored screen until it is answered, and a
+  route to a screen past the first scored screen still unanswered (typed, or resumed) shows
+  that screen instead, so reaching the takeaway means every check is done (tightened on
+  2026-10-15: Next alone did not stop a typed route reaching the takeaway); unscored
+  interactions can be skipped. Back always works; Back on a module's first screen and Next
+  on its takeaway go home. The course is complete when all eight modules are. *Reason:* one
+  event marks completion, and it still reconciles with D11's checks.
 - **Module 07.** No checks; its end screen is its takeaway (the complete box with the ring,
   then the end copy); its score screen is a scene whose stats row reads the module's
   progress ("14 out of 14"). *Reason:* the capstone's order and walls are its scored items.
 - **Resume.** Progress (modules completed, screen reached, every answer) is written to State
-  after every change and to localStorage always; on load State wins when it exists, else
-  localStorage; in preview localStorage alone. State is keyed by the launch activity_id when
-  present, else course.yaml's id; a State read that fails or returns anything but a JSON
-  State document counts as no State. localStorage is keyed by course id and registration
-  ("preview" in preview; "launch" for a launch that carries no registration, reversed on
-  2026-10-15 from "preview" for both), and a launch never loads preview's progress.
+  after every change and to localStorage always, stamped with when it was saved; in preview
+  localStorage alone. On load the newer of State and the local copy wins by that stamp, State
+  on a tie (reversed on 2026-10-15 from State always winning, which lost what a dropped State
+  write had left only in localStorage). State is keyed by the launch activity_id when
+  present, else course.yaml's id. A State read finds a document; or none (a 404, or an
+  answer that is not a JSON progress document); or nothing known (a network error, 401, 403,
+  5xx, or no answer in time). While nothing is known the course plays from the local copy,
+  writes no State, reads again before a write at most every 30 seconds, and holds the module
+  and course completions back until a read answers, then works them out against the document
+  it adopted (reversed on 2026-10-15 from a failed read counting as none, which let the local
+  copy overwrite State it had never read). The State read bypasses the HTTP cache, and what
+  is still queued, the statements and the last State write, goes out with fetch keepalive
+  when the page is hidden or closed. localStorage is keyed by course id and registration
+  ("preview" in preview; for a launch that carries no registration, "launch:" and the
+  learner: the account's homePage and name, else the mbox, mbox_sha1sum or openid; reversed
+  on 2026-10-15 from "preview" for both, then from "launch" alone, which every learner in one
+  browser shared), and a launch never loads preview's progress nor another learner's.
   *Reason:* D22, and a dead endpoint or a preview run must not leak into a real learner's
   record; sharing the "preview" key let exactly that happen.
 - **Preview mode.** No endpoint in the URL, or an endpoint without actor or auth, means an
@@ -351,8 +365,9 @@ The names later beads cite. The rules behind them are §6.
   n of 6 for the walls; one per Check press); *interacted* (slug, option; one per option
   pick, three for the brief's defaults); *fridge ended* (slug, score raw and max);
   *takeaway reached*.
-- **Module completion.** The module's takeaway is reached. Next is disabled on a scored
-  screen until it is answered. The course is complete when all eight modules are.
+- **Module completion.** The module's takeaway is reached with every scored screen in it
+  answered. Next is disabled on a scored screen until it is answered, and no route passes
+  the first one still unanswered. The course is complete when all eight modules are.
 - **The score.** 28 points: 14 checks (two in each of modules 00 to 06, one point each),
   the order's 8 and the walls' 6 in module 07. Scaled is points over 28. The latest answer
   counts. Fridge scores are reported per play and are not part of it.

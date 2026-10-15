@@ -1,11 +1,12 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import App from './App.tsx';
 import { course } from './content/index.ts';
 import type { ProgressDoc } from './progress/progress.ts';
 import { createProgressStore } from './progress/store.ts';
+import { jsonResponse, sparkLaunch } from './xapi/fixtures.ts';
 import { localStateKey } from './xapi/state.ts';
-import { createMemoryTracker } from './xapi/tracker.ts';
+import { createLrsTracker, createMemoryTracker } from './xapi/tracker.ts';
 
 /** A store for this page load: preview's, reading what an earlier load left in localStorage. */
 const freshStore = () => createProgressStore(course, createMemoryTracker(course));
@@ -23,6 +24,7 @@ async function next(to: number | 'home', of: number) {
 }
 
 beforeEach(() => localStorage.clear());
+afterEach(() => vi.unstubAllGlobals());
 
 // course.yaml is the course's final copy, so App is rendered with it; the pages' own tests use
 // inline fixtures.
@@ -162,5 +164,41 @@ describe('App with progress', () => {
     expect(within(banner()).getByText('8 of 8 done')).toBeTruthy();
     expect(primary().textContent).toBe('Review from module 00');
     expect(primary().getAttribute('href')).toBe('#/modules/00/1');
+  });
+});
+
+describe('App and a route past an unanswered check', () => {
+  it("shows module 00's first check for a route to its takeaway, keeps the query string, and neither reaches nor completes past it", async () => {
+    window.history.replaceState(null, '', '/?registration=r1#/modules/00/7');
+    const store = freshStore();
+    render(<App store={store} />);
+    expect(within(banner()).getByText(`Screen 5 of ${course.modules[0].screens.length}`)).toBeTruthy();
+    await waitFor(() => expect(window.location.hash).toBe('#/modules/00/5'));
+    expect(window.location.search).toBe('?registration=r1');
+    expect(store.getSnapshot().modules['00']).toEqual({ answers: {}, reached: 5, completed: false });
+  });
+});
+
+describe('App with a launch', () => {
+  it('shows a saved answer that arrives with State after the screen has mounted', async () => {
+    let answer: (response: Response) => void = () => {};
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>((_url, init) => (init?.method === 'GET' ? new Promise((resolve) => (answer = resolve)) : Promise.resolve(new Response(null, { status: 204 })))),
+    );
+    const state: ProgressDoc = {
+      version: 1,
+      modules: { '00': { answers: { 'check-1': { answer: { picked: [1] }, score: { raw: 1, max: 1 }, right: true } }, reached: 5, completed: false } },
+    };
+    const store = createProgressStore(course, createLrsTracker(course, sparkLaunch()));
+    window.history.replaceState(null, '', '/#/modules/00/5');
+    render(<App store={store} />);
+    const radio = () => screen.getByRole<HTMLInputElement>('radio', { name: 'It filled a gap in your ask with a guess.' });
+    expect(radio().checked).toBe(false);
+
+    answer(jsonResponse(state));
+    await act(() => store.loaded);
+    expect(radio().checked).toBe(true);
+    expect(screen.getByText('Yes. Gaps get filled, confidently.')).toBeTruthy();
   });
 });

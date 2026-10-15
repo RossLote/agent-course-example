@@ -45,7 +45,27 @@ export function awaitsAnswer(screen: Screen, answers: ModuleAnswers): boolean {
   return scored !== null && answers[scored.slug]?.score === undefined;
 }
 
-/** The module's progress: its records, and its score out of what its scored screens are worth. */
+/** The index of the module's first screen still awaiting an answer (awaitsAnswer), or -1 when none is. */
+export function firstAwaiting(module: { screens: readonly Screen[] }, answers: ModuleAnswers): number {
+  return module.screens.findIndex((screen) => awaitsAnswer(screen, answers));
+}
+
+/**
+ * The screen (counting from 1) a route to `requested` shows: one of the module's screens (one
+ * past the last shows the last), and never past the first scored screen still awaiting an
+ * answer, so no route reaches the takeaway over an unanswered check.
+ */
+export function shownScreen(module: { screens: readonly Screen[] }, answers: ModuleAnswers, requested: number): number {
+  const screen = Math.min(Math.max(requested, 1), module.screens.length);
+  const awaiting = firstAwaiting(module, answers);
+  return awaiting === -1 ? screen : Math.min(screen, awaiting + 1);
+}
+
+/**
+ * The module's progress: its records, and its score out of what its scored screens are worth.
+ * Each stored raw counts between 0 and what its screen is worth now, so a score saved before
+ * the content changed never counts for more than the screen gives.
+ */
 export function moduleProgress(module: { screens: readonly Screen[] }, answers: ModuleAnswers): ModuleProgress {
   let raw = 0;
   let max = 0;
@@ -53,7 +73,8 @@ export function moduleProgress(module: { screens: readonly Screen[] }, answers: 
     const scored = scoredItem(screen);
     if (scored === null) continue;
     max += scored.max;
-    raw += answers[scored.slug]?.score?.raw ?? 0;
+    const stored = answers[scored.slug]?.score?.raw ?? 0;
+    raw += Number.isFinite(stored) ? Math.min(Math.max(stored, 0), scored.max) : 0;
   }
   return { items: answers, score: { raw, max } };
 }

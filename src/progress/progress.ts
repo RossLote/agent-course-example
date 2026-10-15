@@ -4,7 +4,7 @@
 // and the views the home page reads. The store (store.ts) holds the document and persists it.
 import { z } from 'zod';
 import type { Module, Screen } from '../content/index.ts';
-import { moduleProgress, NO_ANSWERS, recordEvent } from '../course/frame/progress.ts';
+import { firstAwaiting, moduleProgress, NO_ANSWERS, recordEvent } from '../course/frame/progress.ts';
 import type { ModuleAnswers, ScreenEvent, Score } from '../screens/types.ts';
 
 /** One module's progress. */
@@ -22,10 +22,13 @@ export interface ModuleRecord {
 
 /**
  * The progress document, written to State and localStorage as it is. A module with nothing
- * reached is left out. `version` changes only when the shape does.
+ * reached is left out. `version` changes only when the shape does. `savedAt` is when it last
+ * changed (an ISO timestamp, set by the store), so on load the newer of State and the local copy
+ * wins; a document without it (one saved before it was added, or the empty one) is the oldest.
  */
 export type ProgressDoc = {
   readonly version: 1;
+  readonly savedAt?: string;
   readonly modules: Readonly<Record<string, ModuleRecord>>;
 };
 
@@ -37,6 +40,7 @@ const EMPTY_RECORD: ModuleRecord = { answers: NO_ANSWERS, reached: 0, completed:
 const scoreSchema = z.object({ raw: z.number(), max: z.number() });
 const docSchema = z.object({
   version: z.literal(1),
+  savedAt: z.string().optional(),
   modules: z.record(
     z.string(),
     z.object({
@@ -51,6 +55,17 @@ const docSchema = z.object({
 export function parseProgress(value: unknown): ProgressDoc | null {
   const parsed = docSchema.safeParse(value);
   return parsed.success ? parsed.data : null;
+}
+
+/** When a document was last changed, in ms; -Infinity when it does not say (or says nothing a date parses from). */
+function savedTime(doc: ProgressDoc): number {
+  const time = doc.savedAt === undefined ? NaN : Date.parse(doc.savedAt);
+  return Number.isNaN(time) ? -Infinity : time;
+}
+
+/** Whether `doc` was changed after `than`: strictly later, so a tie is not newer. */
+export function isNewer(doc: ProgressDoc, than: ProgressDoc): boolean {
+  return savedTime(doc) > savedTime(than);
 }
 
 /** What the store takes in: a screen's event with where it came from, or a visit to a module's screen (from 1). */
@@ -90,7 +105,8 @@ function withRecord(doc: ProgressDoc, slug: string, change: (record: ModuleRecor
 /**
  * The document once a cause is taken in; the same object when nothing changed. An event
  * records its answer (the latest counts), reaches its screen, and on `takeaway-reached`
- * completes the module; a visit reaches its screen (clamped to the module's screens).
+ * completes the module when every scored screen in it has a score; a visit reaches its screen
+ * (clamped to the module's screens). `savedAt` is left as it was: the store sets it.
  */
 export function takeCause(doc: ProgressDoc, cause: ProgressCause): ProgressDoc {
   const { module } = cause;
@@ -102,7 +118,7 @@ export function takeCause(doc: ProgressDoc, cause: ProgressCause): ProgressDoc {
   return withRecord(doc, module.slug, (record) => {
     const answers = recordEvent(record.answers, event);
     const reached = Math.max(record.reached, module.screens.indexOf(screen) + 1);
-    const completed = record.completed || event.type === 'takeaway-reached';
+    const completed = record.completed || (event.type === 'takeaway-reached' && firstAwaiting(module, answers) === -1);
     if (answers === record.answers && reached === record.reached && completed === record.completed) return record;
     return { answers, reached, completed };
   });
