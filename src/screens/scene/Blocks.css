@@ -1,0 +1,260 @@
+/* Content blocks (content/README.md, "Blocks"), in the design's first pass. */
+
+.blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.blocks-boxed {
+  gap: 14px;
+}
+
+/* A white card on the ground: a side block, a card item, a column. */
+.scene-card {
+  min-width: 0;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+.block {
+  min-width: 0;
+  margin: 0;
+}
+
+.block p {
+  max-width: 72ch;
+}
+
+.block-heading {
+  margin-bottom: 8px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.block-paragraph + .block-paragraph {
+  margin-top: -6px;
+}
+
+/* cards */
+.block-cards-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.block-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.block-card-number {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* quote */
+.block-quote {
+  padding: 20px 24px;
+  border-radius: var(--radius-card);
+  background: var(--ink);
+  color: #fff;
+  font-size: 19px;
+  line-height: 1.45;
+}
+
+.block-quote blockquote {
+  margin: 0;
+}
+
+.block-quote figcaption {
+  margin-top: 10px;
+  color: var(--line-strong);
+  font-size: 14px;
+}
+
+/* list */
+.block-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.block-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.block-list-marker {
+  flex-shrink: 0;
+  min-width: 22px;
+  padding-top: 3px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.block-list-tone {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 3px;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.block-list-item[data-tone='right'] .block-list-tone {
+  background: var(--right);
+}
+
+.block-list-item[data-tone='wrong'] .block-list-tone {
+  background: var(--wrong);
+}
+
+.block-list-item[data-tone='neutral'] .block-list-tone {
+  width: 10px;
+  height: 10px;
+  margin: 8px 5px 0;
+  background: var(--line-strong);
+}
+
+.block-list-text {
+  min-width: 0;
+}
+
+/* table */
+.block-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  font-size: 15px;
+}
+
+.block-table caption {
+  text-align: left;
+}
+
+.block-table th,
+.block-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.block-table th {
+  background: var(--surface-sunk);
+  font-family: var(--font-display);
+}
+
+/* columns */
+.block-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.block-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.block-column-heading {
+  font-size: 18px;
+}
+
+/* mono */
+.block-mono {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #d7e0e8;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.block-mono figcaption {
+  margin-bottom: 4px;
+  color: var(--line-strong);
+}
+
+.block-mono pre {
+  margin: 0;
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* stats */
+.block-stats-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.block-stats-items li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.block-stat-value {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.block-stat-caption {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* aside: a glossary term in plain words */
+.block-aside {
+  display: flex;
+  align-self: flex-start;
+  max-width: 72ch;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 18px;
+  border-radius: var(--radius-card);
+  background: var(--accent-soft);
+}
+
+.block-aside-term {
+  color: var(--accent-strong);
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 800;
+}

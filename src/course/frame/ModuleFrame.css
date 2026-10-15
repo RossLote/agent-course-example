@@ -1,0 +1,88 @@
+.frame {
+  flex: 1 0 auto;
+  max-width: 1120px;
+}
+
+.frame-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.frame-screen {
+  display: flex;
+  flex: 999 1 560px;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+
+.frame-side {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+
+.frame-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.frame-head h1 {
+  font-size: clamp(26px, 3.6vw, 34px);
+  font-weight: 800;
+}
+
+.frame-intro {
+  max-width: 72ch;
+  margin-top: 2px;
+}
+
+/* The modules, the current one an open ring. */
+.frame-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.frame-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+.frame-dot[data-current] {
+  border: 2px solid var(--accent);
+  background: var(--surface);
+}
+
+.frame-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  padding: 20px 24px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.frame-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px 12px;
+}
+
+/* Next waiting on an answer: still focusable, so its reason is read out, but plainly off. */
+.frame-next .btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.frame-next .btn-primary[aria-disabled='true']:hover {
+  background: var(--accent);
+}

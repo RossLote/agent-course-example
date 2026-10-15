@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { course } from './content/index.ts';
 import { HomePage } from './course/home/HomePage.tsx';
-import { ModulePage } from './course/ModulePage.tsx';
+import { ModuleFrame } from './course/frame/ModuleFrame.tsx';
+import { NO_ANSWERS } from './course/frame/progress.ts';
+import { useCourseAnswers } from './course/frame/useCourseAnswers.ts';
 import { formatRoute, useRoute, type Route } from './course/route.ts';
 import { ScenarioPage } from './course/scenario/ScenarioPage.tsx';
 
@@ -26,10 +28,13 @@ function useFocusHeadingOnNavigate(route: Route) {
 export default function App() {
   const route = useRoute();
   useFocusHeadingOnNavigate(route);
+  const { answers, onEvent } = useCourseAnswers();
 
   if (route.page === 'module') {
     const module = course.modules.find((m) => m.slug === route.slug);
-    if (module) return <ModulePage courseTitle={course.title} module={module} screen={route.screen} />;
+    if (module) {
+      return <ModuleFrame course={course} module={module} screen={route.screen} answers={answers[module.slug] ?? NO_ANSWERS} onEvent={onEvent} />;
+    }
   }
   if (route.page === 'scenario') return <ScenarioPage course={course} />;
   return <HomePage course={course} />;

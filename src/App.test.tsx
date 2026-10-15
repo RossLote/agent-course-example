@@ -22,12 +22,21 @@ describe('App', () => {
     expect(within(screen.getByRole('region', { name: course.home.modulesHeading })).getAllByRole('link')).toHaveLength(course.modules.length);
   });
 
-  it('opens a module from its route', () => {
-    window.history.replaceState(null, '', '/#/modules/01/2');
+  it("opens a module screen from its route in the frame, and moves focus to the next screen's heading on Next", async () => {
+    const module = course.modules[1];
+    const [, second, third] = module.screens;
+    window.history.replaceState(null, '', '/?registration=r1#/modules/01/2');
     render(<App />);
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(course.modules[1].title);
-    expect(screen.getByText('Screen 2')).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Home' }).getAttribute('href')).toBe('#/home');
+    const bar = screen.getByRole('banner');
+    expect(within(bar).getByText(`Module 01 · ${module.title}`)).toBeTruthy();
+    expect(within(bar).getByText(`Screen 2 of ${module.screens.length}`)).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('heading' in second ? second.heading : '');
+
+    fireEvent.click(screen.getByRole('button', { name: /^Next: / }));
+    const heading = await screen.findByRole('heading', { level: 1, name: 'heading' in third ? third.heading : '' });
+    expect(window.location.search).toBe('?registration=r1');
+    expect(window.location.hash).toBe('#/modules/01/3');
+    expect(document.activeElement).toBe(heading);
   });
 
   it('shows the home page for a module the course does not have', () => {

@@ -1,0 +1,47 @@
+.takeaway {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.takeaway-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 32px;
+}
+
+.takeaway-text {
+  display: flex;
+  flex: 999 1 520px;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* The card: the module's one line, white on ink, as the design's takeaway. */
+.takeaway-card {
+  padding: 24px 28px;
+  border-radius: var(--radius-card);
+  background: var(--ink);
+  color: #fff;
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.takeaway-card strong {
+  font-weight: 800;
+}
+
+.takeaway-box {
+  display: flex;
+  flex: 1 1 340px;
+  justify-content: center;
+  min-width: 0;
+}
+
+.takeaway-end {
+  max-width: 760px;
+}
