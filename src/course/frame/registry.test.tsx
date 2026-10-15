@@ -20,17 +20,6 @@ const match = {
 };
 
 const placeholders: Screen[] = [
-  { type: 'chat', slug: 'talk', heading: 'Chat', opening: 'Hello.', messages: ['Hi.'] },
-  {
-    type: 'brief',
-    slug: 'brief',
-    heading: 'Brief',
-    opening: 'Hello.',
-    rounds: [{ message: 'Questions.', questions: [{ text: 'Q?', chips: [{ label: 'A', decision: 'A.', recommended: true }, { label: 'B', decision: 'B.' }] }] }],
-    defaults: { label: 'Your defaults', reply: 'Your defaults.' },
-    closing: 'Done.',
-    panel: { heading: 'The record', note: '{filled} of {total}' },
-  },
   { type: 'match', slug: 'sorting', scored: false, heading: 'Sort', ...match },
   { type: 'compare', heading: 'Compare', left: 'one-shot', right: 'accepted', table: { rows: [{ aspect: 'A', left: 'L', right: 'R', wall: 'W' }] } },
 ];

@@ -1,0 +1,99 @@
+/* The fake brief (M01-Brief in the design's first pass): the conversation, and beside it the
+   record the decisions fill, with the comparison card under it once the brief is closed. */
+
+.brief {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 28px;
+  min-width: 0;
+}
+
+.brief-chat {
+  flex: 999 1 440px;
+  min-width: 0;
+}
+
+.brief-side {
+  display: flex;
+  flex: 1 1 260px;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.brief-question {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--agent-line);
+}
+
+.brief-defaults {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 14px;
+}
+
+.brief-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brief-panel-heading {
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.brief-panel .muted {
+  margin-bottom: 8px;
+}
+
+.brief-decisions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.brief-decision {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.brief-decision[data-filled] {
+  color: var(--ink);
+}
+
+.brief-decision-id {
+  flex-shrink: 0;
+  width: 32px;
+  padding-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.brief-decision[data-filled] .brief-decision-id {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.brief-decision:not([data-filled]) .brief-decision-text {
+  font-style: italic;
+}
+
+/* The closing card: the one dark card, so it reads as the brief's point. */
+.brief-comparison {
+  padding: 20px 22px;
+  border-radius: var(--radius-card);
+  background: var(--ink);
+  color: #fff;
+}
