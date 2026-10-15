@@ -66,6 +66,13 @@ describe('SceneScreen', () => {
     expect(container.querySelector('.block-cards ol')).toBeTruthy();
   });
 
+  it('sets each cards block, numbered or plain, to its balanced column count', () => {
+    const cards = (count: number, numbered: boolean): Block => ({ type: 'cards', numbered, items: Array.from({ length: count }, (_, i) => ({ body: `Card ${i}.` })) });
+    const { container } = render(<Blocks blocks={[cards(5, true), cards(4, false), cards(7, false), cards(1, true)]} progress={progress} />);
+    const lists = [...container.querySelectorAll('.block-cards-list')];
+    expect(lists.map((l) => l.getAttribute('data-columns'))).toEqual(['3', '4', '4', '1']);
+  });
+
   it('renders a quote with its attribution', () => {
     renderScene();
     expect(screen.getByText('A quoted line.', { exact: false }).closest('blockquote')).toBeTruthy();
