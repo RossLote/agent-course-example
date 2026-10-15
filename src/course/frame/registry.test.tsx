@@ -1,69 +1,8 @@
-import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
-import type { Screen } from '../../content/index.ts';
+import { describe, expect, it } from 'vitest';
 import { screenComponents } from '../../screens/index.ts';
-import { fixtureCourse } from './fixture.ts';
-import { NO_ANSWERS } from './progress.ts';
-import { ScreenView } from './ScreenView.tsx';
-
-const course = fixtureCourse();
-const match = {
-  targets: [
-    { id: 'x', label: 'X' },
-    { id: 'y', label: 'Y' },
-  ],
-  rows: [
-    { text: 'One', key: 'x', feedback: 'X.' },
-    { text: 'Two', key: 'y', feedback: 'Y.' },
-    { text: 'Three', key: 'y', feedback: 'Y.' },
-  ],
-};
-
-const placeholders: Screen[] = [
-  { type: 'match', slug: 'sorting', scored: false, heading: 'Sort', ...match },
-];
-
-const scored: { screen: Screen; max: number }[] = [
-  { screen: { type: 'match', slug: 'walls', scored: true, heading: 'Walls', ...match }, max: 3 },
-  {
-    screen: {
-      type: 'order',
-      slug: 'loop',
-      heading: 'Order',
-      cards: ['a', 'b'].map((id) => ({ id, label: id, feedback: id })),
-      start: ['b', 'a'],
-    },
-    max: 2,
-  },
-];
-
-function renderScreen(shown: Screen, onEvent = vi.fn()) {
-  render(<ScreenView screen={shown} module={course.modules[0]} course={course} progress={{ items: NO_ANSWERS, score: { raw: 0, max: 0 } }} onEvent={onEvent} />);
-  return onEvent;
-}
 
 describe('the screen registry', () => {
   it('has a component for every screen type', () => {
     expect(Object.keys(screenComponents).sort()).toEqual(['brief', 'chat', 'choose', 'compare', 'fridge', 'match', 'order', 'scene', 'takeaway']);
-  });
-
-  it.each(placeholders.map((s) => [s.type, s] as const))('renders the %s placeholder, unscored, with nothing to answer', (type, shown) => {
-    renderScreen(shown);
-    expect(screen.getByText(`${type}: not built yet`)).toBeTruthy();
-    expect(screen.queryByRole('button')).toBeNull();
-  });
-
-  it.each(scored.map((s) => [s.screen.type, s] as const))('renders the scored %s placeholder with a button that answers it right', (type, { screen: shown, max }) => {
-    const onEvent = renderScreen(shown);
-    expect(screen.getByText(`${type}: not built yet`)).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Answer (placeholder)' }));
-    expect(onEvent).toHaveBeenCalledWith({
-      type: 'answered',
-      slug: 'slug' in shown ? shown.slug : '',
-      right: true,
-      score: { raw: max, max },
-      response: 'placeholder',
-      answer: 'placeholder',
-    });
   });
 });

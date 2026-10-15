@@ -1,0 +1,16 @@
+/* Beside the Check button (match and order): how far along the learner is before Check, and the
+   result once checked. */
+
+.check-count,
+.check-result {
+  align-self: center;
+  margin: 0;
+}
+
+.check-result {
+  font-weight: 700;
+}
+
+.check-result:empty {
+  display: none;
+}

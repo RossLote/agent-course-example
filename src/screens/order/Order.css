@@ -1,0 +1,106 @@
+/* The order screen (module 07's order the loop): numbered cards in a list, each a button that a
+   pointer drags or the keyboard carries, marked right or wrong once checked. The card's look and
+   its states come from the choose screen's option (../choose/Choose.css). */
+
+.order-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The slot is the drop target; its padding leaves no gap between targets for a drop to miss. */
+.order-slot {
+  padding: 5px 0;
+}
+
+.order-slot[data-over] > .order-card {
+  border-style: dashed;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.order-card[data-state='on'] {
+  box-shadow: 0 4px 12px rgb(23 32 41 / 18%);
+}
+
+.order-card-button {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-height: var(--target);
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.order-card-button:disabled {
+  cursor: default;
+}
+
+.order-card-button[data-dragging] {
+  opacity: 0.4;
+}
+
+.order-mark {
+  display: flex;
+  margin-left: auto;
+}
+
+.order-number {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.order-feedback {
+  padding-left: 52px;
+}
+
+/* The status line: the live region's words, shown. */
+.order-status {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-sunk);
+  font-size: 15px;
+}
+
+.order-status:empty {
+  display: none;
+}
+
+.order-ghost {
+  position: fixed;
+  z-index: 10;
+  padding: 8px 14px;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgb(23 32 41 / 25%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
