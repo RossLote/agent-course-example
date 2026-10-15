@@ -3,6 +3,7 @@ import type { Block, ListItem, StatsItem } from '../../content/index.ts';
 import { Quote } from '../parts/Quote.tsx';
 import { ToneIcon } from '../parts/Tone.tsx';
 import type { ModuleProgress } from '../types.ts';
+import { cardColumns } from './cardColumns.ts';
 import { Copy } from './Copy.tsx';
 import './Blocks.css';
 
@@ -63,7 +64,7 @@ function BlockView({ block, progress, level }: { block: Block; progress: ModuleP
       return (
         <div className="block block-cards">
           {heading}
-          <List className="block-cards-list">
+          <List className="block-cards-list" data-columns={cardColumns(block.items.length)}>
             {block.items.map((item, i) => (
               <li key={i} className="scene-card block-card">
                 {block.numbered && (
