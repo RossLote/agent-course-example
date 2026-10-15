@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Course home: done at a glance</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.quote{background:#172029;color:#fff;border-radius:12px;padding:22px 26px;font-size:19px;line-height:1.45}
+.mod{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#172029;background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:18px 20px;min-height:170px;box-sizing:border-box}
+.mod:hover{border-color:#2F4BD6;color:#172029}
+.mod.done{border:2px solid #1B7F4B;padding:17px 19px}
+.mod.done:hover{border-color:#145F38}
+.mod .head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:28px}
+.mod .num{font-family:'JetBrains Mono',monospace;font-size:13px;color:#5B6672}
+.mod .wall{font-size:14px;color:#2F4BD6;font-weight:700}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px 3px 8px;font-size:13px;font-weight:700;line-height:1.4;white-space:nowrap}
+.pill.done{background:#1B7F4B;color:#fff}
+.pill.going{background:#EEF1FD;color:#1F37A8;border:1px solid #C9D2F7}
+.pill.new{color:#5B6672;border:1px solid #D9DEE3;padding:3px 10px}
+.wallbar{position:absolute;left:50%;top:50%;width:128px;height:8px;border-radius:5px;border:2px dashed #AEB6BF;box-sizing:border-box}
+.wallbar.up{border:0;background:#2F4BD6}
+.walllbl{position:absolute;left:50%;top:50%;font-size:13px;color:#5B6672;white-space:nowrap;font-weight:700}
+.walllbl.up{color:#172029}
+</style>
+</helmet>
+<div style="min-height:1080px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="#top">Getting the most out of agents</a>
+    <span class="muted small">2 of 8 done</span>
+    <span style="flex-grow:1"></span>
+    <span class="muted small">Leave after any module and come back</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-direction:column;gap:36px">
+    <section style="display:flex;flex-wrap:wrap;gap:40px;align-items:center">
+      <div style="flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:20px">
+        <p class="eyebrow">The one thing to remember</p>
+        <h1 style="font-size:44px;font-weight:800">Agents are better at reviewing than building.</h1>
+        <div class="quote">
+          <p>"So whenever you have agents do anything, also have agents look at what the agents have done. Put the agent in a tight box it can't wander off from, and check, and check again."</p>
+          <p class="small" style="margin-top:12px;color:#AEB6BF">Ross Lote</p>
+        </div>
+        <p style="font-size:18px;color:#5B6672;max-width:560px">Every module adds one wall to the box on the right. By the end you can set up a piece of agent work so that you can trust what comes back.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <a class="btn primary" href="#modules">Continue module 02</a>
+          <a class="btn ghost" href="#top">The scenario again</a>
+        </div>
+      </div>
+
+      <div style="flex:1 1 320px;display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div style="position:relative;width:340px;height:340px" role="img" aria-label="The box with wall 01, the record, up">
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;border-radius:50%;background:#fff;border:2px solid #D9DEE3;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-weight:700;font-size:14px;color:#5B6672">the agent</div>
+          <div class="wallbar up" style="transform:translate(-50%,-50%) rotate(0deg) translateY(-112px)"></div>
+          <div class="walllbl up" style="transform:translate(-50%,-50%) rotate(0deg) translateY(-142px) rotate(0deg)">01 the record</div>
+          <div class="wallbar" style="transform:translate(-50%,-50%) rotate(72deg) translateY(-112px)"></div>
+          <div class="walllbl" style="transform:translate(-50%,-50%) rotate(72deg) translateY(-146px) rotate(-72deg)">02 done</div>
+          <div class="wallbar" style="transform:translate(-50%,-50%) rotate(144deg) translateY(-112px)"></div>
+          <div class="walllbl" style="transform:translate(-50%,-50%) rotate(144deg) translateY(-146px) rotate(-144deg)">03 the gate</div>
+          <div class="wallbar" style="transform:translate(-50%,-50%) rotate(216deg) translateY(-112px)"></div>
+          <div class="walllbl" style="transform:translate(-50%,-50%) rotate(216deg) translateY(-146px) rotate(-216deg)">04 other agents</div>
+          <div class="wallbar" style="transform:translate(-50%,-50%) rotate(288deg) translateY(-112px)"></div>
+          <div class="walllbl" style="transform:translate(-50%,-50%) rotate(288deg) translateY(-146px) rotate(-288deg)">05 evidence</div>
+        </div>
+        <p class="muted small" style="text-align:center;max-width:300px">An open box. The walls go up one module at a time; the retro is the arrow round the whole thing.</p>
+      </div>
+    </section>
+
+    <section id="modules" style="display:flex;flex-direction:column;gap:16px">
+      <h2 style="font-size:24px">The modules</h2>
+      <div style="display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:16px">
+        <a class="mod done" href="#modules">
+          <div class="head"><span class="num">00 · 5 min</span><span class="pill done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Done</span></div>
+          <h3 style="font-size:18px">What works and what doesn't</h3><span class="wall">the open box</span><span class="muted small">A vague ask, and what an agent does with it.</span>
+        </a>
+        <a class="mod done" href="#modules">
+          <div class="head"><span class="num">01 · 7 min</span><span class="pill done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Done</span></div>
+          <h3 style="font-size:18px">Write it down</h3><span class="wall">wall 1: the record</span><span class="muted small">The agent asks, you decide, the decisions are on the record.</span>
+        </a>
+        <a class="mod" href="#modules">
+          <div class="head"><span class="num">02 · 7 min</span><span class="pill going"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"></path></svg>In progress</span></div>
+          <h3 style="font-size:18px">Define done before you start</h3><span class="wall">wall 2: done</span><span class="muted small">Pieces with acceptance a reviewer can see.</span>
+        </a>
+        <a class="mod" href="#modules">
+          <div class="head"><span class="num">03 · 6 min</span><span class="pill new">Not started</span></div>
+          <h3 style="font-size:18px">The box</h3><span class="wall">wall 3: the gate</span><span class="muted small">Tests and checks that must be green before done.</span>
+        </a>
+        <a class="mod" href="#modules">
+          <div class="head"><span class="num">04 · 9 min</span><span class="pill new">Not started</span></div>
+          <h3 style="font-size:18px">Agents checking agents</h3><span class="wall">wall 4: other agents</span><span class="muted small">Simplify, review, adversarial review. You play the skeptic.</span>
+        </a>
+        <a class="mod" href="#modules">
+          <div class="head"><span class="num">05 · 6 min</span><span class="pill new">Not started</span></div>
+          <h3 style="font-size:18px">Judging what comes back</h3><span class="wall">wall 5: evidence</span><span class="muted small">Door, undo, walkthrough. Merge or not.</span>
+        </a>
+        <a class="mod" href="#modules">
+          <div class="head"><span class="num">06 · 6 min</span><span class="pill new">Not started</span></div>
+          <h3 style="font-size:18px">Round again</h3><span class="wall">the arrow round the box</span><span class="muted small">A second round, and the check that missed.</span>
+        </a>
+        <a class="mod" href="#modules">
+          <div class="head"><span class="num">07 · 6 min</span><span class="pill new">Not started</span></div>
+          <h3 style="font-size:18px">Put it together</h3><span class="wall">all of them</span><span class="muted small">A new request. Name the wall for each thing that goes wrong.</span>
+        </a>
+      </div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

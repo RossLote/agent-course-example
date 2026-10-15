@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The one-shot fridge, fifteen seconds</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:28px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:22px;box-sizing:border-box}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border-radius:999px;background:#172029;color:#fff;font-family:'JetBrains Mono',monospace;font-size:15px}
+.chip.timer{font-size:17px;font-weight:600;min-width:84px;justify-content:center}
+.chip.urgent{background:#B42318;animation:pulse 1s ease-in-out infinite}
+.chip.over{background:#B42318}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(180,35,24,0.45)}50%{transform:scale(1.08);box-shadow:0 0 0 8px rgba(180,35,24,0)}}
+@media (prefers-reduced-motion: reduce){.chip.urgent{animation:none}}
+.fridge{border:3px solid #AEB6BF;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;background:#F3F5F7;transition:border-color .2s}
+.fridge.urgent{border-color:#B42318}
+.shelf{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;min-height:84px;padding:10px 14px;border-radius:10px;border:2px solid transparent;background:#fff;font:inherit;color:#172029;cursor:default;width:100%;box-sizing:border-box}
+.shelf.target{border:2px dashed #2F4BD6;cursor:pointer}
+.shelf.target:hover{background:#EEF1FD}
+.shelf .name{font-family:Manrope,system-ui,sans-serif;font-weight:700;font-size:15px}
+.placed{display:flex;gap:6px;flex-wrap:wrap}
+.placed span{padding:4px 12px;border-radius:999px;background:#EAF6EE;border:1px solid #BFE3CB;font-size:15px}
+.tray{border:2px dashed #AEB6BF;border-radius:12px;padding:12px;display:flex;flex-wrap:wrap;gap:10px;min-height:68px}
+.item{min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #AEB6BF;background:#fff;font:inherit;color:#172029;cursor:pointer}
+.item:hover{border-color:#172029}
+.item.held{background:#2F4BD6;border-color:#2F4BD6;color:#fff}
+.item.flash{border-color:#B42318;background:#FBEDEB}
+.board{border:1px solid #D9DEE3;border-radius:12px;padding:12px 16px;min-width:190px;box-sizing:border-box}
+.board ol{margin:6px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.status{min-height:26px;font-weight:700}
+.status.bad{color:#B42318}
+.over{border-radius:12px;padding:18px 20px;background:#FBEDEB;border:2px solid #B42318;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+</style>
+</helmet>
+<div style="min-height:1000px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="#top">Getting the most out of agents</a>
+    <span class="muted small">Module 00 · What works and what doesn't</span>
+    <span style="flex-grow:1"></span>
+    <span class="muted small">Screen 4 of 8</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <p class="eyebrow">Try it</p>
+      <h1 style="font-size:34px">Try what it built</h1>
+      <p class="muted">Optional, fifteen seconds. The timer starts as soon as you pick something up.</p>
+    </div>
+
+    <div class="card" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <h2 style="font-size:22px;flex:1 1 auto">Module 00: "Build me a fridge activity"</h2>
+        <button class="btn ghost" onClick="{{reset}}">Reset</button>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <span class="chip">{{placedCount}} of 14 placed</span>
+        <span class="chip">score {{points}}</span>
+        <span class="chip timer {{timerCls}}" role="timer" aria-label="{{timerLabel}}">
+          <sc-if value="{{urgent}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 6a8.5 8.5 0 0 1 0 12"></path></svg></sc-if>
+          {{clock}}
+        </span>
+      </div>
+
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div class="fridge {{fridgeCls}}" style="flex:999 1 560px;min-width:0">
+          <sc-for list="{{shelves}}" as="s" hint-placeholder-count="5">
+            <button class="shelf {{s.cls}}" onClick="{{s.drop}}" aria-disabled="{{s.off}}">
+              <span class="name">{{s.name}}</span>
+              <span class="placed">
+                <sc-for list="{{s.items}}" as="it" hint-placeholder-count="0"><span>{{it}}</span></sc-for>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+        <div class="board" style="flex:1 1 190px">
+          <p style="font-family:Manrope,system-ui,sans-serif;font-weight:800">Leaderboard</p>
+          <ol>
+            <li>Sam · 1,400</li>
+            <li>Priya · 1,250</li>
+            <li style="font-weight:700">You · {{points}}</li>
+          </ol>
+        </div>
+      </div>
+
+      <p class="status {{statusCls}}" role="status">{{status}}</p>
+
+      <sc-if value="{{isOver}}" hint-placeholder-val="{{false}}">
+        <div class="over">
+          <p style="flex:1 1 auto"><strong>Time's up!</strong> Better luck next time. You placed {{placedCount}} of 14.</p>
+          <button class="btn primary" onClick="{{reset}}">Reset</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{playing}}" hint-placeholder-val="{{true}}">
+        <p class="muted small">Click an item, then a shelf. With the keyboard: Enter picks it up, the arrow keys choose a shelf, Enter places it, Escape puts it back.</p>
+        <div class="tray">
+          <sc-for list="{{tray}}" as="t" hint-placeholder-count="14">
+            <button class="item {{t.cls}}" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}">{{t.name}}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="#top">Back</a>
+    <span class="muted small">00 · screen 4 of 8</span>
+    <a class="btn primary" href="#top">Next: check</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = this.fresh();
+  }
+  fresh() {
+    return { placements: {}, held: null, timeLeft: 15, started: false, over: false, points: 0, status: 'Pick something up to start the clock.', statusBad: false, flash: null };
+  }
+  componentWillUnmount() { this.stop(); }
+  stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
+  beep(last) {
+    try {
+      if (!this.audio) this.audio = new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = this.audio;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = last ? 330 : 990;
+      const now = ctx.currentTime;
+      const length = last ? 0.6 : 0.09;
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.18, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + length);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(now); osc.stop(now + length + 0.02);
+    } catch (e) { /* no sound where audio is unavailable */ }
+  }
+  start() {
+    this.stop();
+    if (this.audio && this.audio.state === 'suspended') this.audio.resume();
+    this.timer = setInterval(() => {
+      const left = this.state.timeLeft - 1;
+      if (left <= 0) {
+        this.stop();
+        this.beep(true);
+        this.setState({ timeLeft: 0, over: true, held: null, status: 'Time\'s up!', statusBad: true });
+        return;
+      }
+      if (left <= 5) this.beep(false);
+      this.setState({ timeLeft: left });
+    }, 1000);
+  }
+  renderVals() {
+    const s = this.state;
+    const shelfList = [
+      { id: 'top', name: 'Top shelf' },
+      { id: 'upper-middle', name: 'Upper middle' },
+      { id: 'lower-middle', name: 'Lower middle' },
+      { id: 'bottom', name: 'Bottom shelf' },
+      { id: 'door', name: 'The door' }
+    ];
+    const items = [
+      { id: 'cheese', name: 'Cheese', shelf: 'top' }, { id: 'yoghurt', name: 'Yoghurt', shelf: 'top' },
+      { id: 'butter', name: 'Butter', shelf: 'top' }, { id: 'milk', name: 'Milk', shelf: 'door' },
+      { id: 'eggs', name: 'Eggs', shelf: 'door' }, { id: 'ketchup', name: 'Ketchup', shelf: 'door' },
+      { id: 'juice', name: 'Orange juice', shelf: 'door' }, { id: 'cooked', name: 'Cooked chicken', shelf: 'upper-middle' },
+      { id: 'lasagne', name: 'Lasagne', shelf: 'upper-middle' }, { id: 'raw-chicken', name: 'Raw chicken', shelf: 'lower-middle' },
+      { id: 'mince', name: 'Mince', shelf: 'lower-middle' }, { id: 'salmon', name: 'Raw salmon', shelf: 'bottom' },
+      { id: 'lettuce', name: 'Lettuce', shelf: 'bottom' }, { id: 'tomatoes', name: 'Tomatoes', shelf: 'bottom' }
+    ];
+    const placedCount = Object.keys(s.placements).length;
+    const urgent = s.started && !s.over && s.timeLeft <= 5;
+    const playing = !s.over;
+    const drop = (shelf) => () => {
+      const st = this.state;
+      if (st.over || st.held === null) return;
+      const item = items.find((i) => i.id === st.held);
+      if (item.shelf === shelf.id) {
+        const placements = Object.assign({}, st.placements, { [item.id]: shelf.id });
+        const done = Object.keys(placements).length === items.length;
+        if (done) this.stop();
+        const points = st.points + 100;
+        this.setState({ placements: placements, held: null, points: points, over: done, flash: null, statusBad: false,
+          status: done ? 'You did it! Final score ' + points + '.' : item.name + ' placed on the ' + shelf.name.toLowerCase() + '.' });
+      } else {
+        this.setState({ held: null, points: Math.max(0, st.points - 50), flash: item.id, statusBad: true, status: item.name + ' returned to the tray.' });
+      }
+    };
+    const shelves = shelfList.map((shelf) => ({
+      name: shelf.name,
+      items: items.filter((i) => s.placements[i.id] === shelf.id).map((i) => i.name),
+      cls: s.held !== null && !s.over ? 'target' : '',
+      off: s.held === null || s.over ? 'true' : 'false',
+      drop: drop(shelf)
+    }));
+    const tray = items.filter((i) => s.placements[i.id] === undefined).map((i) => ({
+      name: i.name,
+      cls: s.held === i.id ? 'held' : s.flash === i.id ? 'flash' : '',
+      pressed: s.held === i.id ? 'true' : 'false',
+      pick: () => {
+        const st = this.state;
+        if (st.over) return;
+        if (!st.started) { this.beep(false); this.start(); }
+        const held = st.held === i.id ? null : i.id;
+        this.setState({ started: true, held: held, flash: null, statusBad: false,
+          status: held === null ? i.name + ' put back.' : i.name + ' picked up. Choose a shelf.' });
+      }
+    }));
+    const secs = Math.max(0, s.timeLeft);
+    return {
+      placedCount: placedCount, points: s.points.toLocaleString('en-GB'),
+      clock: '0:' + String(secs).padStart(2, '0'),
+      timerLabel: secs + ' seconds left',
+      timerCls: s.over ? 'over' : urgent ? 'urgent' : '',
+      fridgeCls: urgent || (s.over && placedCount < items.length) ? 'urgent' : '',
+      urgent: urgent,
+      shelves: shelves, tray: tray, status: s.status, statusCls: s.statusBad ? 'bad' : '',
+      isOver: s.over && placedCount < items.length, playing: playing,
+      reset: () => { this.stop(); this.setState(this.fresh()); }
+    };
+  }
+}
+</script>
+</body>
+</html>

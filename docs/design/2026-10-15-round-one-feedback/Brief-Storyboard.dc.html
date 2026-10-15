@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The brief in four beats</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:15px;line-height:1.45}
+h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.2;letter-spacing:-0.01em}
+p{margin:0}
+.muted{color:#5B6672}
+.beat{display:flex;flex-direction:column;gap:12px;min-width:0}
+.beat h3{font-size:17px;display:flex;gap:10px;align-items:baseline}
+.beat h3 span{font-family:'JetBrains Mono',monospace;font-size:13px;color:#2F4BD6}
+.frame{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;height:640px;box-sizing:border-box;overflow:hidden}
+.msg{display:flex;gap:8px;align-items:flex-start}
+.msg.you{flex-direction:row-reverse}
+.av{width:24px;height:24px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-family:Manrope,sans-serif;font-weight:800;font-size:11px}
+.av.agent{background:#0E7C86}.av.you{background:#B45309;font-size:9px}
+.b{border-radius:10px;padding:8px 10px;border:1px solid #D9DEE3;font-size:13px;line-height:1.4}
+.b.agent{background:#E8F4F5;border-color:#BFE0E3;border-top-left-radius:3px;flex:1 1 auto;min-width:0}
+.b.you{background:#FFF3DC;border-color:#F3D9A4;border-top-right-radius:3px;max-width:78%}
+.q{border-top:1px solid #BFE0E3;padding-top:6px;margin-top:6px;display:flex;flex-direction:column;gap:5px}
+.q strong{font-size:12.5px}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chips i{display:block;height:16px;border-radius:999px;border:1.5px solid #AEB6BF;background:#fff}
+.chips i.on{background:#2F4BD6;border-color:#2F4BD6}
+.chips i.rec{border-style:dashed}
+.send{margin-top:8px;display:inline-block;background:#2F4BD6;color:#fff;font-weight:700;font-size:12px;border-radius:7px;padding:5px 10px}
+.send.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF;margin-left:4px}
+.ghosted{opacity:0.28}
+.thinking{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:#0B5F67;font-size:13px}
+.spinner{width:14px;height:14px;border-radius:50%;border:2.5px solid #BFE0E3;border-top-color:#0E7C86;box-sizing:border-box}
+.arrow{font-size:12px;color:#5B6672;font-family:'JetBrains Mono',monospace}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;box-sizing:border-box;padding:40px 48px;display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:24px;align-content:start;background:#F3F5F7">
+
+  <div class="beat">
+    <h3><span>1</span>You answer the five and send</h3>
+    <div class="frame">
+      <div class="msg you"><div class="av you" aria-hidden="true">You</div><div class="b you">A fridge activity for a client's food-hygiene course…</div></div>
+      <div class="msg"><div class="av agent" aria-hidden="true">A</div><div class="b agent">
+        <p>I read the client's food-hygiene guide… Five questions, ranked.</p>
+        <div class="q"><strong>1. Who does this, and where?</strong><div class="chips"><i class="rec on" style="width:120px"></i><i style="width:70px"></i><i style="width:60px"></i></div></div>
+        <div class="q"><strong>2. Which shelves, which items, and whose rules?</strong><div class="chips"><i class="rec on" style="width:110px"></i><i style="width:80px"></i><i style="width:64px"></i></div></div>
+        <div class="q"><strong>3. What happens on a wrong drop?</strong><div class="chips"><i class="rec on" style="width:100px"></i><i style="width:76px"></i><i style="width:84px"></i></div></div>
+        <div class="q"><strong>4. How does it end, and is there a score?</strong><div class="chips"><i class="rec" style="width:120px"></i><i class="on" style="width:66px"></i><i style="width:80px"></i></div></div>
+        <div class="q"><strong>5. Keyboard and touch?</strong><div class="chips"><i class="rec on" style="width:116px"></i><i style="width:70px"></i><i style="width:84px"></i></div></div>
+        <span class="send">Send answers</span>
+      </div></div>
+    </div>
+    <p class="muted">Send stays off until all five have an answer. It is the learner's Enter.</p>
+  </div>
+
+  <div class="beat">
+    <h3><span>2</span>Round one fades; the agent thinks</h3>
+    <div class="frame">
+      <div class="msg you"><div class="av you" aria-hidden="true">You</div><div class="b you">A fridge activity for a client's food-hygiene course…</div></div>
+      <div class="msg you"><div class="av you" aria-hidden="true">You</div><div class="b you">My answers to 1 to 5.</div></div>
+      <div class="msg"><div class="av agent" aria-hidden="true">A</div><div class="b agent"><span class="thinking"><span class="spinner" aria-hidden="true"></span>Thinking…</span></div></div>
+      <div class="msg ghosted" aria-hidden="true"><div class="av agent"></div><div class="b agent">
+        <div class="q"><div class="chips"><i style="width:120px"></i><i style="width:70px"></i></div></div>
+        <div class="q"><div class="chips"><i style="width:110px"></i><i style="width:80px"></i></div></div>
+      </div></div>
+      <p class="arrow">round one fading, 0.4 s</p>
+    </div>
+    <p class="muted">About a second and a half. D1 to D5 are already on the record at the right.</p>
+  </div>
+
+  <div class="beat">
+    <h3><span>3</span>Round two arrives where round one was</h3>
+    <div class="frame">
+      <div class="msg you"><div class="av you" aria-hidden="true">You</div><div class="b you">A fridge activity for a client's food-hygiene course…</div></div>
+      <div class="msg you"><div class="av you" aria-hidden="true">You</div><div class="b you">My answers to 1 to 5.</div></div>
+      <div class="msg"><div class="av agent" aria-hidden="true">A</div><div class="b agent">
+        <p>Took your answers as D1 to D5 on the right. Three more; the rest I can leave to the builder.</p>
+        <div class="q"><strong>6. A timer?</strong><div class="chips"><i class="rec" style="width:70px"></i><i style="width:120px"></i></div></div>
+        <div class="q"><strong>7. Can they retry, and which attempt does the LMS get?</strong><div class="chips"><i class="rec" style="width:150px"></i><i style="width:90px"></i></div></div>
+        <div class="q"><strong>8. What does the client see afterwards?</strong><div class="chips"><i class="rec" style="width:130px"></i><i style="width:120px"></i></div></div>
+        <span class="send">Send answers</span><span class="send ghost">Your defaults</span>
+      </div></div>
+    </div>
+    <p class="muted">No scrolling: the new round is where the learner was already looking, and focus moves to its first line.</p>
+  </div>
+
+  <div class="beat">
+    <h3><span>4</span>That's the brief</h3>
+    <div class="frame">
+      <div class="msg you"><div class="av you" aria-hidden="true">You</div><div class="b you">A fridge activity for a client's food-hygiene course…</div></div>
+      <div class="msg you"><div class="av you" aria-hidden="true">You</div><div class="b you">Your defaults.</div></div>
+      <div class="msg"><div class="av agent" aria-hidden="true">A</div><div class="b agent">That's the brief. Everything left (how the shelves are drawn, what the drag feels like, the exact wording) is the builder's call and changes nothing the learner sees you decide. Eight decisions on the record.</div></div>
+    </div>
+    <p class="muted">Only after a second round of Thinking. The comparison card then appears under the record.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

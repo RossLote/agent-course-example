@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How a brief goes: three and two</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.steps{display:flex;flex-wrap:wrap;justify-content:center;gap:16px}
+.step{flex:0 1 calc((100% - 32px) / 3);min-width:260px;box-sizing:border-box;background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px 22px;display:flex;gap:14px;align-items:flex-start}
+.n{width:30px;height:30px;border-radius:50%;background:#172029;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:14px;flex-shrink:0}
+.quote{background:#172029;color:#fff;border-radius:12px;padding:22px 26px;font-size:19px;line-height:1.45}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+</style>
+</helmet>
+<div style="min-height:820px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="#top">Getting the most out of agents</a>
+    <span class="muted small">Module 01 · Write it down</span>
+    <span style="flex-grow:1"></span>
+    <span class="muted small">Screen 2 of 7</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-direction:column;gap:22px">
+    <h1 style="font-size:34px">How a brief goes</h1>
+    <ol class="steps" style="list-style:none;margin:0;padding:0">
+      <li class="step"><span class="n" aria-hidden="true">1</span><p><strong>You describe it freely first.</strong> A paragraph in your own words, however rough.</p></li>
+      <li class="step"><span class="n" aria-hidden="true">2</span><p><strong>The agent reads before it asks.</strong> What exists already, the client's materials, the standard if there is one. Then it asks.</p></li>
+      <li class="step"><span class="n" aria-hidden="true">3</span><p><strong>At most five questions a round, ranked.</strong> The question whose answer settles the most others comes first. Each comes with what it decides and the agent's recommended answer, so "your defaults, except number 3" is a complete reply.</p></li>
+      <li class="step"><span class="n" aria-hidden="true">4</span><p><strong>You answer in a paragraph.</strong> The agent plays back what it took each answer to be, re-asks only what you missed, and asks the next round.</p></li>
+      <li class="step"><span class="n" aria-hidden="true">5</span><p><strong>It stops when the rest is a builder's call.</strong> Then you get the decisions: D1, D2, D3…, one sentence each with its reason, on one record the builder reads.</p></li>
+    </ol>
+    <div class="quote">
+      <p>"You may not know what you want until you see the first round. The brief is where you find out what you do know."</p>
+      <p class="small" style="margin-top:12px;color:#AEB6BF">Ross</p>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="#top">Back</a>
+    <span class="muted small">01 · screen 2 of 7</span>
+    <a class="btn primary" href="#top">Next: the fridge brief</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

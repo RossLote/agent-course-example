@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tick everything: all five right</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.primary:disabled{background:#AEB6BF;cursor:not-allowed}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:22px;box-sizing:border-box}
+.quote{background:#172029;color:#fff;border-radius:12px;padding:20px 24px;font-size:18px;line-height:1.45}
+.opt{border:2px solid #D9DEE3;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;background:#fff}
+.opt.on{border-color:#2F4BD6;background:#EEF1FD}
+.opt.ok{border-color:#1B7F4B;background:#EAF6EE}
+.opt.left{border-color:#8FCBA6;background:#fff}
+.opt.bad{border-color:#B42318;background:#FBEDEB}
+.opt.missed{border-color:#B42318;border-style:dashed;background:#fff}
+.row{display:flex;align-items:center;gap:14px;cursor:pointer;min-height:32px}
+.row input{width:22px;height:22px;margin:0;accent-color:#172029;flex-shrink:0}
+.row .lbl{font-weight:700;flex:1 1 auto}
+.tag{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 12px 3px 8px;font-size:14px;font-weight:700;white-space:nowrap}
+.tag.ok{background:#1B7F4B;color:#fff}
+.tag.bad{background:#B42318;color:#fff}
+.fb{padding-left:36px;color:#3A4651;font-size:16px}
+.summary{display:flex;align-items:center;gap:12px;border-radius:10px;padding:12px 16px;font-weight:700}
+.summary.ok{background:#EAF6EE;color:#145F38}
+.summary.bad{background:#FBEDEB;color:#8E1B13}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+</style>
+</helmet>
+<div style="min-height:1000px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="#top">Getting the most out of agents</a>
+    <span class="muted small">Module 00 · What works and what doesn't</span>
+    <span style="flex-grow:1"></span>
+    <span class="muted small">Screen 3 of 8</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <p class="eyebrow">Try it</p>
+      <h1 style="font-size:34px">Tick everything that went wrong here.</h1>
+    </div>
+    <div class="quote">
+      <p>"Done! I've built a fridge activity. It has five shelves and fourteen food items, a 15-second timer to keep it exciting, a leaderboard so learners can compete, and confetti when they finish. I assumed the standard fridge rules. I ran through it myself and it works great. Want me to add sound effects?"</p>
+      <p class="small" style="margin-top:10px;color:#AEB6BF">The agent</p>
+    </div>
+
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{opts}}" as="o" hint-placeholder-count="5">
+        <div class="opt {{o.cls}}">
+          <label class="row">
+            <input type="checkbox" checked="{{o.on}}" disabled="{{checked}}" onChange="{{o.toggle}}">
+            <span class="lbl">{{o.label}}</span>
+            <sc-if value="{{o.showTag}}" hint-placeholder-val="{{true}}">
+              <span class="tag {{o.tagCls}}">
+                <sc-if value="{{o.good}}" hint-placeholder-val="{{true}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                <sc-if value="{{o.notGood}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"></path></svg></sc-if>
+                {{o.tag}}
+              </span>
+            </sc-if>
+          </label>
+          <sc-if value="{{o.showTag}}" hint-placeholder-val="{{true}}">
+            <p class="fb">{{o.feedback}}</p>
+          </sc-if>
+        </div>
+      </sc-for>
+
+      <sc-if value="{{checked}}" hint-placeholder-val="{{true}}">
+        <p class="summary {{summaryCls}}" role="status">{{summary}}</p>
+      </sc-if>
+
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <sc-if value="{{notChecked}}" hint-placeholder-val="{{false}}">
+          <button class="btn primary" disabled="{{nothingPicked}}" onClick="{{check}}">Check</button>
+          <span class="muted small">Tick at least one first.</span>
+        </sc-if>
+        <sc-if value="{{checked}}" hint-placeholder-val="{{true}}">
+          <button class="btn ghost" onClick="{{tryAgain}}">Try again</button>
+        </sc-if>
+      </div>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="#top">Back</a>
+    <span class="muted small">00 · screen 3 of 8</span>
+    <a class="btn primary" href="#top">Next: try what it built</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { picked: [0, 1, 2], checked: true };
+  }
+  renderVals() {
+    const s = this.state;
+    const options = [
+      { label: 'It built things nobody asked for: the timer, the leaderboard, the confetti.', right: true, feedback: 'Yes. Every gap in your ask was filled with a guess, and the guesses were fun rather than right.' },
+      { label: 'It invented the rules.', right: true, feedback: 'Yes. "I assumed the standard fridge rules" means it decided what the client\'s course teaches.' },
+      { label: 'It checked its own work.', right: true, feedback: 'Yes. "I ran through it myself and it works great" is the builder marking its own homework.' },
+      { label: 'It should have said no.', right: false, feedback: 'No. It did nothing wrong by building; the ask left it nothing to build to.' },
+      { label: 'It was too slow.', right: false, feedback: 'No. It was fast. Speed is not the problem; direction is.' }
+    ];
+    let correct = 0, wrongTicks = 0, missed = 0;
+    const opts = options.map((o, i) => {
+      const on = s.picked.indexOf(i) !== -1;
+      let cls = on ? 'on' : '', tag = '', tagCls = '', good = true;
+      if (s.checked) {
+        if (on && o.right) { cls = 'ok'; tag = 'Right to tick'; tagCls = 'ok'; correct += 1; }
+        else if (!on && !o.right) { cls = 'left'; tag = 'Right to leave it'; tagCls = 'ok'; correct += 1; }
+        else if (on && !o.right) { cls = 'bad'; tag = 'Shouldn\'t be ticked'; tagCls = 'bad'; good = false; wrongTicks += 1; }
+        else { cls = 'missed'; tag = 'Missed: this went wrong too'; tagCls = 'bad'; good = false; missed += 1; }
+      }
+      return {
+        label: o.label, feedback: o.feedback, on: on, cls: cls, tag: tag, tagCls: tagCls,
+        showTag: s.checked, good: good, notGood: !good,
+        toggle: () => {
+          if (this.state.checked) return;
+          const p = this.state.picked.slice();
+          const at = p.indexOf(i);
+          if (at === -1) p.push(i); else p.splice(at, 1);
+          this.setState({ picked: p });
+        }
+      };
+    });
+    const total = options.length;
+    let summary;
+    if (correct === total) summary = total + ' of ' + total + ' right. You ticked the three that went wrong and left the two that didn\'t.';
+    else {
+      const parts = [];
+      if (wrongTicks > 0) parts.push(wrongTicks === 1 ? 'one tick shouldn\'t be there' : wrongTicks + ' ticks shouldn\'t be there');
+      if (missed > 0) parts.push(missed === 1 ? 'you missed one that went wrong' : 'you missed ' + missed + ' that went wrong');
+      const text = parts.join(', and ');
+      summary = correct + ' of ' + total + ' right: ' + text + '.';
+    }
+    return {
+      opts: opts, checked: s.checked, notChecked: !s.checked, nothingPicked: s.picked.length === 0,
+      summary: summary, summaryCls: correct === total ? 'ok' : 'bad',
+      check: () => this.setState({ checked: true }),
+      tryAgain: () => this.setState({ picked: [], checked: false })
+    };
+  }
+}
+</script>
+</body>
+</html>
