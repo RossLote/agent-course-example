@@ -264,6 +264,8 @@ const chooseScreen = z
       })
       .optional(),
     checkLabel: text.optional(),
+    /** The button once checked; "Try again" if absent. */
+    tryAgainLabel: text.optional(),
     side,
   })
   .superRefine((c, ctx) => {
@@ -293,6 +295,8 @@ const matchScreen = z
     /** Each row's `key` is the id of its right target; its feedback shows once checked. */
     rows: z.array(z.strictObject({ text, key: slug, feedback: text })).min(1),
     checkLabel: text.optional(),
+    /** The button once checked; "Try again" if absent. */
+    tryAgainLabel: text.optional(),
     side,
   })
   .superRefine((m, ctx) => {
@@ -315,6 +319,8 @@ const orderScreen = z
     /** The order the cards start in: every card id once, never the correct order. */
     start: z.array(slug).min(2),
     checkLabel: text.optional(),
+    /** The button once checked; "Try again" if absent. */
+    tryAgainLabel: text.optional(),
     side,
   })
   .superRefine((o, ctx) => {

@@ -2,12 +2,12 @@ import { useId, useRef, useState, type KeyboardEvent } from 'react';
 import { plainText } from '../../content/copy.ts';
 import type { ScreenOf } from '../../content/index.ts';
 import { Announce } from '../parts/Announce.tsx';
-import { CheckButton } from '../parts/CheckButton.tsx';
+import { CheckButton, CheckResult } from '../parts/CheckButton.tsx';
 import { DragGhost } from '../parts/DragGhost.tsx';
 import { Mark } from '../parts/Tone.tsx';
 import { useFocusAfterRender } from '../parts/useFocusAfterRender.ts';
 import { usePointerDrag } from '../parts/usePointerDrag.ts';
-import { savedField } from '../saved.ts';
+import { fittingList, savedField } from '../saved.ts';
 import { Blocks } from '../scene/Blocks.tsx';
 import { Copy } from '../scene/Copy.tsx';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
@@ -29,15 +29,13 @@ interface Held {
 const HINT = 'Drag a card into place, or click it and then the card whose place it takes. With the keyboard: Enter picks a card up, the arrow keys move it, Enter drops it, Escape puts it back.';
 
 /**
- * The order a saved answer holds, or undefined when there is none. Any saved answer renders the
- * screen checked; one that is not every card id once renders the starting order.
+ * The order a saved answer holds, or undefined when there is none or it does not fit the screen
+ * (saved.ts): every card id once.
  */
 function savedOrder(saved: SavedAnswer | undefined, screen: Order): string[] | undefined {
-  if (saved === undefined) return undefined;
-  const order = savedField(saved, 'order');
-  const ids = Array.isArray(order) ? order.filter((id): id is string => typeof id === 'string') : [];
-  const whole = ids.length === screen.cards.length && screen.cards.every((card) => ids.includes(card.id));
-  return whole ? ids : [...screen.start];
+  const isCard = (id: unknown): id is string => typeof id === 'string' && screen.cards.some((card) => card.id === id);
+  const order = fittingList(savedField(saved, 'order'), isCard, screen.cards.length);
+  return order !== undefined && new Set(order).size === order.length ? order : undefined;
 }
 
 /** A card's name in the status line: its label up to the first colon or comma ("Retro"). */
@@ -61,7 +59,8 @@ function moveTo(order: readonly string[], id: string, index: number): string[] {
  * learner left them.
  *
  * An order is always scored: `answered` on every Check press, a point per card in its place.
- * The saved answer is `{order}`, and the screen renders from it checked.
+ * The saved answer is `{order}`, and the screen renders from it checked (unanswered when it does
+ * not fit).
  */
 export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'order'>) {
   const { cards } = screen;
@@ -168,7 +167,7 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
           ref={root}
           className="order-list"
           aria-labelledby={screen.prompt !== undefined ? promptId : undefined}
-          aria-label={screen.prompt === undefined ? screen.heading : undefined}
+          aria-label={screen.prompt === undefined ? plainText(screen.heading) : undefined}
         >
           {order.map((id, i) => {
             const right = cards[i].id === id;
@@ -218,10 +217,8 @@ export function OrderScreen({ screen, progress, saved, onEvent }: ScreenProps<'o
         </ol>
         <Announce words={said.words} turn={said.turn} className="order-status" />
         <div className="choice-actions">
-          <CheckButton checked={checked} label={screen.checkLabel} onCheck={check} onTryAgain={() => setChecked(false)} />
-          <p className="check-result" role="status">
-            {checked && `${inPlace} of ${cards.length} in the right place`}
-          </p>
+          <CheckButton checked={checked} label={screen.checkLabel} tryAgainLabel={screen.tryAgainLabel} onCheck={check} onTryAgain={() => setChecked(false)} />
+          <CheckResult>{checked && `${inPlace} of ${cards.length} in the right place`}</CheckResult>
         </div>
       </div>
       {drag !== null && <DragGhost drag={drag}>{shortName(card(drag.item))}</DragGhost>}

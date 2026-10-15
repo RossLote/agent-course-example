@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { course, type ScreenOf } from '../../content/index.ts';
 import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
@@ -138,9 +138,23 @@ describe('MatchScreen, from a saved answer', () => {
     expect(onEvent).not.toHaveBeenCalled();
   });
 
-  it('renders any saved answer checked, a pick that is not a target counting as none', () => {
-    const { container } = renderMatch('04', 'who-catches-it', { picks: ['simplify', 'nonsense'] });
-    expect(states(container)).toEqual(['right', 'wrong', 'wrong', 'wrong']);
-    expect(screen.getByRole('status').textContent).toBe('1 out of 4 right');
+  it('renders unanswered from a saved answer that does not fit: the wrong shape, the wrong length, a pick that is not a target', () => {
+    const misfits: SavedAnswer[] = [
+      'placeholder',
+      { picks: 'simplify' },
+      { picks: ['simplify', 'review'] },
+      { picks: ['simplify', 'review', 'adversarial', 'nonsense'] },
+      { picks: ['simplify', 'review', 'adversarial', null] },
+    ];
+    for (const saved of misfits) {
+      const { container, onEvent } = renderMatch('04', 'who-catches-it', saved);
+      expect(states(container), JSON.stringify(saved)).toEqual(['none', 'none', 'none', 'none']);
+      expect(screen.getAllByRole('radio').some((r) => (r as HTMLInputElement).checked)).toBe(false);
+      expect(screen.getByText('0 of 4 answered')).toBeTruthy();
+      expect(screen.getByRole('status').textContent).toBe('');
+      expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+      expect(onEvent).not.toHaveBeenCalled();
+      cleanup();
+    }
   });
 });

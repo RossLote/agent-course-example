@@ -15,9 +15,7 @@ screens:
           - value: 39
             caption: fixed
       - type: paragraph
-        text: >-
-          A public project of Ross's, a presentation, built in October 2026. The gate catches what
-          a test can describe; these took other agents reading with a question in mind.
+        text: A public project of Ross's, October 2026.
       - type: paragraph
         text: >-
           Every one of those sixteen pieces passed its gate. The gate catches what a test can
@@ -181,6 +179,7 @@ screens:
           Allowed, and never wrong to say. But you were shown line 41; the honest reading here is
           confirmed. Uncertain is for when you cannot find the line either way.
     checkLabel: Check my verdict
+    tryAgainLabel: Try another verdict
     nav: your verdict
     side:
       - type: list
@@ -247,6 +246,7 @@ screens:
     heading: >-
       A skeptic writes: "Refuted. The framework handles this." No line is cited. What is
       recorded?
+    intro: Every module ends with two of these. Each option tells you why, right or wrong.
     nav: check
     options:
       - label: Refuted; frameworks do handle things.
@@ -280,6 +280,7 @@ screens:
         feedback: The record already decided. Reverted.
 
   - type: takeaway
+    eyebrow: Takeaway
     nav: takeaway
     text: >-
       **The same kind of agent that guessed in module 00 is a sharp reviewer, given one question

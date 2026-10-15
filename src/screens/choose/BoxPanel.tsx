@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { fillTemplate } from '../../content/copy.ts';
+import { fillTemplate, plainText } from '../../content/copy.ts';
 import type { ScreenOf } from '../../content/index.ts';
 import { Copy } from '../scene/Copy.tsx';
 
@@ -20,11 +20,11 @@ function corners(sides: number): [number, number][] {
   });
 }
 
-/** The box in words, its text alternative: the walls up and the walls still down. */
+/** The box in words, its text alternative (plain text, as a title is): the walls up and the walls still down. */
 function describe(box: Box, up: ReadonlySet<string>): string {
-  const raised = box.walls.filter((w) => up.has(w.id)).map((w) => w.label);
-  const down = box.walls.filter((w) => !up.has(w.id)).map((w) => w.label);
-  const parts = [`The box round ${box.builder.title}: ${raised.length} of ${box.walls.length} walls up.`];
+  const raised = box.walls.filter((w) => up.has(w.id)).map((w) => plainText(w.label));
+  const down = box.walls.filter((w) => !up.has(w.id)).map((w) => plainText(w.label));
+  const parts = [`The box round ${plainText(box.builder.title)}: ${raised.length} of ${box.walls.length} walls up.`];
   if (raised.length > 0) parts.push(`Up: ${raised.join('; ')}.`);
   if (down.length > 0) parts.push(`Not up: ${down.join('; ')}.`);
   return parts.join(' ');
@@ -46,11 +46,11 @@ export function BoxPanel({ box, up }: { box: Box; up: ReadonlySet<string> }) {
         <title id={titleId}>{describe(box, up)}</title>
         <rect className="choose-box-builder" x={CENTRE - 70} y={CENTRE - 42} width={140} height={84} rx={12} />
         <text className="choose-box-title" x={CENTRE} y={box.builder.subtitle === undefined ? CENTRE : CENTRE - 10}>
-          {box.builder.title}
+          {plainText(box.builder.title)}
         </text>
         {box.builder.subtitle !== undefined && (
           <text className="choose-box-subtitle" x={CENTRE} y={CENTRE + 14}>
-            {box.builder.subtitle}
+            {plainText(box.builder.subtitle)}
           </text>
         )}
         {box.walls.map((wall, i) => {
@@ -72,7 +72,7 @@ export function BoxPanel({ box, up }: { box: Box; up: ReadonlySet<string> }) {
         {box.walls.map((wall, i) => (
           <li key={wall.id} data-state={up.has(wall.id) ? 'up' : 'down'}>
             <span className="choose-box-key-number">{i + 1}</span>
-            {wall.label}
+            <Copy text={wall.label} />
           </li>
         ))}
       </ol>

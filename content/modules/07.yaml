@@ -108,7 +108,7 @@ screens:
 
   - type: scene
     eyebrow: Capstone
-    heading: Your score, and the box
+    heading: Your score
     nav: your score
     blocks:
       - type: stats
@@ -141,8 +141,11 @@ screens:
               "Show me it doing step 2" beats "tell me it works".
 
   - type: takeaway
+    eyebrow: Takeaway
     nav: the end
-    text: "**That is the whole workflow.** Everything else is detail."
+    text: >-
+      **Lay out the loop for a new request.** For each thing that goes wrong, name the wall that
+      handles it.
     caption: The complete box, with the arrow of the retro round it.
     end:
       - type: paragraph

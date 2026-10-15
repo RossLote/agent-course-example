@@ -110,8 +110,8 @@ screens:
           - "Press Try again: the tray is full and the score is cleared."
       - type: paragraph
         text: >-
-          Done means: every step of this script performed in a browser and recorded, with all the
-          checks green. Not "the agent says so".
+          Every step performed in a browser and recorded, with all the checks green. Not "the
+          agent says so".
 
   - type: choose
     slug: write-the-acceptance

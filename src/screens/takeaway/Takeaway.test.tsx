@@ -30,6 +30,11 @@ describe('TakeawayScreen', () => {
     expect(screen.getByText('The caption.')).toBeTruthy();
   });
 
+  it('renders the eyebrow as copy', () => {
+    renderTakeaway('00', takeaway({ eyebrow: '*The* takeaway' }));
+    expect(screen.getByText('takeaway', { exact: false, selector: '.eyebrow' }).innerHTML).toBe('<em>The</em> takeaway');
+  });
+
   it('reports the takeaway reached when it is shown', () => {
     const { onEvent } = renderTakeaway('00');
     expect(onEvent).toHaveBeenCalledWith({ type: 'takeaway-reached' });

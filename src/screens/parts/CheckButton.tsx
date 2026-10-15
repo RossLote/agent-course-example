@@ -1,4 +1,5 @@
-import { useId } from 'react';
+import { useId, type ReactNode } from 'react';
+import { Copy } from '../scene/Copy.tsx';
 import './CheckButton.css';
 
 interface CheckButtonProps {
@@ -9,6 +10,8 @@ interface CheckButtonProps {
   hint?: string;
   /** The content's `checkLabel`, when it has one. */
   label?: string;
+  /** The content's `tryAgainLabel`, when it has one. */
+  tryAgainLabel?: string;
   onCheck: () => void;
   onTryAgain: () => void;
 }
@@ -16,9 +19,10 @@ interface CheckButtonProps {
 /**
  * Check, and once checked Try again: one button that turns from one into the other and back, so
  * focus stays on it. While there is nothing to check it is aria-disabled (still focusable) and
- * its hint says why. Choose, match and order all use it.
+ * its hint says why. Both labels are copy, from the content when it gives them. Choose, match
+ * and order all use it.
  */
-export function CheckButton({ checked, waiting = false, hint, label, onCheck, onTryAgain }: CheckButtonProps) {
+export function CheckButton({ checked, waiting = false, hint, label, tryAgainLabel, onCheck, onTryAgain }: CheckButtonProps) {
   const hintId = useId();
   const idle = !checked && waiting;
   return (
@@ -30,7 +34,7 @@ export function CheckButton({ checked, waiting = false, hint, label, onCheck, on
         aria-describedby={idle && hint !== undefined ? hintId : undefined}
         onClick={checked ? onTryAgain : idle ? undefined : onCheck}
       >
-        {checked ? 'Try again' : (label ?? 'Check my answer')}
+        <Copy text={checked ? (tryAgainLabel ?? 'Try again') : (label ?? 'Check my answer')} />
       </button>
       {hint !== undefined && (
         <span id={hintId} hidden>
@@ -38,5 +42,18 @@ export function CheckButton({ checked, waiting = false, hint, label, onCheck, on
         </span>
       )}
     </>
+  );
+}
+
+/**
+ * The result beside the Check button (match and order), and its polite live region. It is in
+ * the page from the start, empty until Check fills it, so a screen reader is listening before the
+ * first result arrives; it is never hidden while empty.
+ */
+export function CheckResult({ children }: { children: ReactNode }) {
+  return (
+    <p className="check-result" role="status">
+      {children}
+    </p>
   );
 }

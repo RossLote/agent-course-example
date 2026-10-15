@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { course } from '../../content/index.ts';
 import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
@@ -132,6 +132,36 @@ describe('BriefScreen, the fridge brief (module 01)', () => {
     expect(screen.queryByRole('button', { name: 'Your defaults' })).toBeNull();
   });
 
+  it('moves focus to round two\'s playback message when the last chip of round one opens it', () => {
+    renderBrief();
+    const round1Groups = questions();
+    round1Groups.slice(0, 4).forEach((group) => fireEvent.click(chipsOf(group)[0]));
+    expect(document.activeElement).toBe(document.body);
+    fireEvent.click(chipsOf(round1Groups[4])[0]);
+    const playback = screen.getByText(round2.message).closest('li');
+    expect(playback?.getAttribute('tabindex')).toBe('-1');
+    expect(document.activeElement).toBe(playback);
+  });
+
+  it('moves focus to the closing message when the last chip closes the brief, and not on a re-pick after', () => {
+    renderBrief();
+    pickFirstOfRoundOne();
+    const round2Groups = questions().slice(5);
+    round2Groups.slice(0, 2).forEach((group) => fireEvent.click(chipsOf(group)[1]));
+    const playback = screen.getByText(round2.message).closest('li');
+    expect(document.activeElement).toBe(playback);
+    fireEvent.click(chipsOf(round2Groups[2])[1]);
+    const closing = screen.getByText(brief.closing).closest('li');
+    expect(closing?.getAttribute('tabindex')).toBe('-1');
+    expect(document.activeElement).toBe(closing);
+
+    // A re-pick once closed opens nothing, so focus stays where it is.
+    const chip = chipsOf(questions()[0])[2];
+    chip.focus();
+    fireEvent.click(chip);
+    expect(document.activeElement).toBe(chip);
+  });
+
   it('replaces the line and sends again on a re-pick; the same chip again sends nothing', () => {
     const onEvent = renderBrief();
     pickFirstOfRoundOne();
@@ -165,10 +195,29 @@ describe('BriefScreen, the fridge brief (module 01)', () => {
     expect(onEvent).not.toHaveBeenCalled();
   });
 
-  it('renders a part-saved answer part-filled, dropping picks that are not chips', () => {
-    renderBrief({ picked: [0, 9, 1], defaults: false });
+  it('renders a part-saved answer part-filled', () => {
+    renderBrief({ picked: [0, null, 1, null, null, null, null, null], defaults: false });
     expect(note()).toMatch(/^2 of 8 decisions\./);
     expect(decisions()[1]).toBe('D2waiting for question 2');
     expect(questions()).toHaveLength(5);
+  });
+
+  it('renders unanswered from a saved answer that does not fit: the wrong shape, the wrong length, a pick that is not a chip', () => {
+    const misfits: SavedAnswer[] = [
+      'placeholder',
+      { picked: [0, 9, 1], defaults: false },
+      { picked: [0, 0, 0, 0, 0, 0, 0, 0, 0], defaults: false },
+      { picked: [0, 9, 1, null, null, null, null, null], defaults: false },
+      { picked: [0, 0, 0, 0, 0, null, null, null] },
+      { picked: [0, 0, 0, 0, 0, null, null, null], defaults: true },
+    ];
+    for (const saved of misfits) {
+      const onEvent = renderBrief(saved);
+      expect(note(), JSON.stringify(saved)).toMatch(/^0 of 8 decisions\./);
+      expect(questions()).toHaveLength(5);
+      expect(screen.queryByText('Your defaults.')).toBeNull();
+      expect(onEvent).not.toHaveBeenCalled();
+      cleanup();
+    }
   });
 });

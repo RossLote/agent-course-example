@@ -160,7 +160,9 @@ function BlockView({ block, progress, level }: { block: Block; progress: ModuleP
           <ul className="block-stats-items">
             {block.items.map((item, i) => (
               <li key={i}>
-                <span className="block-stat-value">{statValue(item, progress)}</span>
+                <span className="block-stat-value">
+                  <Copy text={statValue(item, progress)} />
+                </span>
                 <span className="block-stat-caption">
                   <Copy text={item.caption} />
                 </span>
@@ -172,7 +174,9 @@ function BlockView({ block, progress, level }: { block: Block; progress: ModuleP
     case 'aside':
       return (
         <div className="block block-aside" role="note">
-          <dfn className="block-aside-term">{block.term}</dfn>
+          <dfn className="block-aside-term">
+            <Copy text={block.term} />
+          </dfn>
           <p>
             <Copy text={block.text} />
           </p>
@@ -181,7 +185,7 @@ function BlockView({ block, progress, level }: { block: Block; progress: ModuleP
   }
 }
 
-/** A stats item's number: its value, or the module's score so far, "14 out of 14". */
+/** A stats item's number, as copy: its value, or the module's score so far, "14 out of 14". */
 function statValue(item: StatsItem, progress: ModuleProgress): string {
   if ('score' in item) return `${progress.score.raw} out of ${progress.score.max}`;
   return String(item.value);
@@ -193,7 +197,9 @@ function ListLine({ item, number }: { item: ListItem; number?: number }) {
   return (
     <li className="block-list-item" data-tone={tone}>
       {marker !== undefined ? (
-        <span className="block-list-marker">{marker}</span>
+        <span className="block-list-marker">
+          <Copy text={marker} />
+        </span>
       ) : (
         <span className="block-list-marker" aria-hidden="true">
           {number ?? '•'}

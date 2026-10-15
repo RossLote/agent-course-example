@@ -260,6 +260,8 @@ option, a multi choice at least one. Optional extras:
 - `box`: the box panel beside the options (module 03). Each option may name the `wall` it
   draws while ticked; `caption` is a template with `{up}` and `{total}`.
 - `checkLabel`: the Check button's text, "Check my answer" if absent.
+- `tryAgainLabel`: the same button's text once checked, "Try again" if absent (module 04's
+  verdict: "Try another verdict"). Match and order take both labels too.
 
 A check:
 
@@ -406,11 +408,14 @@ difference.
 
 The module's last screen, and the only one without a heading: the card, and the box with
 this module's wall gained (from course.yaml's `wall`). Reaching it completes the module.
-`end` holds blocks shown after the card (module 07's end copy).
+Of the fields every other screen has, it takes `eyebrow` (every module's reads "Takeaway")
+and `nav`. `end` holds blocks shown after the card (module 07's end copy).
 
 ```yaml
 # screen
 - type: takeaway
+  eyebrow: Takeaway
+  nav: takeaway
   text: "**The builder is the worst judge of its own work.** Everything that follows is about putting walls round the builder and letting the reviewers in."
   caption: The box gains nothing yet; the next module adds the first wall.
   end:                       # optional

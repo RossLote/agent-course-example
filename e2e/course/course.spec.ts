@@ -212,7 +212,7 @@ test('the whole course in preview sends every statement, in order, and comes bac
   const refuted = await choose(page, 'Refuted: there is a test for wrong drops (C).', 'Check my verdict');
   await expect(refuted).toHaveAttribute('data-state', 'wrong');
   await expect(refuted).toContainText('Not a refutation.');
-  await page.getByRole('button', { name: 'Try again' }).click();
+  await page.getByRole('button', { name: 'Try another verdict' }).click();
   await expect(await choose(page, 'Confirmed, citing A.', 'Check my verdict')).toHaveAttribute('data-state', 'right');
   await expect(page.getByText('The fix', { exact: true })).toBeVisible();
   await next(page, 'Who catches it?');
@@ -324,11 +324,11 @@ test('the whole course in preview sends every statement, in order, and comes bac
     'Check my answers',
   );
   await expect(page.getByRole('status').filter({ hasText: 'right' })).toHaveText('6 out of 6 right');
-  await next(page, 'Your score, and the box');
+  await next(page, 'Your score');
   await expect(page.locator('.block-stat-value')).toHaveText('14 out of 14');
   await next(page, 'Try this tomorrow');
   await expect(page.locator('.block-card')).toHaveCount(4);
-  await next(page, /^That is the whole workflow\./);
+  await next(page, /^Lay out the loop for a new request\./);
   await expect(solidWalls(page)).toHaveCount(5);
   await expect(page.locator('svg.box-drawing')).toHaveAttribute('data-ring', 'true');
   await expect(page.getByText('This course was built the way it describes')).toBeVisible();

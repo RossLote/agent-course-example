@@ -3,6 +3,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { course } from '../../content/index.ts';
 import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
+import { BoxPanel } from './BoxPanel.tsx';
 import { ChooseScreen } from './index.tsx';
 
 // The real modules, as authored.
@@ -199,7 +200,7 @@ describe('ChooseScreen, the verdict (module 04)', () => {
     expect(screen.getByRole('group', { name: 'Your verdict?' })).toBeTruthy();
   });
 
-  it('shows a wrong verdict its feedback and Try again, with no fix', () => {
+  it('shows a wrong verdict its feedback and "Try another verdict", with no fix', () => {
     const { container, onEvent } = renderChoose('04', 'verdict');
     pick('Refuted: there is a test for wrong drops (C).');
     press('Check my verdict');
@@ -212,20 +213,30 @@ describe('ChooseScreen, the verdict (module 04)', () => {
       response: 'Refuted: there is a test for wrong drops (C).',
       answer: { picked: [1] },
     });
-    expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Try another verdict' })).toBeTruthy();
   });
 
   it('reveals the fix on the right verdict', () => {
     const { container } = renderChoose('04', 'verdict');
     pick('Refuted: there is a test for wrong drops (C).');
     press('Check my verdict');
-    press('Try again');
+    press('Try another verdict');
     pick('Confirmed, citing A.');
     expect(screen.queryByRole('heading', { name: 'The fix' })).toBeNull();
     press('Check my verdict');
     expect(states(container)).toEqual(['right', 'dim', 'dim', 'dim']);
     expect(screen.getByRole('heading', { name: 'The fix' })).toBeTruthy();
     expect(screen.getByText(/The second skeptic also confirmed/)).toBeTruthy();
+  });
+});
+
+describe('BoxPanel', () => {
+  it('names its walls as copy in the key, and in plain words in the drawing', () => {
+    const box = { builder: { title: 'the *builder*', subtitle: 'bead **.4**' }, walls: [{ id: 'gate', label: 'the *gate*' }, { id: 'area', label: 'its own area' }], caption: '{up} of {total} walls up.' };
+    const { container } = render(<BoxPanel box={box} up={new Set(['gate'])} />);
+    expect(container.querySelector('.choose-box-key li')?.innerHTML).toBe('<span class="choose-box-key-number">1</span>the <em>gate</em>');
+    expect(screen.getByRole('img').textContent).toContain('The box round the builder: 1 of 2 walls up. Up: the gate. Not up: its own area.');
+    expect([...container.querySelectorAll('svg > text')].map((t) => t.textContent)).toEqual(['the builder', 'bead .4']);
   });
 });
 
@@ -236,7 +247,7 @@ describe('ChooseScreen, from a saved answer', () => {
     expect(states(container)).toEqual(['right', 'dim', 'dim', 'dim']);
     expect(screen.getByText(/^Yes\. Line 41 returns/)).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'The fix' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Try another verdict' })).toBeTruthy();
     expect(onEvent).not.toHaveBeenCalled();
   });
 
@@ -251,13 +262,24 @@ describe('ChooseScreen, from a saved answer', () => {
     expect(caption()).toMatch(/^2 of 4/);
   });
 
-  it('renders any saved answer checked, dropping what is not an option', () => {
-    const { container, unmount } = renderChoose('00', 'check-1', 'placeholder');
-    expect(states(container)).toEqual(['dim', 'dim', 'dim']);
-    expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy();
-    unmount();
-
-    const { container: other } = renderChoose('00', 'check-1', { picked: [7, 2] });
-    expect(states(other)).toEqual(['dim', 'dim', 'wrong']);
+  it('renders unanswered from a saved answer that does not fit: the wrong shape, a position that is not an option, the wrong count', () => {
+    const misfits: [string, SavedAnswer][] = [
+      ['check-1', 'placeholder'],
+      ['check-1', { picked: 2 }],
+      ['check-1', { picked: [7, 2] }],
+      ['check-1', { picked: [5] }],
+      ['check-1', { picked: [0, 2] }],
+      ['check-1', { picked: [] }],
+      ['what-went-wrong', { picked: [] }],
+      ['what-went-wrong', { picked: [1, 1] }],
+    ];
+    for (const [slug, saved] of misfits) {
+      const { container, unmount } = renderChoose('00', slug, saved);
+      expect(states(container), JSON.stringify(saved)).toEqual(states(container).map(() => 'none'));
+      expect(screen.getByRole('button', { name: 'Check my answer' }).getAttribute('aria-disabled')).toBe('true');
+      expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+      expect(screen.getByRole('status').textContent).toBe('');
+      unmount();
+    }
   });
 });
