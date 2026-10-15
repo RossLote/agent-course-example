@@ -51,8 +51,8 @@ describe('HomePage', () => {
     const cards = within(modules).getAllByRole('link');
     expect(cards.map((a) => a.getAttribute('href'))).toEqual(['#/modules/00/1', '#/modules/01/1']);
     expect(within(cards[0]).getByRole('heading', { level: 3 }).textContent).toBe('First module');
-    expect(cards[0].textContent).toBe('00 · 5 minFirst moduleno wallThe first blurb.Not started');
-    expect(cards[1].textContent).toBe('01 · 7 minSecond modulewall 1The second blurb.Done');
+    expect(cards[0].textContent).toBe('00 · 5 minNot startedFirst moduleno wallThe first blurb.');
+    expect(cards[1].textContent).toBe('01 · 7 minDoneSecond modulewall 1The second blurb.');
   });
 
   it('puts the meta and the leave line in the top bar, and "n of m done" once a module is done', () => {
@@ -71,6 +71,17 @@ describe('HomePage', () => {
     render(<HomePage course={course} statuses={{ '00': 'in-progress', '01': 'not-started' }} />);
     const cards = within(screen.getByRole('region', { name: 'The modules here' })).getAllByRole('link');
     expect(cards.map((card) => card.querySelector('.module-card-status')?.textContent)).toEqual(['In progress', 'Not started']);
+  });
+
+  it('marks a done card in the data (green border) and puts a hidden tick in its pill, none in the others', () => {
+    render(<HomePage course={course} statuses={{ '00': 'done', '01': 'in-progress' }} />);
+    const cards = within(screen.getByRole('region', { name: 'The modules here' })).getAllByRole('link');
+    expect(cards.map((card) => card.getAttribute('data-status'))).toEqual(['done', 'in-progress']);
+    const pill = (card: HTMLElement) => card.querySelector('.module-card-status') as HTMLElement;
+    expect(pill(cards[0]).querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+    expect(pill(cards[0]).textContent).toBe('Done');
+    expect(pill(cards[1]).querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+    expect(cards.every((card) => card.lastElementChild?.className !== 'module-card-status')).toBe(true);
   });
 
   it('starts, continues where the learner got to, or reviews from the first module', () => {

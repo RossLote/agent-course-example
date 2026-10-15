@@ -1,6 +1,7 @@
 import type { Course, ModuleEntry } from '../../content/index.ts';
 import type { HomeNext, ModuleStatus } from '../../progress/progress.ts';
 import { Quote } from '../../screens/parts/Quote.tsx';
+import { ToneIcon } from '../../screens/parts/Tone.tsx';
 import { BoxDiagram } from '../box/BoxDiagram.tsx';
 import { formatRoute } from '../route.ts';
 import { TopBar } from '../TopBar.tsx';
@@ -16,19 +17,40 @@ export interface ModuleCardProps {
   status?: ModuleStatus;
 }
 
-/** One module on the home page, a link that opens it at its first screen. */
+/** A half-filled ring: under way. Decorative; the pill's words say the status. */
+function GoingIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" focusable="false" aria-hidden="true">
+      <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" strokeWidth="2.6" />
+      <path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** The status pill in a card's top row: an icon (done, under way) and the words, never colour alone (D14). */
+function StatusPill({ status }: { status: ModuleStatus }) {
+  return (
+    <span className="module-card-status" data-status={status}>
+      {status === 'done' && <ToneIcon tone="right" />}
+      {status === 'in-progress' && <GoingIcon />}
+      {STATUS_LABELS[status]}
+    </span>
+  );
+}
+
+/** One module on the home page, a link that opens it at its first screen; a done one has a green border. */
 export function ModuleCard({ module, status = 'not-started' }: ModuleCardProps) {
   return (
-    <a className="module-card" href={formatRoute({ page: 'module', slug: module.slug, screen: 1 })}>
-      <span className="module-card-number">
-        {module.slug} · {module.minutes} min
+    <a className="module-card" data-status={status} href={formatRoute({ page: 'module', slug: module.slug, screen: 1 })}>
+      <span className="module-card-head">
+        <span className="module-card-number">
+          {module.slug} · {module.minutes} min
+        </span>
+        <StatusPill status={status} />
       </span>
       <h3>{module.title}</h3>
       <span className="module-card-wall">{module.wallLabel}</span>
       <span className="muted small">{module.blurb}</span>
-      <span className="module-card-status" data-status={status}>
-        {STATUS_LABELS[status]}
-      </span>
     </a>
   );
 }

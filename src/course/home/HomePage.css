@@ -91,7 +91,7 @@
   flex: 1;
   flex-direction: column;
   gap: 8px;
-  min-height: 150px;
+  min-height: 170px;
   padding: 18px 20px;
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
@@ -105,8 +105,27 @@
   color: var(--ink);
 }
 
+/* A done module: a 2px green border (the padding gives the pixel back so the text does not move). */
+.module-card[data-status='done'] {
+  padding: 17px 19px;
+  border-width: 2px;
+  border-color: var(--right);
+}
+
+.module-card[data-status='done']:hover {
+  border-color: #145f38;
+}
+
 .module-card h3 {
   font-size: 18px;
+}
+
+.module-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 28px;
 }
 
 .module-card-number {
@@ -121,10 +140,31 @@
   font-weight: 700;
 }
 
+/* The status pill: solid green done, soft indigo in progress, outline muted not started. */
 .module-card-status {
-  margin-top: auto;
-  padding-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.module-card-status[data-status='done'] {
+  padding-left: 8px;
+  border-color: var(--right);
+  background: var(--right);
+  color: #fff;
+}
+
+.module-card-status[data-status='in-progress'] {
+  padding-left: 8px;
+  border-color: #c9d2f7;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
 }
