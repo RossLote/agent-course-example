@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { strToU8, zipSync } from 'fflate';
 import { ACTIVITY_TYPES } from '../../src/xapi/vocabulary.ts';
+import { readContent } from '../content.ts';
 import { checkZip } from './check.ts';
 import { escapeXml, tincanXml } from './tincan.ts';
 
@@ -65,16 +66,16 @@ describe('the zip self-check', () => {
   const sound = { 'tincan.xml': tincanXml(course), 'index.html': relativeIndex, 'assets/index-b2.css': '@font-face{src:url(./manrope.woff2)}' };
 
   it('passes a zip with tincan.xml and index.html at its root and every asset path relative', () => {
-    expect(checkZip(zipOf(sound))).toEqual([]);
+    expect(checkZip(zipOf(sound), course)).toEqual([]);
   });
 
   it('fails a zip missing tincan.xml', () => {
-    expect(checkZip(zipOf(without(sound, 'tincan.xml')))).toEqual(['tincan.xml is not at the root of the zip']);
+    expect(checkZip(zipOf(without(sound, 'tincan.xml')), course)).toEqual(['tincan.xml is not at the root of the zip']);
   });
 
   it('fails a zip missing index.html, or with the files under a folder', () => {
-    expect(checkZip(zipOf(without(sound, 'index.html')))).toEqual(['index.html is not at the root of the zip']);
-    expect(checkZip(zipOf({ 'dist/tincan.xml': sound['tincan.xml'], 'dist/index.html': relativeIndex }))).toEqual([
+    expect(checkZip(zipOf(without(sound, 'index.html')), course)).toEqual(['index.html is not at the root of the zip']);
+    expect(checkZip(zipOf({ 'dist/tincan.xml': sound['tincan.xml'], 'dist/index.html': relativeIndex }), course)).toEqual([
       'tincan.xml is not at the root of the zip',
       'index.html is not at the root of the zip',
     ]);
@@ -87,6 +88,7 @@ describe('the zip self-check', () => {
         'index.html': '<script src="/assets/index-a1.js"></script><link href="https://fonts.example.com/x.css"><link href=//cdn.example.com/y.css>',
         'assets/index-b2.css': '@font-face{src:url("/assets/manrope.woff2")}',
       }),
+      course,
     );
     expect(problems).toEqual([
       'index.html references /assets/index-a1.js, which is not a relative path',
@@ -94,5 +96,28 @@ describe('the zip self-check', () => {
       'index.html references //cdn.example.com/y.css, which is not a relative path',
       'assets/index-b2.css references /assets/manrope.woff2, which is not a relative path',
     ]);
+  });
+
+  it('checks tincan.xml against course.yaml by default: its activity id, name and description, and index.html as the launch', () => {
+    const real = readContent();
+    const files = { ...sound, 'tincan.xml': tincanXml(real) };
+    expect(checkZip(zipOf(files))).toEqual([]);
+    expect(checkZip(zipOf({ ...files, 'tincan.xml': tincanXml({ ...real, id: 'https://example.com/another-course/' }) }))).toEqual([
+      `tincan.xml's activity id is "https://example.com/another-course/", not ${JSON.stringify(real.id)}`,
+    ]);
+  });
+
+  it('fails a tincan.xml that names another title, drops the description, launches another file or has no single activity', () => {
+    const xml = tincanXml(course);
+    const changed = xml
+      .replace('<name>Agents &lt;and&gt; &quot;you&quot;</name>', '<name>Agents</name>')
+      .replace(/\s*<description[^]*?<\/description>/, '')
+      .replace('<launch lang="en-US">index.html</launch>', '<launch lang="en-US">start.html</launch>');
+    expect(checkZip(zipOf({ ...sound, 'tincan.xml': changed }), course)).toEqual([
+      `tincan.xml's activity name is "Agents", not ${JSON.stringify(course.title)}`,
+      `tincan.xml's activity description is null, not ${JSON.stringify(course.description)}`,
+      `tincan.xml's activity launch is "start.html", not "index.html"`,
+    ]);
+    expect(checkZip(zipOf({ ...sound, 'tincan.xml': '<tincan><activities></activities></tincan>' }), course)).toEqual(['tincan.xml has 0 activities, not 1']);
   });
 });

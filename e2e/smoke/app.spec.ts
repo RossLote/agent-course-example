@@ -31,7 +31,14 @@ test('the app opens on the scenario, takes the job to the home page, and fetches
   expect(external).toEqual([]);
 });
 
-test('every control on the home page is reached by Tab and shows a focus ring', async ({ page }) => {
+/**
+ * Controls exempt from the 44 by 44 px target size, by the name the spec gives them: only an
+ * inline text link inside a sentence, which WCAG 2.5.8's inline exception covers and the spec
+ * confirms. None on the home page today.
+ */
+const INLINE_LINKS: readonly string[] = [];
+
+test('every control on the home page is reached by Tab, shows a focus ring and is a 44 by 44 px target', async ({ page }) => {
   await page.goto('/#/home');
   await expect(heading(page)).toHaveText(HOME_HEADING);
   const controls = await page.locator('a[href], button').count();
@@ -43,12 +50,30 @@ test('every control on the home page is reached by Tab and shows a focus ring', 
       const el = document.activeElement as HTMLElement;
       const style = getComputedStyle(el);
       const box = el.getBoundingClientRect();
-      return { name: `${el.getAttribute('href')} ${el.textContent}`, outline: style.outlineStyle, width: style.outlineWidth, height: box.height };
+      // In a sentence: an inline link with text of its own beside it in the same parent.
+      const inSentence =
+        el.tagName === 'A' &&
+        style.display === 'inline' &&
+        [...(el.parentElement?.childNodes ?? [])].some((node) => node !== el && node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
+      return {
+        name: `${el.getAttribute('href')} ${el.textContent}`,
+        outlineStyle: style.outlineStyle,
+        outlineWidth: style.outlineWidth,
+        width: box.width,
+        height: box.height,
+        inSentence,
+      };
     });
     reached.add(focused.name);
-    expect(focused.outline, focused.name).toBe('solid');
-    expect(focused.width, focused.name).toBe('3px');
-    expect(focused.height, focused.name).toBeGreaterThanOrEqual(44);
+    expect(focused.outlineStyle, focused.name).toBe('solid');
+    expect(focused.outlineWidth, focused.name).toBe('3px');
+    if (INLINE_LINKS.includes(focused.name)) {
+      expect(focused.inSentence, `${focused.name} is exempt as an inline link in a sentence`).toBe(true);
+      continue;
+    }
+    const size = `${focused.name}: ${focused.width} by ${focused.height} px`;
+    expect(focused.width, size).toBeGreaterThanOrEqual(44);
+    expect(focused.height, size).toBeGreaterThanOrEqual(44);
   }
   expect(reached.size).toBe(controls);
 });
