@@ -19,8 +19,8 @@ export default defineConfig([
     languageOptions: { globals: globals.browser },
   },
   {
-    // Tooling that runs on Node: configs and the e2e specs.
-    files: ['*.{ts,js}', 'e2e/**/*.ts'],
+    // Tooling that runs on Node: configs, the e2e specs and the scripts.
+    files: ['*.{ts,js}', 'e2e/**/*.ts', 'scripts/**/*.ts'],
     extends: [js.configs.recommended, tseslint.configs.recommended],
     languageOptions: { globals: globals.node },
   },
