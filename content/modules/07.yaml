@@ -1,119 +1,153 @@
-# Stub: placeholder screens, one of every type, so the frame can play this module before its
-# real screens arrive (bead .10 writes modules 00-03, bead .11 modules 04-07, from the
-# storyboard in docs/course/modules/). Every type is documented in content/README.md.
 slug: "07"
 screens:
   - type: scene
-    eyebrow: Placeholder
-    heading: Module 07, placeholder scene
+    eyebrow: Capstone
+    heading: A new request
     blocks:
       - type: paragraph
-        text: Placeholder copy. This module's screens come from its storyboard.
+        text: >-
+          Round two's brief is done: a hint after two wrong drops (D9), eggs in the salad drawer
+          (D10). You are setting up the work. Lay it out.
+
+  - type: order
+    slug: order-the-loop
+    eyebrow: Capstone
+    heading: Order the loop
+    intro: >-
+      Eight cards to drag into order. Keyboard: pick up with Enter, move with the arrows, drop
+      with Enter.
+    cards:
+      - id: brief
+        label: "Brief: the agent asks, you decide, D9 and D10 on the record."
+        feedback: The brief comes first; everything after it builds to the record.
+      - id: epic
+        label: "Epic: the pieces, each with acceptance, and the demo script."
+        feedback: The epic comes after the brief and before its review.
+      - id: epic-review
+        label: "Epic review: gaps found while they cost a sentence."
+        feedback: >-
+          The epic review comes before the build; a gap found during the build is a rebuild.
+      - id: build
+        label: "Build: workers in their boxes, gate green."
+        feedback: >-
+          The build comes after the epic review and before the reviews; there has to be
+          something to check.
+      - id: reviews
+        label: "Simplify, review, adversarial review: agents checking agents."
+        feedback: >-
+          The reviews come once the build is green, before the pull request is written; they
+          read what was built.
+      - id: pull-request
+        label: "Walkthrough and pull request: the evidence, written for you."
+        feedback: >-
+          The walkthrough and pull request come after the reviews, so the evidence is of the work
+          as it ended up.
+      - id: judge
+        label: "You judge it: door, undo, evidence against the acceptance."
+        feedback: >-
+          You judge once the pull request is written: you read the evidence against the
+          acceptance, not the code.
+      - id: retro
+        label: "Retro, over several runs: what repeats, what to change."
+        feedback: The retro comes last; it reads the runs that came before it.
+    start: [brief, epic, epic-review, build, retro, reviews, pull-request, judge]
+    checkLabel: Check the order
+    nav: order the loop
+
+  - type: match
+    slug: name-the-wall
+    scored: true
+    eyebrow: Capstone
+    heading: Name the wall
+    intro: >-
+      Round two: a hint after two wrong drops (D9), eggs in the salad drawer (D10). You laid out
+      the loop on the last screen. Now six things go wrong. For each, pick the wall that handles
+      it.
+    nav: name the wall
+    body:
+      - type: paragraph
+        heading: The loop you ordered
+        text: >-
+          brief › epic › epic review › build, in boxes › simplify · review · adversarial ›
+          walkthrough and pull request › you judge › retro
+    targets:
+      - id: record
+        label: the record
+      - id: done
+        label: done
+      - id: gate
+        label: the gate
+      - id: agents
+        label: other agents
+      - id: evidence
+        label: evidence
+      - id: arrow
+        label: the arrow
+    rows:
+      - text: The builder added a "hint streak" counter nobody asked for.
+        key: record
+        feedback: The record. A gap in the brief was filled with a guess.
+      - text: The builder says the hint is done, and you cannot say whether it is.
+        key: done
+        feedback: Done. No acceptance a reviewer can see.
+      - text: While adding the hint it changed the score screen's wording too.
+        key: gate
+        feedback: The gate. Its files were not limited, or the change was not rejected.
+      - text: The gate is green, and the hint code is a copy of the message code with one word changed.
+        key: agents
+        feedback: Other agents. Simplify's reuse question.
+      - text: It is nine in the morning and there is a forty-file change waiting.
+        key: evidence
+        feedback: Evidence. Door, undo, walkthrough against the demo script.
+      - text: >-
+          A colleague found that the hint shows after two wrong drops *of the same item*, which
+          nobody specified and no check questioned.
+        key: arrow
+        feedback: The arrow. Which check would have caught it; does it repeat; change the check.
+    checkLabel: Check my answers
+
+  - type: scene
+    eyebrow: Capstone
+    heading: Your score, and the box
+    nav: your score
+    blocks:
       - type: stats
         items:
           - score: module
-            caption: this module's score
-  - type: chat
-    slug: chat
-    heading: Placeholder chat
-    opening: A placeholder ask.
-    messages:
-      - A placeholder reply from the agent.
-    replies:
-      options:
-        - label: First reply
-          reply: The agent's scripted answer to the first reply.
-        - label: Second reply
-          reply: The agent's scripted answer to the second reply.
-  - type: brief
-    slug: brief
-    heading: Placeholder brief
-    opening: A placeholder request.
-    rounds:
-      - message: One question, with my recommended answer.
-        questions:
-          - text: The first question?
-            chips:
-              - label: The recommended answer
-                decision: The decision the recommended answer makes.
-                recommended: true
-              - label: Another answer
-                decision: The decision the other answer makes.
-      - message: Took your answer as D1. One more.
-        questions:
-          - text: The second question?
-            chips:
-              - label: The recommended answer
-                decision: The decision the recommended answer makes.
-                recommended: true
-              - label: Another answer
-                decision: The decision the other answer makes.
-    defaults:
-      label: Your defaults
-      reply: Your defaults.
-    closing: That's the brief. Two decisions on the record.
-    panel:
-      heading: The record
-      note: "{filled} of {total} decisions."
-  - type: choose
-    slug: pick
-    eyebrow: Try it
-    heading: A placeholder question?
-    scored: false
-    mode: single
-    options:
-      - label: The right answer.
-        right: true
-        feedback: Yes. Placeholder feedback.
-      - label: A wrong answer.
-        right: false
-        feedback: Placeholder feedback on the wrong answer.
-  - type: match
-    slug: match
-    heading: Placeholder match
-    scored: false
-    targets:
-      - id: first
-        label: the first target
-      - id: second
-        label: the second target
-    rows:
-      - text: A row that matches the first target.
-        key: first
-        feedback: The first target.
-      - text: A row that matches the second target.
-        key: second
-        feedback: The second target.
-  - type: order
-    slug: order
-    heading: Placeholder order
-    cards:
-      - id: one
-        label: The first card.
-        feedback: This one comes first.
-      - id: two
-        label: The second card.
-        feedback: This one comes second.
-      - id: three
-        label: The third card.
-        feedback: This one comes last.
-    start: [three, one, two]
-  - type: fridge
-    heading: Placeholder fridge
-    fridge: one-shot
-  - type: compare
-    heading: Placeholder comparison
-    left: one-shot
-    right: accepted
-    table:
-      rows:
-        - aspect: Placeholder
-          left: The one-shot.
-          right: The accepted one.
-          wall: placeholder
+            caption: your score
+      - type: paragraph
+        text: That is the whole workflow. Everything else is detail.
+
+  - type: scene
+    heading: Try this tomorrow
+    intro: Four cards for any agent, including the chat tools you already use.
+    blocks:
+      - type: cards
+        numbered: true
+        items:
+          - title: Before you ask for anything, ask it to ask you five questions first.
+            body: >-
+              Answer in a paragraph. Watch how much of what it would have guessed you had an
+              opinion on.
+          - title: Write done before it starts.
+            body: >-
+              Three things you will do and see when it is finished. Give it those, not
+              adjectives.
+          - title: When it says done, open a new chat and ask a fresh agent what is wrong with it.
+            body: Make it say where. Do not let it say "looks fine".
+          - title: Ask for the evidence, not the explanation.
+            body: >-
+              "Show me it doing step 2" beats "tell me it works".
+
   - type: takeaway
-    text: "**Placeholder takeaway.** The module's own card comes from its storyboard."
-    caption: Placeholder line under the box.
+    nav: the end
+    text: "**That is the whole workflow.** Everything else is detail."
+    caption: The complete box, with the arrow of the retro round it.
     end:
       - type: paragraph
-        text: Placeholder end copy.
+        text: >-
+          This course was built the way it describes: a brief, an epic, a run with workers in
+          their boxes, three layers of review, a recorded walkthrough, a pull request someone
+          judged. The record is in its repository. Nothing in it was one-shot.
+      - type: paragraph
+        text: "*Ross Lote's workflow; the course built with it.*"

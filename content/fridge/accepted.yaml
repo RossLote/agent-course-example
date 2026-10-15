@@ -1,25 +1,54 @@
-# Stub: a small fridge that validates, with the accepted fridge's settings. Bead .15 writes
-# the full fridge (four shelves, eight items, each with its reason) from
-# docs/course/modules/05 screen 5 and the M05-TwoFridges design board. Every field is
-# documented in content/README.md.
 title: "Module 05: what you accepted"
-caption: Placeholder. A wrong drop returns the item and says why.
+caption: >-
+  Four shelves, eight items, the client's rules. A wrong drop returns the item and says why. The
+  score is right-first-time out of eight. No timer, no leaderboard. The screen reader hears item,
+  shelf and result.
 shelves:
   - id: top
     name: Top shelf
     subtitle: ready to eat
+  - id: middle
+    name: Middle shelf
+    subtitle: cooked food and leftovers, covered
   - id: bottom
     name: Bottom shelf
     subtitle: raw meat and fish
+  - id: salad-drawer
+    name: Salad drawer
+    subtitle: fruit and veg
 items:
   - id: cheese
     name: Cheese
     shelf: top
     reason: Dairy goes on the top shelf, away from raw meat.
+  - id: yoghurt
+    name: Yoghurt
+    shelf: top
+    reason: Dairy goes on the top shelf, away from raw meat.
+  - id: cooked-chicken
+    name: Cooked chicken
+    shelf: middle
+    reason: Cooked food goes on the middle shelf, covered, above anything raw.
+  - id: leftover-lasagne
+    name: Leftover lasagne (sealed)
+    shelf: middle
+    reason: Leftovers go on the middle shelf, sealed, above anything raw.
   - id: raw-chicken
     name: Raw chicken
     shelf: bottom
     reason: Raw meat and fish go on the bottom shelf so they can't drip onto other food.
+  - id: raw-salmon
+    name: Raw salmon
+    shelf: bottom
+    reason: Raw meat and fish go on the bottom shelf so they can't drip onto other food.
+  - id: lettuce
+    name: Lettuce
+    shelf: salad-drawer
+    reason: Fruit and veg go in the salad drawer.
+  - id: tomatoes
+    name: Tomatoes
+    shelf: salad-drawer
+    reason: Fruit and veg go in the salad drawer.
 feedback: reason
 score:
   mode: right-first-time
