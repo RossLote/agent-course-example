@@ -1,0 +1,106 @@
+/* The preview's badge, its statements button and the drawer (src/course/tracking.tsx). */
+
+.tracking {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tracking-badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--learner-soft);
+  border: 1px solid var(--learner-line);
+  color: var(--learner);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.tracking-toggle {
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+.statements-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(440px, 100vw);
+  padding: 16px 20px;
+  overflow-y: auto;
+  background: var(--surface);
+  box-shadow: -8px 0 24px rgb(23 32 41 / 0.12);
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.statements-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.statements-drawer h2 {
+  font-size: 18px;
+}
+
+.statements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.statement {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface-sunk);
+}
+
+.statement-verb {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.statement-id {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.statement-result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+.statement-result div {
+  display: flex;
+  gap: 4px;
+}
+
+.statement-result dt {
+  color: var(--muted);
+}
+
+.statement-result dt::after {
+  content: ':';
+}
+
+.statement-result dd {
+  margin: 0;
+}
