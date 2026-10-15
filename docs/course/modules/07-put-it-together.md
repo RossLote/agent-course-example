@@ -2,6 +2,11 @@
 
 **Wall:** all of them. **Time:** about 6 minutes. The capstone: scored.
 
+Unlike modules 00 to 06, this module has no Check screens. Its scored items are the order
+(8 points) and the walls (6), which with the fourteen checks of modules 00 to 06 make the
+course's score of 28 points. Its end screen (screen 6) is its takeaway: reaching it
+completes the module (plan §6).
+
 **Objective.** The learner can lay out the loop for a new request and, for each thing that
 goes wrong, name the wall that handles it.
 
@@ -49,6 +54,10 @@ The score out of fourteen, with the box drawn whole: the record, done, the gate,
 agents, evidence, and the arrow round it. One line: *That is the whole workflow. Everything
 else is detail.*
 
+A scene: its stats row reads the module's progress (the order's points plus the walls',
+"14 out of 14" when all are right). This is the module's score, not the course's, which is
+out of 28. A scene has no box block, so the box drawn whole is the takeaway's (screen 6).
+
 ## Screen 5 · Try this tomorrow
 
 Not assessed. Four cards for any agent, including the chat tools you already use:
@@ -62,7 +71,9 @@ Not assessed. Four cards for any agent, including the chat tools you already use
 4. **Ask for the evidence, not the explanation.** "Show me it doing step 2" beats "tell me
    it works".
 
-## Screen 6 · End
+## Screen 6 · End (the takeaway)
+
+The module's takeaway: the complete box with the ring, then the end copy.
 
 > This course was built the way it describes: a brief, an epic, a run with workers in their
 > boxes, three layers of review, a recorded walkthrough, a pull request someone judged. The
@@ -70,10 +81,13 @@ Not assessed. Four cards for any agent, including the chat tools you already use
 
 Credit line (if C10 stands): *Ross Lote's workflow; the course built with it.*
 
-Completion is sent here.
+Reaching this screen completes the module. When it is the last of the eight to complete,
+the course's completion is sent with its score.
 
 ## Statements
 
-Module launched; the order and the six walls as interactions with their responses and
-scores; module completed; course completed with the score out of fourteen plus the module
-checks.
+As D19 and plan §6 say, which supersede this storyboard's first list: answered on every
+Check press of the order (n of 8) and of the walls (n of 6); completed on the module at its
+takeaway; completed on the course with the score out of 28 (scaled, points over 28) when
+the last module completes, and again whenever a scored item changes afterwards. No "module
+launched" statement.
