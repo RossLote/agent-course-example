@@ -32,9 +32,15 @@ function shelfAt(root: HTMLElement | null, x: number, y: number): string | undef
 /**
  * The drag in progress and the handlers an item spreads onto its button. `onDrop` gets the
  * item and the shelf it was let go over; let go anywhere else, it stays in the tray.
+ * `onStart` is called once when a press turns into a drag, so a timer can begin with it.
  * `swallowClick` is true for the click a browser fires at the end of a drag, which is not one.
  */
-export function usePointerDrag(root: RefObject<HTMLElement | null>, onDrop: (item: string, shelf: string) => void, enabled: boolean) {
+export function usePointerDrag(
+  root: RefObject<HTMLElement | null>,
+  onDrop: (item: string, shelf: string) => void,
+  onStart: () => void,
+  enabled: boolean,
+) {
   const [drag, setDrag] = useState<Drag | null>(null);
   const press = useRef<Press | null>(null);
   const dragged = useRef(false);
@@ -55,6 +61,7 @@ export function usePointerDrag(root: RefObject<HTMLElement | null>, onDrop: (ite
       const current = press.current;
       if (current === null || current.pointer !== event.pointerId) return;
       if (!current.dragging && Math.hypot(event.clientX - current.x, event.clientY - current.y) < DRAG_START) return;
+      if (!current.dragging) onStart();
       current.dragging = true;
       event.preventDefault();
       setDrag({ item, x: event.clientX, y: event.clientY, over: shelfAt(root.current, event.clientX, event.clientY) });

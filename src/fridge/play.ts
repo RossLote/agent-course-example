@@ -1,7 +1,8 @@
 // A fridge play as data (PLAN.md §6, "A fridge play"): what is on the shelves, which items were
-// wrong the first time they were dropped, what the learner holds, and what just happened. Every
-// change goes through `fridgeReducer`, a pure function of the fridge file, so the component, the
-// tests and the extras that come later (the one-shot's timer and points) share one set of rules.
+// wrong the first time they were dropped, what the learner holds, the points and the time left,
+// and what just happened. Every change goes through `fridgeReducer`, a pure function of the
+// fridge file, so the component, the tests and the one-shot's timer and points share one set of
+// rules.
 import type { Fridge } from '../content/index.ts';
 import type { Json, SavedAnswer, Score } from '../screens/types.ts';
 
@@ -12,6 +13,8 @@ export type FridgeOutcome =
   | { kind: 'put-back'; item: string }
   | { kind: 'placed'; item: string; shelf: string }
   | { kind: 'returned'; item: string; shelf: string }
+  | { kind: 'no-timer' }
+  | { kind: 'time-up' }
   | { kind: 'reset' };
 
 export interface FridgePlay {
@@ -19,6 +22,12 @@ export interface FridgePlay {
   placements: Readonly<Record<string, string>>;
   /** The items whose first drop was wrong. */
   wrongFirst: readonly string[];
+  /** Points so far on a points fridge: the file's right and wrong drops added up, never below zero. */
+  points: number;
+  /** Seconds left; null when the file has no timer or the learner switched it off, 0 once time is up. */
+  timeLeft: number | null;
+  /** Whether the countdown has begun: the learner's first pick up or drag. */
+  started: boolean;
   /** The item picked up for the keyboard or a click, and the shelf the cursor is on (an index). */
   held: { item: string; cursor: number } | null;
   /** What the last action did; null on a fresh or a saved play. */
@@ -38,17 +47,34 @@ export type FridgeAction =
   | { type: 'drop'; item: string; shelf: string }
   /** Put the held item back in the tray. */
   | { type: 'put-back' }
+  /** Start the countdown without picking up (a drag begins). */
+  | { type: 'start' }
+  /** One second passes. Counts down only once the play has started. */
+  | { type: 'tick' }
+  /** Switch the timer off, before or during a play. */
+  | { type: 'no-timer' }
   /** Empty the shelves and start a new play. */
   | { type: 'reset' };
 
-/** A play with every item in the tray. */
-export function newPlay(): FridgePlay {
-  return { placements: {}, wrongFirst: [], held: null, last: null, turn: 0 };
+/** The seconds a fridge's timer starts from, or null when its file has none. */
+const timerSeconds = (fridge: Fridge): number | null => (fridge.timer === 'none' ? null : fridge.timer.seconds);
+
+/** A play with every item in the tray, no points, and the timer waiting for a first pick up. */
+export function newPlay(fridge: Fridge): FridgePlay {
+  return { placements: {}, wrongFirst: [], points: 0, timeLeft: timerSeconds(fridge), started: false, held: null, last: null, turn: 0 };
 }
 
-/** Whether the play has ended: every item is on its shelf. */
-export function isFinished(fridge: Fridge, play: FridgePlay): boolean {
+/** Whether every item is on its shelf. */
+export function allPlaced(fridge: Fridge, play: FridgePlay): boolean {
   return fridge.items.every((item) => play.placements[item.id] !== undefined);
+}
+
+/** Whether the timer ran out. */
+export const timedOut = (play: FridgePlay): boolean => play.timeLeft === 0;
+
+/** Whether the play has ended: every item is on its shelf, or time is up. */
+export function isFinished(fridge: Fridge, play: FridgePlay): boolean {
+  return allPlaced(fridge, play) || timedOut(play);
 }
 
 /** The items still in the tray, in the file's order. */
@@ -62,24 +88,40 @@ export function rightFirstTime(fridge: Fridge, play: FridgePlay): number {
 }
 
 /**
- * The play's score. Right first time is out of the item count. Points mode (the one-shot) is
- * scored right first time as well until its points arrive with the one-shot's extras.
+ * The play's score. Right first time is out of the item count; points mode (the one-shot) is the
+ * running points out of what every item earns when it is dropped right.
  */
 export function scoreOf(fridge: Fridge, play: FridgePlay): Score {
+  if (fridge.score.mode === 'points') return { raw: play.points, max: fridge.score.right * fridge.items.length };
   return { raw: rightFirstTime(fridge, play), max: fridge.items.length };
+}
+
+/** The points after a drop: the file's right or wrong amount added, never below zero; none outside points mode. */
+function pointsAfter(fridge: Fridge, play: FridgePlay, right: boolean): number {
+  if (fridge.score.mode !== 'points') return play.points;
+  return Math.max(0, play.points + (right ? fridge.score.right : fridge.score.wrong));
 }
 
 /** The next play after an action. A finished play takes nothing but a reset. */
 export function fridgeReducer(fridge: Fridge, play: FridgePlay, action: FridgeAction): FridgePlay {
   const turn = play.turn + 1;
-  if (action.type === 'reset') return { ...newPlay(), last: { kind: 'reset' }, turn };
+  if (action.type === 'reset') return { ...newPlay(fridge), last: { kind: 'reset' }, turn };
   if (isFinished(fridge, play)) return play;
 
   switch (action.type) {
+    case 'start':
+      return play.started || play.timeLeft === null ? play : { ...play, started: true };
+    case 'tick': {
+      if (!play.started || play.timeLeft === null) return play;
+      const timeLeft = play.timeLeft - 1;
+      return timeLeft > 0 ? { ...play, timeLeft } : { ...play, timeLeft: 0, held: null, last: { kind: 'time-up' }, turn };
+    }
+    case 'no-timer':
+      return play.timeLeft === null ? play : { ...play, timeLeft: null, last: { kind: 'no-timer' }, turn };
     case 'pick': {
       if (play.placements[action.item] !== undefined || !fridge.items.some((item) => item.id === action.item)) return play;
       if (play.held?.item === action.item) return { ...play, held: null, last: { kind: 'put-back', item: action.item }, turn };
-      return { ...play, held: { item: action.item, cursor: 0 }, last: { kind: 'picked', item: action.item, shelf: fridge.shelves[0].id }, turn };
+      return { ...play, started: true, held: { item: action.item, cursor: 0 }, last: { kind: 'picked', item: action.item, shelf: fridge.shelves[0].id }, turn };
     }
     case 'move': {
       if (play.held === null) return play;
@@ -93,10 +135,10 @@ export function fridgeReducer(fridge: Fridge, play: FridgePlay, action: FridgeAc
       const item = fridge.items.find((candidate) => candidate.id === action.item);
       if (item === undefined || play.placements[item.id] !== undefined || !fridge.shelves.some((shelf) => shelf.id === action.shelf)) return play;
       if (item.shelf === action.shelf) {
-        return { ...play, placements: { ...play.placements, [item.id]: action.shelf }, held: null, last: { kind: 'placed', item: item.id, shelf: action.shelf }, turn };
+        return { ...play, placements: { ...play.placements, [item.id]: action.shelf }, points: pointsAfter(fridge, play, true), held: null, last: { kind: 'placed', item: item.id, shelf: action.shelf }, turn };
       }
       const wrongFirst = play.wrongFirst.includes(item.id) ? play.wrongFirst : [...play.wrongFirst, item.id];
-      return { ...play, wrongFirst, held: null, last: { kind: 'returned', item: item.id, shelf: action.shelf }, turn };
+      return { ...play, wrongFirst, points: pointsAfter(fridge, play, false), held: null, last: { kind: 'returned', item: item.id, shelf: action.shelf }, turn };
     }
     case 'put-back':
       if (play.held === null) return play;
@@ -104,9 +146,13 @@ export function fridgeReducer(fridge: Fridge, play: FridgePlay, action: FridgeAc
   }
 }
 
-/** The play as the answer the fridge-ended event carries and a saved play renders from. */
+/**
+ * The play as the answer the fridge-ended event carries and a saved play renders from: its
+ * placements and the items wrong first time, and the points and the seconds left (null when the
+ * timer was off, 0 when time ran out) so a finished one-shot comes back as it ended.
+ */
 export function savedPlay(play: FridgePlay): SavedAnswer {
-  return { placements: { ...play.placements }, wrongFirst: [...play.wrongFirst] };
+  return { placements: { ...play.placements }, wrongFirst: [...play.wrongFirst], points: play.points, timeLeft: play.timeLeft };
 }
 
 const isRecord = (value: Json | undefined): value is { readonly [key: string]: Json } =>
@@ -115,17 +161,26 @@ const isRecord = (value: Json | undefined): value is { readonly [key: string]: J
 /**
  * A play from a saved answer: its placements and the items wrong first time, keeping only what
  * this fridge file still has (an item on its own shelf), so an edited file never breaks it.
- * Anything else is a fresh play.
+ * The points and the time left are read when they are there (an answer from before they existed
+ * has neither: its points are worked out from the drops, its timer is untouched). Anything else
+ * is a fresh play.
  */
 export function playFromSaved(fridge: Fridge, saved: SavedAnswer | undefined): FridgePlay {
-  if (!isRecord(saved)) return newPlay();
-  const { placements: placed, wrongFirst: wrong } = saved;
-  if (!isRecord(placed) || !Array.isArray(wrong)) return newPlay();
+  const fresh = newPlay(fridge);
+  if (!isRecord(saved)) return fresh;
+  const { placements: placed, wrongFirst: wrong, points, timeLeft } = saved;
+  if (!isRecord(placed) || !Array.isArray(wrong)) return fresh;
   const wrongIds: readonly Json[] = wrong;
   const placements: Record<string, string> = {};
   for (const item of fridge.items) {
     if (placed[item.id] === item.shelf) placements[item.id] = item.shelf;
   }
   const wrongFirst = fridge.items.filter((item) => wrongIds.includes(item.id)).map((item) => item.id);
-  return { ...newPlay(), placements, wrongFirst };
+  const drops = { ...fresh, placements, wrongFirst };
+  const worked = fridge.score.mode === 'points'
+    ? Math.max(0, fridge.score.right * Object.keys(placements).length + fridge.score.wrong * wrongFirst.length)
+    : 0;
+  const seconds = timerSeconds(fridge);
+  const left = seconds === null || timeLeft === null ? null : typeof timeLeft === 'number' ? Math.min(Math.max(Math.floor(timeLeft), 0), seconds) : seconds;
+  return { ...drops, points: typeof points === 'number' && points >= 0 ? points : worked, timeLeft: left, started: isFinished(fridge, { ...drops, timeLeft: left }) };
 }

@@ -21,7 +21,6 @@ const match = {
 
 const placeholders: Screen[] = [
   { type: 'match', slug: 'sorting', scored: false, heading: 'Sort', ...match },
-  { type: 'compare', heading: 'Compare', left: 'one-shot', right: 'accepted', table: { rows: [{ aspect: 'A', left: 'L', right: 'R', wall: 'W' }] } },
 ];
 
 const scored: { screen: Screen; max: number }[] = [

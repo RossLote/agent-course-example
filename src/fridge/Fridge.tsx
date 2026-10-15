@@ -1,9 +1,9 @@
-import { useEffect, useId, useRef, type KeyboardEvent } from 'react';
+import { useEffect, useEffectEvent, useId, useRef, type KeyboardEvent } from 'react';
 import type { Fridge as FridgeFile } from '../content/index.ts';
 import { Copy } from '../screens/scene/Copy.tsx';
 import type { SavedAnswer, ScreenEvent } from '../screens/types.ts';
 import { ToneIcon } from './icons.tsx';
-import { isFinished, rightFirstTime, savedPlay, scoreOf, trayItems, type FridgeAction } from './play.ts';
+import { allPlaced, isFinished, rightFirstTime, savedPlay, scoreOf, timedOut, trayItems, type FridgeAction } from './play.ts';
 import { useFridgePlay } from './useFridgePlay.ts';
 import { usePointerDrag } from './usePointerDrag.ts';
 import { fillTemplate, fridgeWords } from './words.ts';
@@ -16,16 +16,27 @@ export interface FridgeProps {
   name: string;
   /** A finished play to show, with its score card; Try again starts a new one. */
   saved?: SavedAnswer;
-  /** Gets `fridge-ended` once per play, when its last item is placed. */
+  /** Gets `fridge-ended` once per play, when its last item is placed or time is up. */
   onEvent?: (event: ScreenEvent) => void;
 }
+
+/** Seconds as m:ss: 60 is "1:00". */
+const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+
+/** A timer pill turns red for its last ten seconds. */
+const LOW_TIME = 10;
+
+/** The confetti banner's pieces: decorative, so each is hidden from a screen reader. */
+const CONFETTI = ['#ffb547', '#4fd6ff', '#ff6b9a', '#7cf29c', '#ffb547', '#4fd6ff', '#ff6b9a', '#7cf29c'];
 
 const HINT = 'Drag an item onto a shelf, or click it and then a shelf. With the keyboard: Enter picks it up, the arrow keys choose a shelf, Enter places it, Escape puts it back.';
 
 /**
  * One fridge, driven entirely by its file (D17): its shelves in file order, the tray, a right
- * drop that stays and a wrong drop that returns (with its reason on a reason fridge), and the
- * score card when every item is placed. Pointer drag with mouse and touch, a click on an item
+ * drop that stays and a wrong drop that returns (with its reason on a reason fridge, or a red
+ * flash and nothing more on a flash one), and the score card when every item is placed. The
+ * one-shot's file switches on the rest: points, a countdown that starts at the first pick up
+ * and ends the play at zero (and a No timer button, WCAG 2.2.1), a leaderboard and confetti. Pointer drag with mouse and touch, a click on an item
  * then a shelf, and the keyboard route all go through the same play (./play.ts). The status
  * line and the live region say the same words (./words.ts). Everything it renders is scoped to
  * itself (ids, the live region, its keys), so two fridges can share a page.
@@ -40,6 +51,9 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
   );
 
   const finished = isFinished(fridge, play);
+  const timeUp = timedOut(play);
+  const timer = fridge.timer === 'none' ? null : fridge.timer;
+  const running = play.timeLeft !== null && play.started && !finished;
   const tray = trayItems(fridge, play);
   const words = fridgeWords(fridge, play);
   const held = play.held;
@@ -63,13 +77,22 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
     }
   };
 
+  // One tick a second while the countdown runs; leaving the screen mid-play clears it, and
+  // nothing is sent.
+  const tick = useEffectEvent(() => dispatch({ type: 'tick' }));
+  useEffect(() => {
+    if (!running) return;
+    const interval = setInterval(() => tick(), 1000);
+    return () => clearInterval(interval);
+  }, [running]);
+
   useEffect(() => {
     const target = focusNext.current;
     focusNext.current = null;
     if (target !== null) root.current?.querySelector<HTMLElement>(target)?.focus();
   });
 
-  const { drag, handlers, swallowClick } = usePointerDrag(root, (item, shelf) => act({ type: 'drop', item, shelf }), !finished);
+  const { drag, handlers, swallowClick } = usePointerDrag(root, (item, shelf) => act({ type: 'drop', item, shelf }), () => dispatch({ type: 'start' }), !finished);
 
   // Arrows and Escape while holding, from anywhere inside this fridge and nowhere else.
   const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
@@ -106,44 +129,72 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
         </button>
       </div>
 
-      <p className="fridge-hud">
+      <div className="fridge-hud">
         <span className="fridge-pill">
           {placed} of {fridge.items.length} placed
         </span>
-      </p>
+        {fridge.score.mode === 'points' && <span className="fridge-pill">score {score.raw}</span>}
+        {timer !== null && play.timeLeft !== null && (
+          <span className="fridge-pill" role="timer" aria-label="Time left" data-low={(play.timeLeft <= LOW_TIME && !allPlaced(fridge, play)) || undefined}>
+            {clock(play.timeLeft)}
+          </span>
+        )}
+        {timer !== null && (
+          <button type="button" className="btn btn-ghost fridge-no-timer" aria-pressed={play.timeLeft === null} disabled={finished || play.timeLeft === null} onClick={() => act({ type: 'no-timer' })}>
+            No timer
+          </button>
+        )}
+      </div>
 
-      <ul className="fridge-cabinet" aria-label="Shelves">
-        {fridge.shelves.map((shelf, index) => {
-          const onShelf = fridge.items.filter((item) => play.placements[item.id] === shelf.id);
-          return (
-            <li key={shelf.id}>
-              <button
-                type="button"
-                className="fridge-shelf"
-                data-shelf={shelf.id}
-                data-target={held !== null || drag !== null || undefined}
-                data-cursor={held?.cursor === index || undefined}
-                data-over={drag?.over === shelf.id || undefined}
-                disabled={held === null}
-                onClick={() => held !== null && act({ type: 'drop', item: held.item, shelf: shelf.id })}
-              >
-                <span className="fridge-shelf-name">
-                  {shelf.name}
-                  {shelf.subtitle !== undefined && <span className="fridge-shelf-sub"> · {shelf.subtitle}</span>}
-                </span>
-                <span className="fridge-on-shelf">
-                  {onShelf.map((item) => (
-                    <span key={item.id} className="fridge-placed">
-                      <ToneIcon tone="right" size={12} />
-                      {item.name}
-                    </span>
-                  ))}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="fridge-body">
+        <ul className="fridge-cabinet" aria-label="Shelves">
+          {fridge.shelves.map((shelf, index) => {
+            const onShelf = fridge.items.filter((item) => play.placements[item.id] === shelf.id);
+            return (
+              <li key={shelf.id}>
+                <button
+                  type="button"
+                  className="fridge-shelf"
+                  data-shelf={shelf.id}
+                  data-target={held !== null || drag !== null || undefined}
+                  data-cursor={held?.cursor === index || undefined}
+                  data-over={drag?.over === shelf.id || undefined}
+                  disabled={held === null}
+                  onClick={() => held !== null && act({ type: 'drop', item: held.item, shelf: shelf.id })}
+                >
+                  <span className="fridge-shelf-name">
+                    {shelf.name}
+                    {shelf.subtitle !== undefined && <span className="fridge-shelf-sub"> · {shelf.subtitle}</span>}
+                  </span>
+                  <span className="fridge-on-shelf">
+                    {onShelf.map((item) => (
+                      <span key={item.id} className="fridge-placed">
+                        <ToneIcon tone="right" size={12} />
+                        {item.name}
+                      </span>
+                    ))}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        {fridge.leaderboard !== 'none' && (
+          <div className="fridge-board">
+            <h3 className="fridge-board-title">
+              Leaderboard
+            </h3>
+            <ol className="fridge-board-rows">
+              {fridge.leaderboard.map((row) => (
+                <li key={row.name} data-learner={'learner' in row || undefined}>
+                  {row.name} · {('learner' in row ? score.raw : row.score).toLocaleString('en-GB')}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+      </div>
 
       <p id={`${id}-hint`} className="small muted">
         {HINT}
@@ -156,6 +207,7 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
             className="fridge-item"
             data-item={item.id}
             data-dragging={drag?.item === item.id || undefined}
+            disabled={timeUp}
             data-returned={(play.last?.kind === 'returned' && play.last.item === item.id) || undefined}
             aria-pressed={held?.item === item.id}
             aria-describedby={`${id}-hint`}
@@ -181,8 +233,21 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
         {words !== '' && play.turn % 2 === 1 ? ' ' : ''}
       </div>
 
-      {finished && (
-        <div className="fridge-score" tabIndex={-1} aria-labelledby={`${id}-score`}>
+      {timeUp && timer !== null && (
+        <p className="fridge-timeup">
+          <Copy text={timer.message} />
+        </p>
+      )}
+
+      {allPlaced(fridge, play) && (
+        <div className="fridge-score" tabIndex={-1} aria-labelledby={`${id}-score`} data-confetti={fridge.confetti || undefined}>
+          {fridge.confetti && (
+            <span className="fridge-confetti" aria-hidden="true">
+              {CONFETTI.map((colour, index) => (
+                <span key={index} className="fridge-confetto" style={{ background: colour, animationDelay: `${index * 80}ms` }} />
+              ))}
+            </span>
+          )}
           <p id={`${id}-score`} className="fridge-score-line">
             <Copy text={fillTemplate(fridge.finish, { right: rightFirstTime(fridge, play), total: fridge.items.length, score: score.raw })} />
           </p>
