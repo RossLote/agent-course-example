@@ -1,112 +1,230 @@
-# Stub: placeholder screens, one of every type, so the frame can play this module before its
-# real screens arrive (bead .10 writes modules 00-03, bead .11 modules 04-07, from the
-# storyboard in docs/course/modules/). Every type is documented in content/README.md.
 slug: "02"
 screens:
   - type: scene
-    eyebrow: Placeholder
-    heading: Module 02, placeholder scene
+    heading: Who builds what, and how do you know it is done?
     blocks:
       - type: paragraph
-        text: Placeholder copy. This module's screens come from its storyboard.
-  - type: chat
-    slug: chat
-    heading: Placeholder chat
-    opening: A placeholder ask.
-    messages:
-      - A placeholder reply from the agent.
-    replies:
-      options:
-        - label: First reply
-          reply: The agent's scripted answer to the first reply.
-        - label: Second reply
-          reply: The agent's scripted answer to the second reply.
-  - type: brief
-    slug: brief
-    heading: Placeholder brief
-    opening: A placeholder request.
-    rounds:
-      - message: One question, with my recommended answer.
-        questions:
-          - text: The first question?
-            chips:
-              - label: The recommended answer
-                decision: The decision the recommended answer makes.
-                recommended: true
-              - label: Another answer
-                decision: The decision the other answer makes.
-      - message: Took your answer as D1. One more.
-        questions:
-          - text: The second question?
-            chips:
-              - label: The recommended answer
-                decision: The decision the recommended answer makes.
-                recommended: true
-              - label: Another answer
-                decision: The decision the other answer makes.
-    defaults:
-      label: Your defaults
-      reply: Your defaults.
-    closing: That's the brief. Two decisions on the record.
-    panel:
-      heading: The record
-      note: "{filled} of {total} decisions."
+        text: >-
+          Eight decisions. An agent could start building from them now, and when it said "done" you
+          would have no way to say whether it was. So before anything is built, the work is cut
+          into pieces, and each piece says how a reviewer will know it is finished.
+      - type: aside
+        term: epic
+        text: >-
+          the set of pieces for one job, with the decisions, the order they run in, and a demo
+          script for the whole thing.
+      - type: aside
+        term: bead
+        text: one piece, written for execution.
+
+  - type: scene
+    heading: A bead is not a ticket
+    blocks:
+      - type: columns
+        columns:
+          - heading: A ticket (what most of us write)
+            blocks:
+              - type: paragraph
+                text: >-
+                  Fridge activity: feedback and scoring. Show feedback on wrong drops and a score
+                  at the end.
+          - heading: A bead (what the builder gets)
+            blocks:
+              - type: paragraph
+                text: >-
+                  **.4 Feedback and the score screen.** A wrong drop returns the item to the tray
+                  and shows its one-line reason (D3). When all eight are placed, the score screen
+                  shows how many were right first time out of eight and lists each wrong placement
+                  with its reason (D4). Try again resets the tray and clears the score; the latest
+                  attempt is what is reported (D7).
+              - type: paragraph
+                text: >-
+                  *Acceptance:* dropping raw chicken on the top shelf returns it and shows "Raw
+                  meat and fish go on the bottom shelf so they can't drip onto other food"; after
+                  placing all eight with one wrong, the score screen reads "7 out of 8 right first
+                  time" and lists raw chicken with that reason; Try again empties the shelves.
+              - type: paragraph
+                text: >-
+                  *Read first:* the data file from .1; the drop handling from .2. *Touches:* the
+                  feedback and score files only. *Depends on:* .2.
+      - type: cards
+        numbered: true
+        items:
+          - title: The decisions are cited, not re-explained.
+            body: D3, D4, D7. The builder reads the record.
+          - title: The acceptance is something a reviewer can do and see.
+            body: Drop this, read that.
+          - title: It says what it may touch.
+            body: So two builders working at once do not collide.
+
+  - type: scene
+    eyebrow: The epic
+    heading: The fridge activity, cut into pieces
+    intro: >-
+      Eight decisions become five beads. Each says what it is, which decisions bind it, what it may
+      touch, and how a reviewer will know it is done. The demo script on the right is what done
+      means for the whole thing.
+    nav: The fridge epic
+    blocks:
+      - type: cards
+        items:
+          - title: .1 The data (runs alone)
+            body: >-
+              Shelves, items, rules and reasons in one file, from the client's guide (D2).
+              *Acceptance:* a test that every item has exactly one right shelf and a reason.
+          - title: .2 The fridge and dragging (runs alone, sets the pattern)
+            body: >-
+              Four shelves, eight items, drag with mouse and touch; a right drop stays, a wrong
+              drop returns (D3, D5). Depends on .1. *Acceptance:* drag raw chicken to the top
+              shelf: it returns; to the bottom shelf: it stays.
+          - title: .3 Keyboard and screen reader (with .4)
+            body: >-
+              Enter, arrows, Enter; announcements of item, shelf and result (D5). Depends on .2.
+              *Acceptance:* you write it below.
+          - title: .4 Feedback and the score screen (with .3)
+            body: >-
+              The one-line reason on a wrong drop (D3); the score screen and Try again (D4, D7).
+              Depends on .2. *Touches:* the feedback and score files only.
+          - title: .5 The walkthrough (last)
+            body: >-
+              Runs the demo script in a browser, recorded, one chapter per step. Depends on .3 and
+              .4.
+      - type: paragraph
+        text: "**Order:** .1, then .2, then .3 and .4 together (they touch different files), then .5."
+    side:
+      - type: list
+        heading: The demo script (done means)
+        items:
+          - "Open the activity: four labelled shelves and eight items in a tray."
+          - >-
+            Drag raw chicken to the top shelf: it returns, and the message reads "Raw meat and fish
+            go on the bottom shelf so they can't drip onto other food."
+          - "Drag raw chicken to the bottom shelf: it stays."
+          - >-
+            Tab to the lettuce, Enter, arrow down to the salad drawer, Enter: placed; the screen
+            reader says "Lettuce placed in the salad drawer. Correct."
+          - >-
+            Place the other six; the score screen reads "7 out of 8 right first time" and lists
+            raw chicken with its reason.
+          - "Press Try again: the tray is full and the score is cleared."
+      - type: paragraph
+        text: >-
+          Done means: every step of this script performed in a browser and recorded, with all the
+          checks green. Not "the agent says so".
+
+  - type: choose
+    slug: write-the-acceptance
+    scored: false
+    mode: multi
+    eyebrow: Try it
+    heading: Bead .3 has no acceptance yet. Pick the three lines a reviewer could check.
+    nav: Write the acceptance
+    options:
+      - label: Pressing Enter on the focused tomatoes, then arrow down three times, then Enter, places them in the salad drawer.
+        right: true
+        feedback: Yes. A reviewer can do it and see it.
+      - label: Keyboard use is smooth and intuitive.
+        right: false
+        feedback: No. Nobody can check "smooth". What would they press?
+      - label: 'The screen reader says "Tomatoes placed in the salad drawer. Correct."'
+        right: true
+        feedback: Yes. A reviewer can hear it.
+      - label: Works with a screen reader.
+        right: false
+        feedback: No. Which reader, saying what? Without the words, any noise passes.
+      - label: Pressing Escape while an item is picked up puts it back in the tray.
+        right: true
+        feedback: Yes. A key, an action, a visible result.
+      - label: Accessibility is handled properly.
+        right: false
+        feedback: No. A wish, not a test.
+    after:
+      - type: paragraph
+        text: >-
+          **Three you can check, three you can only hope.** The builder is held to the first
+          three; the second three would have let it decide what "proper" meant.
+
+  - type: choose
+    slug: epic-review
+    scored: false
+    mode: single
+    eyebrow: Try it
+    heading: The epic review
+    intro: >-
+      Before the epic runs, another agent reads it against the project and the decisions. It found
+      this:
+    body:
+      - type: quote
+        text: >-
+          **Finding.** Beads .3 and .4 are set to run together, but both change the drop handling
+          file to add their messages. They will collide. Also: .3's acceptance line "works with a
+          screen reader" names nothing a reviewer could hear.
+      - type: paragraph
+        text: "*What do you do?*"
+    options:
+      - label: Let it run; the builders will sort it out.
+        right: false
+        feedback: >-
+          They will each change the file, and the second one in will overwrite the first. Found
+          mid-run, this costs a rebuild. Found now, it costs one line.
+      - label: >-
+          Fix the epic now: give .4 its own file to add messages to, and replace .3's line with the
+          words the reader should say.
+        right: true
+        feedback: >-
+          Yes. Every gap found before the run is one line; every gap found during it is a rebuild.
+      - label: Cancel .3; accessibility can be a later round.
+        right: false
+        feedback: It is a decision (D5) and the client's learners are the point. Fix the bead, not the scope.
+    after:
+      - type: paragraph
+        text: >-
+          In Ross's runs, gaps like these added between twelve and thirty pieces of work to an epic
+          before this review existed. Now they cost a sentence.
+
   - type: choose
     slug: check-1
-    eyebrow: Check · 1 of 2
-    heading: A placeholder question?
     scored: true
     mode: single
+    eyebrow: Check · 1 of 2
+    heading: Which of these is acceptance a reviewer can check?
+    intro: Every module ends with two of these. Each option tells you why, right or wrong.
+    nav: Check · 1 of 2
     options:
-      - label: The right answer.
-        right: true
-        feedback: Yes. Placeholder feedback.
-      - label: A wrong answer.
+      - label: '"The feedback is clear and helpful."'
         right: false
-        feedback: Placeholder feedback on the wrong answer.
-  - type: match
-    slug: match
-    heading: Placeholder match
-    scored: false
-    targets:
-      - id: first
-        label: the first target
-      - id: second
-        label: the second target
-    rows:
-      - text: A row that matches the first target.
-        key: first
-        feedback: The first target.
-      - text: A row that matches the second target.
-        key: second
-        feedback: The second target.
-  - type: order
-    slug: order
-    heading: Placeholder order
-    cards:
-      - id: one
-        label: The first card.
-        feedback: This one comes first.
-      - id: two
-        label: The second card.
-        feedback: This one comes second.
-      - id: three
-        label: The third card.
-        feedback: This one comes last.
-    start: [three, one, two]
-  - type: fridge
-    heading: Placeholder fridge
-    fridge: one-shot
-  - type: compare
-    heading: Placeholder comparison
-    left: one-shot
-    right: accepted
-    table:
-      rows:
-        - aspect: Placeholder
-          left: The one-shot.
-          right: The accepted one.
-          wall: placeholder
+        feedback: Clear to whom? Nothing to do or see.
+      - label: >-
+          "Dropping yoghurt on the bottom shelf returns it and shows 'Dairy goes on the top shelf,
+          away from raw meat.'"
+        right: true
+        feedback: Yes. Do this, see that.
+      - label: '"Feedback works."'
+        right: false
+        feedback: What would the reviewer do to find out?
+
+  - type: choose
+    slug: check-2
+    scored: true
+    mode: single
+    eyebrow: Check · 2 of 2
+    heading: Two beads are set to run at the same time. What has to be true?
+    nav: Check · 2 of 2
+    options:
+      - label: They are about different features.
+        right: false
+        feedback: Not enough. Different features can share a file.
+      - label: They touch different files, and neither depends on the other.
+        right: true
+        feedback: Yes. Disjoint touches and no dependency, or they collide.
+      - label: They are both small.
+        right: false
+        feedback: Size decides how long they take, not whether they collide.
+
   - type: takeaway
-    text: "**Placeholder takeaway.** The module's own card comes from its storyboard."
-    caption: Placeholder line under the box.
+    eyebrow: Takeaway
+    nav: Takeaway
+    text: >-
+      **Done is defined before the build starts, as things a reviewer can do and see.** The epic
+      review finds the gaps while they still cost a sentence.
+    caption: "The box gains its second wall: **done**."

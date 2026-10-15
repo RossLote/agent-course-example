@@ -1,112 +1,228 @@
-# Stub: placeholder screens, one of every type, so the frame can play this module before its
-# real screens arrive (bead .10 writes modules 00-03, bead .11 modules 04-07, from the
-# storyboard in docs/course/modules/). Every type is documented in content/README.md.
 slug: "01"
 screens:
   - type: scene
-    eyebrow: Placeholder
-    heading: Module 01, placeholder scene
+    heading: Where did the timer come from?
     blocks:
       - type: paragraph
-        text: Placeholder copy. This module's screens come from its storyboard.
-  - type: chat
-    slug: chat
-    heading: Placeholder chat
-    opening: A placeholder ask.
-    messages:
-      - A placeholder reply from the agent.
-    replies:
-      options:
-        - label: First reply
-          reply: The agent's scripted answer to the first reply.
-        - label: Second reply
-          reply: The agent's scripted answer to the second reply.
+        text: >-
+          The timer came from a gap. So did the fifth shelf, the leaderboard and "the standard
+          fridge rules". The agent did not know what the client's course needs, and you did not
+          tell it, so it guessed. The fix is not a longer prompt. It is a conversation where the
+          agent asks and you answer, until nothing is left that would change what gets built.
+      - type: aside
+        term: brief
+        text: >-
+          the conversation before anything is built, where the agent asks you ranked questions a
+          few at a time and the decisions come out numbered.
+
+  - type: scene
+    heading: How a brief goes
+    blocks:
+      - type: cards
+        numbered: true
+        items:
+          - title: You describe it freely first.
+            body: A paragraph in your own words, however rough.
+          - title: The agent reads before it asks.
+            body: >-
+              What exists already, the client's materials, the standard if there is one. Then it
+              asks.
+          - title: At most five questions a round, ranked.
+            body: >-
+              The question whose answer settles the most others comes first. Each comes with what
+              it decides and the agent's recommended answer, so "your defaults, except number 3"
+              is a complete reply.
+          - title: You answer in a paragraph.
+            body: >-
+              The agent plays back what it took each answer to be, re-asks only what you missed,
+              and asks the next round.
+          - title: It stops when the rest is a builder's call.
+            body: >-
+              Then you get the decisions: D1, D2, D3…, one sentence each with its reason, on one
+              record the builder reads.
+      - type: quote
+        text: >-
+          You may not know what you want until you see the first round. The brief is where you
+          find out what you do know.
+        attribution: Ross
+
   - type: brief
-    slug: brief
-    heading: Placeholder brief
-    opening: A placeholder request.
+    slug: fridge-brief
+    eyebrow: Try it
+    heading: The fridge brief
+    intro: >-
+      Same agent as module 00. This time it asks before it builds. Each question comes with its
+      recommended answer (dashed); pick it or pick differently. Every answer becomes a decision on
+      the right.
+    nav: The fridge brief
+    opening: >-
+      A fridge activity for a client's food-hygiene course. Learners drag food onto the right
+      shelf and get told why when they're wrong. It's for kitchen staff. The authoring tool can't
+      do it.
     rounds:
-      - message: One question, with my recommended answer.
+      - message: >-
+          I read the client's food-hygiene guide and the course outline. Five questions, ranked:
+          the one whose answer settles the most comes first. My recommended answer is the dashed
+          one.
         questions:
-          - text: The first question?
+          - text: Who does this, and where?
+            decides: Decides the device and how long it can take.
             chips:
-              - label: The recommended answer
-                decision: The decision the recommended answer makes.
+              - label: Kitchen staff on induction, tablet or laptop, about five minutes
+                decision: Kitchen staff on induction, on a tablet or laptop, about five minutes.
                 recommended: true
-              - label: Another answer
-                decision: The decision the other answer makes.
-      - message: Took your answer as D1. One more.
+              - label: Managers at a desk, as a refresher
+                decision: Managers at a desk, as a refresher; no time pressure.
+              - label: Everyone, on their phones
+                decision: Everyone, on a phone; it must work at phone width.
+          - text: Which shelves, which items, and whose rules?
+            decides: Decides the whole content.
+            chips:
+              - label: Four shelves, eight items, rules from the client's guide
+                decision: >-
+                  Four shelves and eight items; rules and reasons from the client's guide, not the
+                  agent's.
+                recommended: true
+              - label: Three shelves, six items, keep it quick
+                decision: Three shelves and six items; rules from the client's guide.
+              - label: Let the agent pick sensible rules
+                decision: The agent chooses the rules; the client checks them before launch.
+          - text: What happens on a wrong drop?
+            decides: Decides the feedback, and whether it is practice or a test.
+            chips:
+              - label: Item goes back, one-line reason, try again, no limit
+                decision: A wrong drop returns the item and shows a one-line reason; unlimited tries.
+                recommended: true
+              - label: Three tries, then it is placed for them
+                decision: Three tries per item; on the third the item is placed and the reason shown.
+              - label: No feedback until the end; it is a test
+                decision: No feedback during; all results shown at the end. It is a test.
+          - text: How does it end, and is there a score?
+            decides: Decides what the LMS records.
+            chips:
+              - label: All eight placed; right-first-time out of eight; wrong ones listed
+                decision: >-
+                  Ends when all eight are placed; score is right-first-time out of eight; wrong
+                  ones listed with their reasons.
+                recommended: true
+              - label: No score, completion only
+                decision: No score; the LMS records completion only.
+              - label: A percentage with a pass mark of 75
+                decision: A percentage score with a pass mark of 75; passed or failed is reported.
+          - text: Keyboard and touch?
+            decides: Decides accessibility and the tablet.
+            chips:
+              - label: "Both: Enter, arrows, Enter; announcements; touch drag"
+                decision: >-
+                  Keyboard: Enter picks up, arrows move between shelves, Enter places; a screen
+                  reader hears item, shelf and result. Touch drag works.
+                recommended: true
+              - label: Mouse and touch only for now
+                decision: Mouse and touch; keyboard and screen reader in a later round.
+              - label: Keyboard only; no tablets in the kitchens
+                decision: Keyboard and mouse; no touch support.
+      - message: Took your answers as D1 to D5 on the right. Three more; the rest I can leave to the builder.
         questions:
-          - text: The second question?
+          - text: A timer?
+            recommendation: "Recommended: no. Induction, not a game; a timer punishes the people the course is for."
             chips:
-              - label: The recommended answer
-                decision: The decision the recommended answer makes.
+              - label: No timer
+                decision: No timer. No leaderboard.
                 recommended: true
-              - label: Another answer
-                decision: The decision the other answer makes.
+              - label: A sixty-second timer
+                decision: A sixty-second timer.
+          - text: Can they retry the whole thing, and which attempt does the LMS get?
+            recommendation: "Recommended: a Try again button; the LMS gets the latest attempt."
+            chips:
+              - label: A Try again button; the LMS gets the latest attempt
+                decision: A Try again button; the LMS gets the latest attempt.
+                recommended: true
+              - label: One attempt only
+                decision: One attempt only; the LMS gets that attempt.
+          - text: What does the client see afterwards?
+            recommendation: "Recommended: completion and the score per learner, nothing else."
+            chips:
+              - label: Completion and the score per learner
+                decision: The client sees completion and score per learner.
+                recommended: true
+              - label: Every learner's drops, item by item
+                decision: The client sees every learner's drops, item by item.
     defaults:
       label: Your defaults
+      hint: One line is a complete reply.
       reply: Your defaults.
-    closing: That's the brief. Two decisions on the record.
+    closing: >-
+      That's the brief. Everything left (how the shelves are drawn, what the drag feels like, the
+      exact wording) is the builder's call and changes nothing the learner sees you decide. Eight
+      decisions on the record.
     panel:
       heading: The record
-      note: "{filled} of {total} decisions."
+      note: "{filled} of {total} decisions. The builder reads these, not your memory of the conversation."
+    comparison: >-
+      Compare this with module 00's one-line ask. Same agent. The difference is eight sentences you
+      did not have to think of; you only had to answer.
+
+  - type: scene
+    heading: What the record is for
+    blocks:
+      - type: paragraph
+        text: >-
+          The builder will not remember this conversation. It will not even be the same agent.
+          What it gets is the eight decisions, each with its reason, and it builds to them. That is
+          why the output of a brief is a list, not a feeling that you have been understood.
+      - type: cards
+        items:
+          - title: Decisions bind the builder.
+            body: '"No timer" on the record means no timer. A guess has nowhere to live.'
+          - title: Reasons let the builder choose well.
+            body: >-
+              "Induction, not a game" tells the builder what kind of thing it is making when it
+              hits a case nobody wrote down.
+
   - type: choose
     slug: check-1
-    eyebrow: Check · 1 of 2
-    heading: A placeholder question?
     scored: true
     mode: single
+    eyebrow: Check · 1 of 2
+    heading: The agent asks five questions. You have time to answer two. What do you do?
+    intro: Every module ends with two of these. Each option tells you why, right or wrong.
+    nav: Check · 1 of 2
     options:
-      - label: The right answer.
-        right: true
-        feedback: Yes. Placeholder feedback.
-      - label: A wrong answer.
+      - label: Answer two and let it guess the rest.
         right: false
-        feedback: Placeholder feedback on the wrong answer.
-  - type: match
-    slug: match
-    heading: Placeholder match
-    scored: false
-    targets:
-      - id: first
-        label: the first target
-      - id: second
-        label: the second target
-    rows:
-      - text: A row that matches the first target.
-        key: first
-        feedback: The first target.
-      - text: A row that matches the second target.
-        key: second
-        feedback: The second target.
-  - type: order
-    slug: order
-    heading: Placeholder order
-    cards:
-      - id: one
-        label: The first card.
-        feedback: This one comes first.
-      - id: two
-        label: The second card.
-        feedback: This one comes second.
-      - id: three
-        label: The third card.
-        feedback: This one comes last.
-    start: [three, one, two]
-  - type: fridge
-    heading: Placeholder fridge
-    fridge: one-shot
-  - type: compare
-    heading: Placeholder comparison
-    left: one-shot
-    right: accepted
-    table:
-      rows:
-        - aspect: Placeholder
-          left: The one-shot.
-          right: The accepted one.
-          wall: placeholder
+        feedback: Guessing is what module 00 showed. The three gaps will be filled.
+      - label: Say "your defaults, except..." for the ones you disagree with.
+        right: true
+        feedback: Yes. The recommended answers are there so that this is a complete reply in one line.
+      - label: Ask it to stop asking and start building.
+        right: false
+        feedback: It will, and it will fill the gaps.
+
+  - type: choose
+    slug: check-2
+    scored: true
+    mode: single
+    eyebrow: Check · 2 of 2
+    heading: >-
+      Halfway through round two the agent recommends a leaderboard "to drive engagement". What is
+      the right move?
+    nav: Check · 2 of 2
+    options:
+      - label: Accept it; the agent knows what works.
+        right: false
+        feedback: The agent knows what is common. The record is where you say what this course is.
+      - label: Decide, and have the reason recorded with it.
+        right: true
+        feedback: >-
+          Yes. "No leaderboard: induction, not a game" is a decision a builder can hold to.
+      - label: Tell it never to recommend things.
+        right: false
+        feedback: The recommendations are the fast path. Decline the ones that are wrong.
+
   - type: takeaway
-    text: "**Placeholder takeaway.** The module's own card comes from its storyboard."
-    caption: Placeholder line under the box.
+    eyebrow: Takeaway
+    nav: Takeaway
+    text: >-
+      **The agent asks, you decide, the decisions are written down.** The builder works from the
+      record, not from your memory of a conversation.
+    caption: The box gains its first wall. Four to go, then the arrow.

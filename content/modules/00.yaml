@@ -1,147 +1,137 @@
-# Stub: placeholder screens, one of every type, so the frame can play this module before its
-# real screens arrive (bead .10 writes modules 00-03, bead .11 modules 04-07, from the
-# storyboard in docs/course/modules/). Every type is documented in content/README.md.
 slug: "00"
 screens:
   - type: scene
-    eyebrow: Placeholder
-    heading: Module 00, placeholder scene
+    heading: The request
     blocks:
       - type: paragraph
-        text: Placeholder copy. This module's screens come from its storyboard.
+        text: >-
+          A client's food-hygiene course needs a fridge activity: learners drag food onto the right
+          shelf of a fridge and are told why when they get it wrong. Our authoring tool's
+          drag-and-drop can't do shelves with rules, so it will be built in code. You have an agent.
+      - type: paragraph
+        text: "*Let's do what most people do first.*"
+
+  - type: chat
+    slug: just-ask
+    eyebrow: Try it
+    heading: Just ask
+    intro: The client wants a fridge activity. You have an agent. Let's do what most people do first.
+    nav: Just ask
+    opening: Build a drag-and-drop fridge activity for the food hygiene course.
+    messages:
+      - >-
+        Done! I've built a fridge activity. It has five shelves and fourteen food items, a
+        60-second timer to keep it exciting, a leaderboard so learners can compete, and confetti
+        when they finish. I assumed the standard fridge rules. I ran through it myself and it
+        works great. Want me to add sound effects?
+    side:
+      - type: paragraph
+        heading: What to watch for
+        text: >-
+          Read the agent's reply twice. Count the things you did not ask for. Count the things it
+          decided. Notice who tested it.
+
+  - type: choose
+    slug: what-went-wrong
+    scored: false
+    mode: multi
+    eyebrow: Try it
+    heading: Tick everything that went wrong here.
+    nav: Tick everything that went wrong
+    body:
+      - type: quote
+        text: >-
+          Done! I've built a fridge activity. It has five shelves and fourteen food items, a
+          60-second timer to keep it exciting, a leaderboard so learners can compete, and confetti
+          when they finish. I assumed the standard fridge rules. I ran through it myself and it
+          works great. Want me to add sound effects?
+        attribution: The agent
+    options:
+      - label: "It built things nobody asked for: the timer, the leaderboard, the confetti."
+        right: true
+        feedback: Yes. Every gap in your ask was filled with a guess, and the guesses were fun rather than right.
+      - label: It invented the rules.
+        right: true
+        feedback: >-
+          Yes. "I assumed the standard fridge rules" means it decided what the client's course
+          teaches.
+      - label: It checked its own work.
+        right: true
+        feedback: >-
+          Yes. "I ran through it myself and it works great" is the builder marking its own
+          homework.
+      - label: It should have said no.
+        right: false
+        feedback: No. It did nothing wrong by building; the ask left it nothing to build to.
+      - label: It was too slow.
+        right: false
+        feedback: No. It was fast. Speed is not the problem; direction is.
+    after:
       - type: cards
+        heading: What just happened
         numbered: true
         items:
-          - title: A placeholder card.
-            body: Its body.
-      - type: quote
-        text: A placeholder quote.
-        attribution: Someone
-      - type: list
-        items:
-          - The first line.
-          - text: The second line, with its own marker.
-            marker: ch 2
-            tone: right
-      - type: table
-        header: [Aspect, Value]
-        rows:
-          - [Placeholder, "1"]
-      - type: columns
-        columns:
-          - heading: Left
-            blocks:
-              - type: paragraph
-                text: The left column.
-          - heading: Right
-            blocks:
-              - type: mono
-                text: "gate: lint ok"
-      - type: stats
-        items:
-          - value: 16
-            caption: a fixed number
-      - type: aside
-        term: placeholder
-        text: a word the glossary defines.
-  - type: chat
-    slug: chat
-    heading: Placeholder chat
-    opening: A placeholder ask.
-    messages:
-      - A placeholder reply from the agent.
-    replies:
-      options:
-        - label: First reply
-          reply: The agent's scripted answer to the first reply.
-        - label: Second reply
-          reply: The agent's scripted answer to the second reply.
-  - type: brief
-    slug: brief
-    heading: Placeholder brief
-    opening: A placeholder request.
-    rounds:
-      - message: One question, with my recommended answer.
-        questions:
-          - text: The first question?
-            chips:
-              - label: The recommended answer
-                decision: The decision the recommended answer makes.
-                recommended: true
-              - label: Another answer
-                decision: The decision the other answer makes.
-      - message: Took your answer as D1. One more.
-        questions:
-          - text: The second question?
-            chips:
-              - label: The recommended answer
-                decision: The decision the recommended answer makes.
-                recommended: true
-              - label: Another answer
-                decision: The decision the other answer makes.
-    defaults:
-      label: Your defaults
-      reply: Your defaults.
-    closing: That's the brief. Two decisions on the record.
-    panel:
-      heading: The record
-      note: "{filled} of {total} decisions."
+          - title: It filled every gap with a guess.
+            body: >-
+              Agents do not stop at a gap; they fill it, and they sound sure when they do. The
+              timer came from a gap you left.
+          - title: It built more than you asked.
+            body: >-
+              Given room, an agent builds into it. More is not better; more is more to check.
+          - title: It marked its own homework.
+            body: The agent that built it is the worst judge of it. It believes its own plan.
+          - title: Here is the part that works.
+            body: >-
+              The same agent, pointed at someone else's work with a clear question, is sharp. That
+              asymmetry is the whole workflow: box the builder, then let the reviewers loose.
+
+  - type: fridge
+    eyebrow: Try it
+    heading: Try what it built
+    intro: Optional, a minute long. The timer starts as soon as you pick something up.
+    fridge: one-shot
+
   - type: choose
     slug: check-1
-    eyebrow: Check · 1 of 2
-    heading: A placeholder question?
     scored: true
     mode: single
+    eyebrow: Check · 1 of 2
+    heading: Your agent built a feature you never mentioned. What most likely happened?
+    intro: Every module ends with two of these. Each option tells you why, right or wrong.
+    nav: Check · 1 of 2
     options:
-      - label: The right answer.
-        right: true
-        feedback: Yes. Placeholder feedback.
-      - label: A wrong answer.
+      - label: It misread your message.
         right: false
-        feedback: Placeholder feedback on the wrong answer.
-  - type: match
-    slug: match
-    heading: Placeholder match
-    scored: false
-    targets:
-      - id: first
-        label: the first target
-      - id: second
-        label: the second target
-    rows:
-      - text: A row that matches the first target.
-        key: first
-        feedback: The first target.
-      - text: A row that matches the second target.
-        key: second
-        feedback: The second target.
-  - type: order
-    slug: order
-    heading: Placeholder order
-    cards:
-      - id: one
-        label: The first card.
-        feedback: This one comes first.
-      - id: two
-        label: The second card.
-        feedback: This one comes second.
-      - id: three
-        label: The third card.
-        feedback: This one comes last.
-    start: [three, one, two]
-  - type: fridge
-    heading: Placeholder fridge
-    fridge: one-shot
-  - type: compare
-    heading: Placeholder comparison
-    left: one-shot
-    right: accepted
-    table:
-      rows:
-        - aspect: Placeholder
-          left: The one-shot.
-          right: The accepted one.
-          wall: placeholder
+        feedback: Not usually. It read what you wrote; the feature came from what you did not write.
+      - label: It filled a gap in your ask with a guess.
+        right: true
+        feedback: Yes. Gaps get filled, confidently.
+      - label: It was showing off.
+        right: false
+        feedback: Agents do not show off; they complete. An open ask is completed with more.
+
+  - type: choose
+    slug: check-2
+    scored: true
+    mode: single
+    eyebrow: Check · 2 of 2
+    heading: The agent says "I tested it myself and it all works." What is that worth?
+    nav: Check · 2 of 2
+    options:
+      - label: "A lot: it has run the code and you have not."
+        right: false
+        feedback: It is the builder's word. The builder believes its own plan, including the parts that are wrong.
+      - label: "Something, but not a sign-off: another agent, or a test, has to look."
+        right: true
+        feedback: Yes. The course is about what that looking looks like.
+      - label: "Nothing: agents lie."
+        right: false
+        feedback: They do not lie; they are sure. Those are different problems with the same fix.
+
   - type: takeaway
-    text: "**Placeholder takeaway.** The module's own card comes from its storyboard."
-    caption: Placeholder line under the box.
+    eyebrow: Takeaway
+    nav: Takeaway
+    text: >-
+      **The builder is the worst judge of its own work.** Everything that follows is about putting
+      walls round the builder and letting the reviewers in.
+    caption: The box gains nothing yet; the next module adds the first wall.
