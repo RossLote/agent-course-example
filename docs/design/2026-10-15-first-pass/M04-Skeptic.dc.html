@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Module 04: you are the skeptic</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.mono{font-family:'JetBrains Mono',monospace}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px 22px;box-sizing:border-box}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#D9DEE3}.dot.done{background:#2F4BD6}.dot.now{background:#fff;border:2px solid #2F4BD6;box-sizing:border-box}
+.stage{display:flex;gap:16px;align-items:flex-start}
+.stagenum{width:34px;height:34px;border-radius:50%;background:#172029;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-weight:800;font-size:14px;flex-shrink:0}
+.stagenum.teal{background:#0E7C86}
+.stagenum.amber{background:#B45309}
+.agentbox{border:1px solid #BFE0E3;background:#E8F4F5;border-radius:10px;padding:12px 14px}
+.excerpt{font-family:'JetBrains Mono',monospace;font-size:13px;background:#172029;color:#D7E0E8;border-radius:8px;padding:10px 12px;white-space:pre-wrap;line-height:1.5}
+.excerpt .ln{color:#7C8A99}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px;border-radius:10px;border:2px solid #D9DEE3;background:#fff;font:inherit;cursor:pointer;color:#172029;box-sizing:border-box}
+.opt:hover{border-color:#AEB6BF}
+.opt.right{border-color:#1B7F4B;background:#EAF6EE}
+.opt.wrong{border-color:#B42318;background:#FBEDEB}
+.opt.dim{opacity:0.6}
+.radio{width:22px;height:22px;border-radius:50%;border:2px solid #AEB6BF;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:#fff;color:#fff}
+.opt.right .radio{border-color:#1B7F4B;background:#1B7F4B}
+.opt.wrong .radio{border-color:#B42318;background:#B42318}
+.fb{font-size:15px;margin-top:4px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+.num{font-family:Manrope,sans-serif;font-weight:800;font-size:36px;line-height:1}
+.layer{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid #D9DEE3}
+.layer .n{font-family:'JetBrains Mono',monospace;font-size:12px;color:#2F4BD6;padding-top:4px;width:18px;flex-shrink:0}
+</style>
+</helmet>
+<div style="min-height:1080px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="Main.dc.html">Getting the most out of agents</a>
+    <span class="muted small">Module 04 · Agents checking agents</span>
+    <span style="flex-grow:1"></span>
+    <div class="dots" aria-label="Module 5 of 8"><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot now"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <span class="muted small">Screen 3 of 6</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+    <section style="flex:999 1 600px;min-width:0;display:flex;flex-direction:column;gap:22px">
+      <div>
+        <p class="eyebrow">Try it</p>
+        <h1 style="font-size:34px;margin-top:6px">Follow one finding</h1>
+        <p class="muted" style="margin-top:8px">The build is green. The adversarial review starts. Follow one finding from the finder to the fix, and take the skeptic's seat in the middle.</p>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;gap:22px">
+        <div class="stage">
+          <span class="stagenum teal">1</span>
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:0;flex:1 1 auto">
+            <p><strong>The finder.</strong> <span class="muted">Lens: the states a screen can be in.</span></p>
+            <div class="agentbox">
+              <p><strong>Finding.</strong> If the learner drops a second item while a wrong-placement message is still on screen, the drop is ignored: the item snaps back to the tray with no message.</p>
+              <p class="small" style="margin-top:6px"><strong>Scenario:</strong> drop raw chicken on the top shelf (the message shows for 2.5 seconds); within that time drop cheese on the top shelf; cheese returns to the tray and nothing explains why.</p>
+              <p class="small muted" style="margin-top:4px"><strong>Lines read:</strong> the drop handler, 40 to 58; the message timer, 80 to 84.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage">
+          <span class="stagenum teal">2</span>
+          <div style="min-width:0;flex:1 1 auto">
+            <p><strong>The deduper.</strong> A finder with the <em>correctness</em> lens found the same thing in different words. The deduper reads the list, never the code, and folds the two into one finding with both locations. It will be verified once and fixed everywhere.</p>
+          </div>
+        </div>
+
+        <div class="stage">
+          <span class="stagenum amber">3</span>
+          <div style="display:flex;flex-direction:column;gap:12px;min-width:0;flex:1 1 auto">
+            <p><strong>You are the skeptic.</strong> Three excerpts. Your verdict?</p>
+            <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px">
+              <div class="excerpt"><span class="ln">A · drop handler, line 41</span>
+if (message.visible) return;</div>
+              <div class="excerpt"><span class="ln">B · message timer, line 82</span>
+hideAfter(message, 2500);</div>
+              <div class="excerpt"><span class="ln">C · test</span>
+"shows the reason on a wrong drop":
+drops one item, checks the message.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{opts}}" as="o" hint-placeholder-count="4">
+                <button class="opt {{o.cls}}" onClick="{{o.pick}}">
+                  <span class="radio" aria-hidden="true"><sc-if value="{{o.chosen}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="6"></circle></svg></sc-if></span>
+                  <span style="display:flex;flex-direction:column;gap:2px">
+                    <span style="font-weight:700">{{o.label}}</span>
+                    <sc-if value="{{o.chosen}}" hint-placeholder-val="{{false}}"><span class="fb">{{o.feedback}}</span></sc-if>
+                  </span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <sc-if value="{{answered}}" hint-placeholder-val="{{false}}">
+          <div class="stage">
+            <span class="stagenum teal">4</span>
+            <div style="min-width:0;flex:1 1 auto">
+              <p><strong>The fix.</strong> The second skeptic also confirmed, citing line 41. The finding becomes a piece of work: <em>a drop while a message is showing replaces the message</em>, with its own acceptance, built in the box, gate green.</p>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{answered}}" hint-placeholder-val="{{false}}"><div><button class="btn ghost" onClick="{{reset}}">Try another verdict</button></div></sc-if>
+      </div>
+    </section>
+
+    <aside style="flex:1 1 300px;display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="display:flex;flex-direction:column;gap:10px">
+        <p class="eyebrow">One real run of this workflow</p>
+        <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:12px">
+          <div><div class="num">16</div><p class="small muted">pieces built, all green at the gate</p></div>
+          <div><div class="num">16</div><p class="small muted">finders, one lens each</p></div>
+          <div><div class="num">50</div><p class="small muted">findings</p></div>
+          <div><div class="num">39</div><p class="small muted">fixed</p></div>
+        </div>
+        <p class="small muted">A public project of Ross's, October 2026. The gate catches what a test can describe; these took other agents reading with a question in mind.</p>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column">
+        <p class="eyebrow" style="margin-bottom:6px">The skeptic's rules</p>
+        <div class="layer"><span class="n">01</span><p class="small"><strong>Confirmed</strong> means you read the lines and the scenario happens.</p></div>
+        <div class="layer"><span class="n">02</span><p class="small"><strong>Refuted</strong> only by citing the exact line that makes it impossible. No line, no refutation.</p></div>
+        <div class="layer"><span class="n">03</span><p class="small"><strong>Uncertain</strong> is allowed. It keeps the finding alive at lower priority. A wrong refutation costs a bug; an uncertain costs minutes.</p></div>
+        <div class="layer"><span class="n">04</span><p class="small">"Unlikely", "a test exists", "the framework handles it", "the spec says so": none of these is a refutation.</p></div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="M03-Box.dc.html">Back</a>
+    <span class="muted small">04 · screen 3 of 6</span>
+    <a class="btn primary" href="M05-PR.dc.html">Next: who catches it?</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { chosen: null }; }
+  renderVals() {
+    const s = this.state;
+    const base = [
+      { label: 'Confirmed, citing A.', right: true, feedback: 'Yes. Line 41 returns before anything happens when a message is showing. The scenario happens. You cited the line.' },
+      { label: 'Refuted: there is a test for wrong drops (C).', right: false, feedback: 'Not a refutation. The test drops one item; it never exercises this scenario. "A test exists" refutes nothing unless it tests exactly this.' },
+      { label: 'Refuted: nobody drops two items within 2.5 seconds.', right: false, feedback: 'Not a refutation. "Unlikely" is about how bad it is, not whether it is true. Likelihood is severity.' },
+      { label: 'Uncertain.', right: false, feedback: 'Allowed, and never wrong to say. But you were shown line 41; the honest reading here is confirmed. Uncertain is for when you cannot find the line either way.' }
+    ];
+    const answered = s.chosen !== null;
+    const opts = base.map((o, i) => {
+      const chosen = s.chosen === i;
+      let cls = '';
+      if (answered) { cls = chosen ? (o.right ? 'right' : 'wrong') : 'dim'; }
+      return { label: o.label, feedback: o.feedback, chosen: chosen, cls: cls,
+        pick: () => { if (answered) return; this.setState({ chosen: i }); } };
+    });
+    return { opts: opts, answered: answered, reset: () => this.setState({ chosen: null }) };
+  }
+}
+</script>
+</body>
+</html>

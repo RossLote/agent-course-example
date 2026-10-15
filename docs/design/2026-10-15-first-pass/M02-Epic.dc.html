@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Module 02: the epic and the acceptance</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.mono{font-family:'JetBrains Mono',monospace}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px 22px;box-sizing:border-box}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#D9DEE3}.dot.done{background:#2F4BD6}.dot.now{background:#fff;border:2px solid #2F4BD6;box-sizing:border-box}
+.bead{border:1px solid #D9DEE3;border-radius:10px;padding:12px 14px;background:#fff;display:flex;flex-direction:column;gap:4px}
+.bead .id{font-family:'JetBrains Mono',monospace;font-size:13px;color:#2F4BD6;font-weight:600}
+.bead.alone{border-color:#172029}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:#EEF1FD;color:#2F4BD6}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px;border-radius:10px;border:2px solid #D9DEE3;background:#fff;font:inherit;cursor:pointer;color:#172029;box-sizing:border-box}
+.opt:hover{border-color:#AEB6BF}
+.opt.on{border-color:#2F4BD6;background:#EEF1FD}
+.opt.right{border-color:#1B7F4B;background:#EAF6EE}
+.opt.wrong{border-color:#B42318;background:#FBEDEB}
+.tick{width:22px;height:22px;border-radius:6px;border:2px solid #AEB6BF;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;color:#fff;margin-top:2px}
+.opt.on .tick{border-color:#2F4BD6;background:#2F4BD6}
+.opt.right .tick{border-color:#1B7F4B;background:#1B7F4B}
+.opt.wrong .tick{border-color:#B42318;background:#B42318}
+.fb{font-size:15px;margin-top:4px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+ol.script{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+</style>
+</helmet>
+<div style="min-height:1080px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="Main.dc.html">Getting the most out of agents</a>
+    <span class="muted small">Module 02 · Define done before you start</span>
+    <span style="flex-grow:1"></span>
+    <div class="dots" aria-label="Module 3 of 8"><span class="dot done"></span><span class="dot done"></span><span class="dot now"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <span class="muted small">Screens 3 and 4 of 7</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-direction:column;gap:28px">
+    <div>
+      <p class="eyebrow">The epic</p>
+      <h1 style="font-size:34px;margin-top:6px">The fridge activity, cut into pieces</h1>
+      <p class="muted" style="margin-top:8px">Eight decisions become five beads. Each says what it is, which decisions bind it, what it may touch, and how a reviewer will know it is done. The demo script on the right is what done means for the whole thing.</p>
+    </div>
+
+    <section style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+      <div style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:10px">
+        <div class="bead alone"><span class="id">.1 The data <span class="tag">runs alone</span></span><p>Shelves, items, rules and reasons in one file, from the client's guide (D2).</p><p class="small muted"><strong>Acceptance:</strong> a test that every item has exactly one right shelf and a reason.</p></div>
+        <div class="bead alone"><span class="id">.2 The fridge and dragging <span class="tag">runs alone · sets the pattern</span></span><p>Four shelves, eight items, drag with mouse and touch; a right drop stays, a wrong drop returns (D3, D5). Depends on .1.</p><p class="small muted"><strong>Acceptance:</strong> drag raw chicken to the top shelf: it returns; to the bottom shelf: it stays.</p></div>
+        <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px">
+          <div class="bead"><span class="id">.3 Keyboard and screen reader <span class="tag">with .4</span></span><p>Enter, arrows, Enter; announcements of item, shelf and result (D5). Depends on .2.</p><p class="small muted"><strong>Acceptance:</strong> you write it below.</p></div>
+          <div class="bead"><span class="id">.4 Feedback and the score screen <span class="tag">with .3</span></span><p>The one-line reason on a wrong drop (D3); the score screen and Try again (D4, D7). Depends on .2.</p><p class="small muted"><strong>Touches:</strong> the feedback and score files only.</p></div>
+        </div>
+        <div class="bead"><span class="id">.5 The walkthrough <span class="tag">last</span></span><p>Runs the demo script in a browser, recorded, one chapter per step. Depends on .3 and .4.</p></div>
+        <p class="small muted"><span class="mono">order:</span> .1, then .2, then .3 and .4 together (they touch different files), then .5.</p>
+      </div>
+
+      <div class="card" style="flex:1 1 320px;display:flex;flex-direction:column;gap:10px">
+        <p class="eyebrow">The demo script (done means)</p>
+        <ol class="script">
+          <li>Open the activity: four labelled shelves and eight items in a tray.</li>
+          <li>Drag raw chicken to the top shelf: it returns, and the message reads "Raw meat and fish go on the bottom shelf so they can't drip onto other food."</li>
+          <li>Drag raw chicken to the bottom shelf: it stays.</li>
+          <li>Tab to the lettuce, Enter, arrow down to the salad drawer, Enter: placed; the screen reader says "Lettuce placed in the salad drawer. Correct."</li>
+          <li>Place the other six; the score screen reads "7 out of 8 right first time" and lists raw chicken with its reason.</li>
+          <li>Press Try again: the tray is full and the score is cleared.</li>
+        </ol>
+        <p class="small muted">Every step performed in a browser and recorded, with all the checks green. Not "the agent says so".</p>
+      </div>
+    </section>
+
+    <section class="card" style="display:flex;flex-direction:column;gap:12px">
+      <p class="eyebrow">Try it</p>
+      <h2 style="font-size:22px">Bead .3 has no acceptance yet. Pick the three lines a reviewer could check.</h2>
+      <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px">
+        <sc-for list="{{opts}}" as="o" hint-placeholder-count="6">
+          <button class="opt {{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.toggle}}">
+            <span class="tick" aria-hidden="true"><sc-if value="{{o.on}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"></path></svg></sc-if></span>
+            <span style="display:flex;flex-direction:column;gap:2px">
+              <span>{{o.label}}</span>
+              <sc-if value="{{o.showFeedback}}" hint-placeholder-val="{{false}}"><span class="fb"><strong>{{o.verdict}}</strong> {{o.feedback}}</span></sc-if>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:4px">
+        <sc-if value="{{notSubmitted}}" hint-placeholder-val="{{true}}"><button class="btn primary" onClick="{{submit}}">Check my answer</button></sc-if>
+        <sc-if value="{{submitted}}" hint-placeholder-val="{{false}}"><button class="btn ghost" onClick="{{reset}}">Try again</button><p style="flex:1 1 300px"><strong>Three you can check, three you can only hope.</strong> The builder is held to the first three; the second three would have let it decide what "proper" meant.</p></sc-if>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="M01-Brief.dc.html">Back</a>
+    <span class="muted small">02 · screens 3 and 4 of 7</span>
+    <a class="btn primary" href="M03-Box.dc.html">Next: the epic review</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { picked: {}, submitted: false }; }
+  renderVals() {
+    const s = this.state;
+    const base = [
+      { label: 'Pressing Enter on the focused tomatoes, then arrow down twice, then Enter, places them in the salad drawer.', right: true, feedback: 'A reviewer can do it and see it.' },
+      { label: 'Keyboard use is smooth and intuitive.', right: false, feedback: 'Nobody can check "smooth". What would they press?' },
+      { label: 'The screen reader says "Tomatoes placed in the salad drawer. Correct."', right: true, feedback: 'A reviewer can hear it.' },
+      { label: 'Works with a screen reader.', right: false, feedback: 'Which reader, saying what? Without the words, any noise passes.' },
+      { label: 'Pressing Escape while an item is picked up puts it back in the tray.', right: true, feedback: 'A key, an action, a visible result.' },
+      { label: 'Accessibility is handled properly.', right: false, feedback: 'A wish, not a test.' }
+    ];
+    const opts = base.map((o, i) => {
+      const on = !!s.picked[i];
+      let cls = on ? 'on' : '';
+      if (s.submitted) { cls = o.right ? 'right' : 'wrong'; }
+      return { label: o.label, feedback: o.feedback, on: on, cls: cls, pressed: on ? 'true' : 'false', showFeedback: s.submitted, verdict: o.right ? 'Yes.' : 'No.',
+        toggle: () => { if (s.submitted) return; const p = Object.assign({}, s.picked); p[i] = !on; this.setState({ picked: p }); } };
+    });
+    return { opts: opts, submitted: s.submitted, notSubmitted: !s.submitted,
+      submit: () => this.setState({ submitted: true }), reset: () => this.setState({ picked: {}, submitted: false }) };
+  }
+}
+</script>
+</body>
+</html>

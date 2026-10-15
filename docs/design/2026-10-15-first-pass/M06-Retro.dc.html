@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Module 06: the check that missed</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px 22px;box-sizing:border-box}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#D9DEE3}.dot.done{background:#2F4BD6}.dot.now{background:#fff;border:2px solid #2F4BD6;box-sizing:border-box}
+.story{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-top:1px solid #D9DEE3}
+.story .n{width:30px;height:30px;border-radius:50%;background:#172029;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-weight:800;font-size:14px;flex-shrink:0}
+.story .n.amber{background:#B45309}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px;border-radius:10px;border:2px solid #D9DEE3;background:#fff;font:inherit;cursor:pointer;color:#172029;box-sizing:border-box}
+.opt:hover{border-color:#AEB6BF}
+.opt.on{border-color:#2F4BD6;background:#EEF1FD}
+.opt.right{border-color:#1B7F4B;background:#EAF6EE}
+.opt.wrong{border-color:#B42318;background:#FBEDEB}
+.tick{width:22px;height:22px;border-radius:6px;border:2px solid #AEB6BF;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;color:#fff;margin-top:2px}
+.opt.on .tick{border-color:#2F4BD6;background:#2F4BD6}
+.opt.right .tick{border-color:#1B7F4B;background:#1B7F4B}
+.opt.wrong .tick{border-color:#B42318;background:#B42318}
+.fb{font-size:15px;margin-top:4px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+.code{font-family:'JetBrains Mono',monospace;font-size:13px;background:#F3F5F7;border-radius:6px;padding:2px 6px}
+</style>
+</helmet>
+<div style="min-height:1080px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="Main.dc.html">Getting the most out of agents</a>
+    <span class="muted small">Module 06 · Round again</span>
+    <span style="flex-grow:1"></span>
+    <div class="dots" aria-label="Module 7 of 8"><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot now"></span><span class="dot"></span></div>
+    <span class="muted small">Screens 3 and 4 of 6</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+    <section style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:22px">
+      <div>
+        <p class="eyebrow">A true story</p>
+        <h1 style="font-size:34px;margin-top:6px">The check that missed</h1>
+        <p class="muted" style="margin-top:8px">Not every miss is the client's taste. Sometimes a wall has a gap. This happened, in Ross's work, in October 2026.</p>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column">
+        <div class="story" style="border-top:0;padding-top:0"><span class="n">1</span><p>A feature was built twice, on purpose: once by hand by a colleague, once by this workflow, with every agent told to ignore the other attempt. The question was whether the workflow could get to a passable result on its own.</p></div>
+        <div class="story"><span class="n">2</span><p>A reviewer on the hand-built version asked for one change: a permission check looked at whether a field was <strong>present</strong> in the request, when it should have looked at whether the field was <strong>changing</strong>. An ordinary user who fetched a record, changed something else and sent it all back would be refused.</p></div>
+        <div class="story"><span class="n">3</span><p>The workflow's version had the identical check. It had been written into the epic as a settled decision, so no review questioned it. The adversarial review found three other things and confirmed none. Two automated review rounds and two more review passes found nine things each. None of them was this.</p></div>
+        <div class="story"><span class="n">4</span><p>The workflow had a gap: nothing in it asked what an ordinary caller would do. The decision was settled, so every agent respected it.</p></div>
+        <div class="story"><span class="n amber">5</span><div style="display:flex;flex-direction:column;gap:6px"><p><strong>What changed, in the days after.</strong> A new lens for the finders: <em>what would an ordinary caller do?</em> The skeptic's rule tightened: "the code does what the spec says" is not a refutation when the spec is the problem. The rule that a refutation must cite a line. And a new step, the retro, that reads several runs' records back to find what goes wrong more than once.</p><p class="muted">The agent was not told to be more careful. The check was changed.</p></div></div>
+      </div>
+    </section>
+
+    <aside style="flex:1 1 360px;display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="display:flex;flex-direction:column;gap:10px">
+        <p class="eyebrow">Try it</p>
+        <h2 style="font-size:20px">A reviewer found something none of the checks did. Tick what you would do.</h2>
+        <sc-for list="{{opts}}" as="o" hint-placeholder-count="5">
+          <button class="opt {{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.toggle}}">
+            <span class="tick" aria-hidden="true"><sc-if value="{{o.on}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"></path></svg></sc-if></span>
+            <span style="display:flex;flex-direction:column;gap:2px">
+              <span>{{o.label}}</span>
+              <sc-if value="{{o.showFeedback}}" hint-placeholder-val="{{false}}"><span class="fb"><strong>{{o.verdict}}</strong> {{o.feedback}}</span></sc-if>
+            </span>
+          </button>
+        </sc-for>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:4px">
+          <sc-if value="{{notSubmitted}}" hint-placeholder-val="{{true}}"><button class="btn primary" onClick="{{submit}}">Check my answer</button></sc-if>
+          <sc-if value="{{submitted}}" hint-placeholder-val="{{false}}"><button class="btn ghost" onClick="{{reset}}">Try again</button><p style="flex:1 1 200px"><strong>Three changes to the process, none to the hope.</strong></p></sc-if>
+        </div>
+      </div>
+      <div class="card" style="background:#172029;color:#fff;border-color:#172029">
+        <p class="small" style="color:#AEB6BF;margin-bottom:6px">Ross</p>
+        <p>"The first round is not necessarily the one that hits. You merge it, and you go round again. You may not know what you want until you see the first round."</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="M05-PR.dc.html">Back</a>
+    <span class="muted small">06 · screens 3 and 4 of 6</span>
+    <a class="btn primary" href="M07-Capstone.dc.html">Next: check</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { picked: {}, submitted: false }; }
+  renderVals() {
+    const s = this.state;
+    const base = [
+      { label: 'Tell the builders to be more careful about permissions.', right: false, feedback: 'They will agree. Hope is not a wall (module 03).' },
+      { label: 'Add a lens to the finders: what would an ordinary user do with this?', right: true, feedback: 'A finder with that question would have found it.' },
+      { label: 'Write the decision as settled again, more clearly.', right: false, feedback: 'It was settled; that was the problem. A settled decision still needs a reviewer who is allowed to ask whether it is the right rule.' },
+      { label: 'Look back over the last few runs to see whether this kind of miss repeats.', right: true, feedback: 'That is the retro. One miss is a story; a pattern is a change to the process.' },
+      { label: 'Add a test for the exact case that was missed.', right: true, feedback: 'Yes, and not only. The test catches this case next time. The lens catches the next case like it.' }
+    ];
+    const opts = base.map((o, i) => {
+      const on = !!s.picked[i];
+      let cls = on ? 'on' : '';
+      if (s.submitted) { cls = o.right ? 'right' : 'wrong'; }
+      return { label: o.label, feedback: o.feedback, on: on, cls: cls, pressed: on ? 'true' : 'false', showFeedback: s.submitted, verdict: o.right ? 'Yes.' : 'No.',
+        toggle: () => { if (s.submitted) return; const p = Object.assign({}, s.picked); p[i] = !on; this.setState({ picked: p }); } };
+    });
+    return { opts: opts, submitted: s.submitted, notSubmitted: !s.submitted,
+      submit: () => this.setState({ submitted: true }), reset: () => this.setState({ picked: {}, submitted: false }) };
+  }
+}
+</script>
+</body>
+</html>

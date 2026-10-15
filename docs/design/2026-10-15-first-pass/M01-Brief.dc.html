@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Module 01: the fridge brief</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px 22px;box-sizing:border-box}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#D9DEE3}.dot.done{background:#2F4BD6}.dot.now{background:#fff;border:2px solid #2F4BD6;box-sizing:border-box}
+.chat{display:flex;flex-direction:column;gap:18px}
+.msg{display:flex;gap:12px;align-items:flex-start}
+.msg.you{flex-direction:row-reverse}
+.avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-weight:800;font-size:14px;flex-shrink:0}
+.avatar.agent{background:#0E7C86;color:#fff}.avatar.you{background:#B45309;color:#fff}
+.bubble{max-width:640px;padding:14px 18px;border-radius:14px;border:1px solid #D9DEE3;background:#fff}
+.bubble.agent{background:#E8F4F5;border-color:#BFE0E3;border-top-left-radius:4px}
+.bubble.you{background:#FFF3DC;border-color:#F3D9A4;border-top-right-radius:4px}
+.who{font-size:13px;font-weight:700;color:#5B6672;margin-bottom:4px}
+.q{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid #BFE0E3}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:40px;padding:6px 14px;border-radius:999px;border:2px solid #AEB6BF;background:#fff;font:inherit;font-size:15px;cursor:pointer;color:#172029;text-align:left}
+.chip:hover{border-color:#172029}
+.chip.on{border-color:#2F4BD6;background:#2F4BD6;color:#fff}
+.chip.rec{border-style:dashed}
+.chip.rec.on{border-style:solid}
+.dec{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #D9DEE3}
+.dec .id{font-family:'JetBrains Mono',monospace;font-size:13px;color:#5B6672;width:32px;flex-shrink:0;padding-top:3px}
+.dec.filled .id{color:#2F4BD6;font-weight:600}
+.dec .txt{color:#AEB6BF}
+.dec.filled .txt{color:#172029}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+</style>
+</helmet>
+<div style="min-height:1080px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="Main.dc.html">Getting the most out of agents</a>
+    <span class="muted small">Module 01 · Write it down</span>
+    <span style="flex-grow:1"></span>
+    <div class="dots" aria-label="Module 2 of 8"><span class="dot done"></span><span class="dot now"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <span class="muted small">Screen 3 of 6</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+    <section style="flex:999 1 600px;min-width:0;display:flex;flex-direction:column;gap:22px">
+      <div>
+        <p class="eyebrow">Try it</p>
+        <h1 style="font-size:34px;margin-top:6px">The fridge brief</h1>
+        <p class="muted" style="margin-top:8px">Same agent as module 00. This time it asks before it builds. Each question comes with its recommended answer (dashed); pick it or pick differently. Every answer becomes a decision on the right.</p>
+      </div>
+
+      <div class="chat card" style="padding:22px">
+        <div class="msg you">
+          <div class="avatar you" aria-hidden="true">You</div>
+          <div><div class="who" style="text-align:right">You</div><div class="bubble you">A fridge activity for a client's food-hygiene course. Learners drag food onto the right shelf and get told why when they're wrong. It's for kitchen staff. The authoring tool can't do it.</div></div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar agent" aria-hidden="true">A</div>
+          <div style="min-width:0;flex:1 1 auto"><div class="who">Agent</div>
+            <div class="bubble agent" style="max-width:none">
+              <p>I read the client's food-hygiene guide and the course outline. Five questions, ranked: the one whose answer settles the most comes first. My recommended answer is the dashed one.</p>
+              <sc-for list="{{qs}}" as="q" hint-placeholder-count="5">
+                <div class="q">
+                  <p><strong>{{q.n}}. {{q.text}}</strong> <span class="muted small">{{q.decides}}</span></p>
+                  <div class="chips">
+                    <sc-for list="{{q.opts}}" as="o" hint-placeholder-count="3">
+                      <button class="chip {{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}">{{o.chip}}</button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <sc-if value="{{round1Done}}" hint-placeholder-val="{{false}}">
+          <div class="msg">
+            <div class="avatar agent" aria-hidden="true">A</div>
+            <div style="min-width:0;flex:1 1 auto"><div class="who">Agent</div>
+              <div class="bubble agent" style="max-width:none">
+                <p>Took your answers as D1 to D5 on the right. Three more; the rest I can leave to the builder.</p>
+                <div class="q"><p><strong>6. A timer?</strong> <span class="muted small">Recommended: no. Induction, not a game; a timer punishes the people the course is for.</span></p></div>
+                <div class="q"><p><strong>7. Can they retry the whole thing, and which attempt does the LMS get?</strong> <span class="muted small">Recommended: a Try again button; the LMS gets the latest attempt.</span></p></div>
+                <div class="q"><p><strong>8. What does the client see afterwards?</strong> <span class="muted small">Recommended: completion and the score per learner, nothing else.</span></p></div>
+                <sc-if value="{{notDefaults}}" hint-placeholder-val="{{true}}"><div style="margin-top:10px"><button class="btn primary" onClick="{{takeDefaults}}">Your defaults</button> <span class="muted small" style="margin-left:10px">One line is a complete reply.</span></div></sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{defaults}}" hint-placeholder-val="{{false}}">
+          <div class="msg you">
+            <div class="avatar you" aria-hidden="true">You</div>
+            <div><div class="who" style="text-align:right">You</div><div class="bubble you">Your defaults.</div></div>
+          </div>
+          <div class="msg">
+            <div class="avatar agent" aria-hidden="true">A</div>
+            <div><div class="who">Agent</div><div class="bubble agent">That's the brief. Everything left (how the shelves are drawn, what the drag feels like, the exact wording) is the builder's call and changes nothing the learner sees you decide. Eight decisions on the record.</div></div>
+          </div>
+        </sc-if>
+      </div>
+    </section>
+
+    <aside style="flex:1 1 300px;display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="display:flex;flex-direction:column;gap:2px">
+        <p class="eyebrow">The record</p>
+        <p class="muted small" style="margin-bottom:8px">{{filledCount}} of 8 decisions. The builder reads these, not your memory of the conversation.</p>
+        <sc-for list="{{decs}}" as="d" hint-placeholder-count="8">
+          <div class="dec {{d.cls}}"><span class="id">{{d.id}}</span><span class="txt">{{d.text}}</span></div>
+        </sc-for>
+      </div>
+      <sc-if value="{{defaults}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="background:#172029;color:#fff;border-color:#172029">
+          <p>Compare this with module 00's one-line ask. Same agent. The difference is eight sentences you did not have to think of; you only had to answer.</p>
+        </div>
+      </sc-if>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="M00-JustAsk.dc.html">Back</a>
+    <span class="muted small">01 · screen 3 of 6</span>
+    <a class="btn primary" href="M02-Epic.dc.html">Next: what the record is for</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { answers: {}, defaults: false }; }
+  renderVals() {
+    const s = this.state;
+    const data = [
+      { n: 1, text: 'Who does this, and where?', decides: 'Decides the device and how long it can take.', opts: [
+        { chip: 'Kitchen staff on induction, tablet or laptop, about five minutes', dec: 'Kitchen staff on induction, on a tablet or laptop, about five minutes.' },
+        { chip: 'Managers at a desk, as a refresher', dec: 'Managers at a desk, as a refresher; no time pressure.' },
+        { chip: 'Everyone, on their phones', dec: 'Everyone, on a phone; it must work at phone width.' } ] },
+      { n: 2, text: 'Which shelves, which items, and whose rules?', decides: 'Decides the whole content.', opts: [
+        { chip: 'Four shelves, eight items, rules from the client\'s guide', dec: 'Four shelves and eight items; rules and reasons from the client\'s guide, not the agent\'s.' },
+        { chip: 'Three shelves, six items, keep it quick', dec: 'Three shelves and six items; rules from the client\'s guide.' },
+        { chip: 'Let the agent pick sensible rules', dec: 'The agent chooses the rules; the client checks them before launch.' } ] },
+      { n: 3, text: 'What happens on a wrong drop?', decides: 'Decides the feedback, and whether it is practice or a test.', opts: [
+        { chip: 'Item goes back, one-line reason, try again, no limit', dec: 'A wrong drop returns the item and shows a one-line reason; unlimited tries.' },
+        { chip: 'Three tries, then it is placed for them', dec: 'Three tries per item; on the third the item is placed and the reason shown.' },
+        { chip: 'No feedback until the end; it is a test', dec: 'No feedback during; all results shown at the end. It is a test.' } ] },
+      { n: 4, text: 'How does it end, and is there a score?', decides: 'Decides what the LMS records.', opts: [
+        { chip: 'All eight placed; right-first-time out of eight; wrong ones listed', dec: 'Ends when all eight are placed; score is right-first-time out of eight; wrong ones listed with their reasons.' },
+        { chip: 'No score, completion only', dec: 'No score; the LMS records completion only.' },
+        { chip: 'A percentage with a pass mark of 75', dec: 'A percentage score with a pass mark of 75; passed or failed is reported.' } ] },
+      { n: 5, text: 'Keyboard and touch?', decides: 'Decides accessibility and the tablet.', opts: [
+        { chip: 'Both: Enter, arrows, Enter; announcements; touch drag', dec: 'Keyboard: Enter picks up, arrows move between shelves, Enter places; a screen reader hears item, shelf and result. Touch drag works.' },
+        { chip: 'Mouse and touch only for now', dec: 'Mouse and touch; keyboard and screen reader in a later round.' },
+        { chip: 'Keyboard only; no tablets in the kitchens', dec: 'Keyboard and mouse; no touch support.' } ] }
+    ];
+    const qs = data.map((q, qi) => ({
+      n: q.n, text: q.text, decides: q.decides,
+      opts: q.opts.map((o, oi) => {
+        const on = s.answers[qi] === oi;
+        return { chip: o.chip, cls: (oi === 0 ? 'rec ' : '') + (on ? 'on' : ''), pressed: on ? 'true' : 'false',
+          pick: () => { const a = Object.assign({}, s.answers); a[qi] = oi; this.setState({ answers: a }); } };
+      })
+    }));
+    const round1Done = data.every((q, qi) => s.answers[qi] !== undefined);
+    const decs = [];
+    data.forEach((q, qi) => {
+      const a = s.answers[qi];
+      decs.push({ id: 'D' + q.n, text: a === undefined ? 'waiting for question ' + q.n : q.opts[a].dec, cls: a === undefined ? '' : 'filled' });
+    });
+    const later = ['No timer. No leaderboard.', 'A Try again button; the LMS gets the latest attempt.', 'The client sees completion and score per learner.'];
+    later.forEach((t, i) => decs.push({ id: 'D' + (6 + i), text: s.defaults ? t : 'round two', cls: s.defaults ? 'filled' : '' }));
+    const filledCount = decs.filter(d => d.cls === 'filled').length;
+    return { qs: qs, decs: decs, round1Done: round1Done, defaults: s.defaults, notDefaults: !s.defaults, filledCount: filledCount,
+      takeDefaults: () => this.setState({ defaults: true }) };
+  }
+}
+</script>
+</body>
+</html>

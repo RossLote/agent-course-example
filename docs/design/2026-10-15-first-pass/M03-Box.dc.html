@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Module 03: build the box</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.mono{font-family:'JetBrains Mono',monospace}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px 22px;box-sizing:border-box}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#D9DEE3}.dot.done{background:#2F4BD6}.dot.now{background:#fff;border:2px solid #2F4BD6;box-sizing:border-box}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px;border-radius:10px;border:2px solid #D9DEE3;background:#fff;font:inherit;cursor:pointer;color:#172029;box-sizing:border-box}
+.opt:hover{border-color:#AEB6BF}
+.opt.on{border-color:#2F4BD6;background:#EEF1FD}
+.opt.right{border-color:#1B7F4B;background:#EAF6EE}
+.opt.wrong{border-color:#B42318;background:#FBEDEB}
+.tick{width:22px;height:22px;border-radius:6px;border:2px solid #AEB6BF;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;color:#fff;margin-top:2px}
+.opt.on .tick{border-color:#2F4BD6;background:#2F4BD6}
+.opt.right .tick{border-color:#1B7F4B;background:#1B7F4B}
+.opt.wrong .tick{border-color:#B42318;background:#B42318}
+.fb{font-size:15px;margin-top:4px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+.side{position:absolute;background:#D9DEE3;border-radius:4px}
+.side.up{background:#2F4BD6}
+.sidelbl{position:absolute;font-size:12px;font-weight:700;color:#AEB6BF;white-space:nowrap}
+.sidelbl.up{color:#172029}
+.play{display:flex;flex-direction:column;gap:8px}
+.play .row{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.play .k{font-family:'JetBrains Mono',monospace;font-size:12px;padding:2px 8px;border-radius:999px;flex-shrink:0;margin-top:3px}
+.k.ok{background:#EAF6EE;color:#1B7F4B}.k.red{background:#FBEDEB;color:#B42318}.k.no{background:#EEF1FD;color:#2F4BD6}.k.grey{background:#F3F5F7;color:#5B6672}
+.gate{font-family:'JetBrains Mono',monospace;font-size:12px;background:#172029;color:#D7E0E8;border-radius:8px;padding:10px 12px;white-space:pre-wrap;line-height:1.5}
+</style>
+</helmet>
+<div style="min-height:1080px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="Main.dc.html">Getting the most out of agents</a>
+    <span class="muted small">Module 03 · The box</span>
+    <span style="flex-grow:1"></span>
+    <div class="dots" aria-label="Module 4 of 8"><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot now"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <span class="muted small">Screens 3 and 4 of 6</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-direction:column;gap:28px">
+    <div>
+      <p class="eyebrow">Try it</p>
+      <h1 style="font-size:34px;margin-top:6px">Build the box</h1>
+      <p class="muted" style="margin-top:8px">Bead .4 is about to start. Choose what goes round the builder. Tick everything that is a wall; the box on the right draws itself as you go.</p>
+    </div>
+
+    <section style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+      <div class="card" style="flex:999 1 540px;min-width:0;display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{opts}}" as="o" hint-placeholder-count="7">
+          <button class="opt {{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.toggle}}">
+            <span class="tick" aria-hidden="true"><sc-if value="{{o.on}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"></path></svg></sc-if></span>
+            <span style="display:flex;flex-direction:column;gap:2px">
+              <span>{{o.label}}</span>
+              <sc-if value="{{o.showFeedback}}" hint-placeholder-val="{{false}}"><span class="fb"><strong>{{o.verdict}}</strong> {{o.feedback}}</span></sc-if>
+            </span>
+          </button>
+        </sc-for>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px">
+          <sc-if value="{{notSubmitted}}" hint-placeholder-val="{{true}}"><button class="btn primary" onClick="{{submit}}">Check my box</button></sc-if>
+          <sc-if value="{{submitted}}" hint-placeholder-val="{{false}}"><button class="btn ghost" onClick="{{reset}}">Try again</button></sc-if>
+        </div>
+      </div>
+
+      <div style="flex:1 1 320px;display:flex;flex-direction:column;align-items:center;gap:12px">
+        <div style="position:relative;width:320px;height:300px">
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:150px;height:110px;border-radius:12px;background:#fff;border:1px solid #D9DEE3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+            <span style="font-family:Manrope,sans-serif;font-weight:700;font-size:14px">the builder</span>
+            <span class="mono small" style="color:#5B6672;font-size:12px">bead .4</span>
+          </div>
+          <div class="side {{wallArea}}" style="left:40px;top:40px;width:10px;height:220px"></div>
+          <div class="sidelbl {{wallArea}}" style="left:0;top:14px">own area, its files only</div>
+          <div class="side {{wallGate}}" style="left:40px;top:250px;width:240px;height:10px"></div>
+          <div class="sidelbl {{wallGate}}" style="left:40px;top:268px">the gate: lint, types, tests, a browser run</div>
+          <div class="side {{wallDone}}" style="left:40px;top:40px;width:240px;height:10px"></div>
+          <div class="sidelbl {{wallDone}}" style="left:120px;top:14px">done, in its instructions</div>
+          <div class="side {{wallWord}}" style="left:270px;top:40px;width:10px;height:220px"></div>
+          <div class="sidelbl {{wallWord}}" style="left:200px;top:268px;text-align:right">its word not taken</div>
+        </div>
+        <p class="muted small" style="text-align:center;max-width:300px">{{wallCount}} of 4 walls up. Hope, context and a promise to report are not walls.</p>
+      </div>
+    </section>
+
+    <section class="card" style="display:flex;flex-direction:column;gap:14px">
+      <p class="eyebrow">The same bead, twice</p>
+      <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:20px">
+        <div class="play">
+          <h3 style="font-size:18px">Loose</h3>
+          <div class="row"><span class="k grey">00:00</span><span>Changes the feedback files.</span></div>
+          <div class="row"><span class="k grey">00:20</span><span>"While I was there" tidies the shelf layout, in bead .3's file.</span></div>
+          <div class="row"><span class="k grey">00:30</span><span>Simplifies the drag code. Touch dragging stops working. Nothing notices.</span></div>
+          <div class="row"><span class="k ok">00:40</span><span><strong>"Done, I ran it and it looks good."</strong></span></div>
+          <div class="row"><span class="k red">+7 days</span><span>The client finds the touch bug. Bead .3's work was overwritten.</span></div>
+        </div>
+        <div class="play">
+          <h3 style="font-size:18px">Boxed</h3>
+          <div class="row"><span class="k grey">00:00</span><span>Changes the feedback files.</span></div>
+          <div class="row"><span class="k no">00:20</span><span>Tries to tidy the shelves: the file is outside its list. Rejected.</span></div>
+          <div class="row"><span class="k red">00:35</span><span>Runs the gate: the browser run goes red at step 3, touch drag.</span></div>
+          <div class="row"><span class="k ok">00:50</span><span>Fixes it, runs the gate again: green.</span></div>
+          <div class="row"><span class="k ok">00:55</span><span><strong>Reports with the gate's output pasted in</strong>, and one line: "Could not confirm the screen-reader wording; that is bead .3's."</span></div>
+          <div class="gate">gate: lint ok · typecheck ok · unit 14/14 · e2e fridge 6/6 · 4m12s
+touched: src/feedback/*, src/score/*  (2 files)
+unconfirmed: screen-reader wording (bead .3)</div>
+        </div>
+      </div>
+      <p class="muted">Fifteen minutes slower. The whole of the difference is that the box pushed back twice.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="M02-Epic.dc.html">Back</a>
+    <span class="muted small">03 · screens 3 and 4 of 6</span>
+    <a class="btn primary" href="M04-Skeptic.dc.html">Next: check</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { picked: {}, submitted: false }; }
+  renderVals() {
+    const s = this.state;
+    const base = [
+      { label: 'A unit test that every item has exactly one right shelf and a reason.', right: true, wall: 'gate', feedback: 'Wall. If the builder breaks the data, this goes red.' },
+      { label: 'A line asking it to please be careful and not change anything else.', right: false, feedback: 'Not a wall. It will agree, and then it will tidy the shelves. Hope is not a check.' },
+      { label: 'A run through the demo script in a browser, which must pass.', right: true, wall: 'gate', feedback: 'Wall. The touch drag breaking would be caught here.' },
+      { label: 'Its own working area, with the feedback and score files as the only ones it may touch.', right: true, wall: 'area', feedback: 'Wall. The shelf layout is not on the list.' },
+      { label: 'A much longer prompt explaining the whole project so it understands.', right: false, feedback: 'Not a wall. More context is not a constraint; the record from the brief is what it needs. The rest is room to wander in.' },
+      { label: '"Done means" in its instructions: the acceptance, the gate green, nothing outside its files.', right: true, wall: 'done', feedback: 'Wall. The finish line, in writing.' },
+      { label: 'The gate\'s own output pasted into its report, and anything unconfirmed named.', right: true, wall: 'word', feedback: 'Wall. The orchestrator reads the output, not the summary.' }
+    ];
+    const opts = base.map((o, i) => {
+      const on = !!s.picked[i];
+      let cls = on ? 'on' : '';
+      if (s.submitted) { cls = o.right ? 'right' : 'wrong'; }
+      return { label: o.label, feedback: o.feedback, on: on, cls: cls, pressed: on ? 'true' : 'false', showFeedback: s.submitted, verdict: o.right ? 'Yes.' : 'No.',
+        toggle: () => { if (s.submitted) return; const p = Object.assign({}, s.picked); p[i] = !on; this.setState({ picked: p }); } };
+    });
+    const up = (w) => base.some((o, i) => o.wall === w && !!s.picked[i]) ? 'up' : '';
+    const walls = ['area', 'gate', 'done', 'word'];
+    const wallCount = walls.filter(w => up(w) === 'up').length;
+    return { opts: opts, submitted: s.submitted, notSubmitted: !s.submitted,
+      wallArea: up('area'), wallGate: up('gate'), wallDone: up('done'), wallWord: up('word'), wallCount: wallCount,
+      submit: () => this.setState({ submitted: true }), reset: () => this.setState({ picked: {}, submitted: false }) };
+  }
+}
+</script>
+</body>
+</html>

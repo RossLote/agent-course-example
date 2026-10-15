@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Module 05: merge or not</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.mono{font-family:'JetBrains Mono',monospace}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px 22px;box-sizing:border-box}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#D9DEE3}.dot.done{background:#2F4BD6}.dot.now{background:#fff;border:2px solid #2F4BD6;box-sizing:border-box}
+.pr{border:1px solid #D9DEE3;border-radius:12px;background:#fff;overflow:hidden}
+.prhead{padding:18px 22px;border-bottom:1px solid #D9DEE3;display:flex;flex-direction:column;gap:6px}
+.badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12px;padding:3px 10px;border-radius:999px;background:#EAF6EE;color:#1B7F4B;font-weight:600}
+.lines{padding:16px 22px;border-bottom:1px solid #D9DEE3;display:flex;flex-direction:column;gap:6px;background:#F8F9FB}
+.sec{padding:16px 22px;border-bottom:1px solid #D9DEE3;display:flex;flex-direction:column;gap:8px}
+.chap{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-top:1px solid #EEF0F2}
+.chap .n{font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6672;width:60px;flex-shrink:0;padding-top:3px}
+.chap .still{width:72px;height:44px;border-radius:6px;background:#D9DEE3;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#5B6672}
+.chap .ok{color:#1B7F4B;font-weight:700;flex-shrink:0}
+.tr{font-family:'JetBrains Mono',monospace;font-size:13px;color:#5B6672}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px;border-radius:10px;border:2px solid #D9DEE3;background:#fff;font:inherit;cursor:pointer;color:#172029;box-sizing:border-box}
+.opt:hover{border-color:#AEB6BF}
+.opt.right{border-color:#1B7F4B;background:#EAF6EE}
+.opt.wrong{border-color:#B42318;background:#FBEDEB}
+.opt.dim{opacity:0.6}
+.radio{width:22px;height:22px;border-radius:50%;border:2px solid #AEB6BF;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:#fff;color:#fff}
+.opt.right .radio{border-color:#1B7F4B;background:#1B7F4B}
+.opt.wrong .radio{border-color:#B42318;background:#B42318}
+.fb{font-size:15px;margin-top:4px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+</style>
+</helmet>
+<div style="min-height:1080px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="Main.dc.html">Getting the most out of agents</a>
+    <span class="muted small">Module 05 · Judging what comes back</span>
+    <span style="flex-grow:1"></span>
+    <div class="dots" aria-label="Module 6 of 8"><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot now"></span><span class="dot"></span><span class="dot"></span></div>
+    <span class="muted small">Screen 4 of 6</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+    <section style="flex:999 1 600px;min-width:0;display:flex;flex-direction:column;gap:22px">
+      <div>
+        <p class="eyebrow">Try it</p>
+        <h1 style="font-size:34px;margin-top:6px">Merge or not?</h1>
+        <p class="muted" style="margin-top:8px">It finished at two in the morning. Forty changed files. Reading them is not your job; judging them is. Here is the pull request, condensed to what matters.</p>
+      </div>
+
+      <div class="pr">
+        <div class="prhead">
+          <span class="badge">pull request · ready for review</span>
+          <h2 style="font-size:22px">Fridge activity: shelves, dragging, keyboard, feedback and score</h2>
+          <p class="small muted">5 beads · 40 files · gate green · simplify 11 applied · review 4 fixed · adversarial 7 findings, 5 confirmed, 5 fixed</p>
+        </div>
+        <div class="lines">
+          <p><strong>Two-way door.</strong> Reverting the merge removes the activity and nothing else depends on it.</p>
+          <p><strong>Before merging:</strong> nothing.</p>
+          <p><strong>Undo:</strong> revert the merge commit and redeploy.</p>
+        </div>
+        <div class="sec">
+          <p class="eyebrow">Evidence · the recorded walkthrough, one chapter per step</p>
+          <div class="chap"><span class="n">ch 1</span><span class="still" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span><span style="flex:1 1 auto">Open: four shelves, eight items in the tray.</span><span class="ok">passes</span></div>
+          <div class="chap"><span class="n">ch 2</span><span class="still" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span><span style="flex:1 1 auto">Raw chicken to the top shelf: returns, message as specified.</span><span class="ok">passes</span></div>
+          <div class="chap"><span class="n">ch 3</span><span class="still" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span><span style="flex:1 1 auto">Raw chicken to the bottom shelf: stays.</span><span class="ok">passes</span></div>
+          <div class="chap"><span class="n">ch 4</span><span class="still" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span><span style="flex:1 1 auto;display:flex;flex-direction:column;gap:2px"><span>Keyboard: Tab to lettuce, Enter, arrow down twice, Enter: placed.</span><span class="tr">screen reader: "Lettuce placed. Correct."</span></span><span class="ok">passes</span></div>
+          <div class="chap"><span class="n">ch 5</span><span class="still" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span><span style="flex:1 1 auto">All eight placed: "7 out of 8 right first time", raw chicken listed with its reason.</span><span class="ok">passes</span></div>
+          <div class="chap"><span class="n">ch 6</span><span class="still" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span><span style="flex:1 1 auto">Try again: tray full, score cleared.</span><span class="ok">passes</span></div>
+        </div>
+        <div class="sec">
+          <p class="eyebrow">Choices made for you</p>
+          <p>The screen reader announcement names the item and the result; the shelf is implied by focus, so it is not read out.</p>
+        </div>
+        <div class="sec" style="border-bottom:0">
+          <p class="eyebrow">Review guide (about 6 minutes)</p>
+          <p class="small">1. The rules file against the client's guide. 2. The drop handler's message replacement (the adversarial fix). 3. The score screen's wording against D4.</p>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;gap:10px">
+        <h2 style="font-size:20px">What do you do?</h2>
+        <sc-for list="{{opts}}" as="o" hint-placeholder-count="3">
+          <button class="opt {{o.cls}}" onClick="{{o.pick}}">
+            <span class="radio" aria-hidden="true"><sc-if value="{{o.chosen}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="6"></circle></svg></sc-if></span>
+            <span style="display:flex;flex-direction:column;gap:2px">
+              <span style="font-weight:700">{{o.label}}</span>
+              <sc-if value="{{o.chosen}}" hint-placeholder-val="{{false}}"><span class="fb">{{o.feedback}}</span></sc-if>
+            </span>
+          </button>
+        </sc-for>
+        <sc-if value="{{answered}}" hint-placeholder-val="{{false}}">
+          <p class="muted" style="margin-top:4px">You did not read a line of code. You read six chapters against six steps and a list of choices against eight decisions.</p>
+          <div><button class="btn ghost" onClick="{{reset}}">Try again</button></div>
+        </sc-if>
+      </div>
+    </section>
+
+    <aside style="flex:1 1 300px;display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="display:flex;flex-direction:column;gap:10px">
+        <p class="eyebrow">Read it in this order</p>
+        <p class="small"><strong>1. The door.</strong> Two-way if undoing puts everything back; one-way if something is lost for good. The worst signal in the change, never an average.</p>
+        <p class="small"><strong>2. Before merging, and undo.</strong> A recipe, not a reassurance.</p>
+        <p class="small"><strong>3. Evidence against the acceptance.</strong> One chapter per step of the demo script. A missing chapter is missing proof.</p>
+        <p class="small"><strong>4. Choices made for you.</strong> Everything the run decided alone, so you can disagree with any of it.</p>
+      </div>
+      <div class="card" style="background:#172029;color:#fff;border-color:#172029">
+        <p class="small" style="color:#AEB6BF;margin-bottom:6px">Ross</p>
+        <p>"The pull request is the point where everything the agents did is shown to you in a way you can consume safely."</p>
+      </div>
+      <div class="card">
+        <p class="eyebrow" style="margin-bottom:6px">The record, for reference</p>
+        <p class="small"><span class="mono">D5</span> Keyboard: Enter picks up, arrows move between shelves, Enter places; a screen reader hears <strong>item, shelf and result</strong>.</p>
+        <p class="small" style="margin-top:6px"><span class="mono">step 4</span> "Lettuce placed <strong>in the salad drawer</strong>. Correct."</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="M04-Skeptic.dc.html">Back</a>
+    <span class="muted small">05 · screen 4 of 6</span>
+    <a class="btn primary" href="M06-Retro.dc.html">Next: check</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { chosen: null }; }
+  renderVals() {
+    const s = this.state;
+    const base = [
+      { label: 'Merge. Every chapter passes and the choice is reasonable.', right: false, feedback: 'Every chapter plays, but chapter 4 does not match the acceptance. D5 and step 4 say the announcement names the item, the shelf and the result. "Implied by focus" is the builder deciding what the client\'s learners need. Reasonable is not the test; the record is.' },
+      { label: 'Send it back as one piece of work: the announcement must name the shelf, per D5 and step 4.', right: true, feedback: 'Yes. You judged from the evidence against the acceptance, found the one gap, and sent back exactly that. It goes through the box like any other piece.' },
+      { label: 'Read the forty files to be sure there is nothing else.', right: false, feedback: 'You can, but the reviews already did, with lenses and evidence. Your time goes on judging the evidence against the record. If the evidence were missing, that would be the reason to send it back.' }
+    ];
+    const answered = s.chosen !== null;
+    const opts = base.map((o, i) => {
+      const chosen = s.chosen === i;
+      let cls = '';
+      if (answered) { cls = chosen ? (o.right ? 'right' : 'wrong') : 'dim'; }
+      return { label: o.label, feedback: o.feedback, chosen: chosen, cls: cls, pick: () => { if (answered) return; this.setState({ chosen: i }); } };
+    });
+    return { opts: opts, answered: answered, reset: () => this.setState({ chosen: null }) };
+  }
+}
+</script>
+</body>
+</html>

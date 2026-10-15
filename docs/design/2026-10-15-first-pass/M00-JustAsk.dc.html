@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Module 00: just ask</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px 22px;box-sizing:border-box}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#D9DEE3}.dot.now{background:#fff;border:2px solid #2F4BD6;box-sizing:border-box}
+.chat{display:flex;flex-direction:column;gap:18px}
+.msg{display:flex;gap:12px;align-items:flex-start}
+.msg.you{flex-direction:row-reverse}
+.avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-weight:800;font-size:14px;flex-shrink:0}
+.avatar.agent{background:#0E7C86;color:#fff}.avatar.you{background:#B45309;color:#fff}
+.bubble{max-width:620px;padding:14px 18px;border-radius:14px;border:1px solid #D9DEE3;background:#fff}
+.bubble.agent{background:#E8F4F5;border-color:#BFE0E3;border-top-left-radius:4px}
+.bubble.you{background:#FFF3DC;border-color:#F3D9A4;border-top-right-radius:4px}
+.who{font-size:13px;font-weight:700;color:#5B6672;margin-bottom:4px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:14px 16px;border-radius:10px;border:2px solid #D9DEE3;background:#fff;font:inherit;cursor:pointer;color:#172029;box-sizing:border-box}
+.opt:hover{border-color:#AEB6BF}
+.opt.on{border-color:#2F4BD6;background:#EEF1FD}
+.opt.right{border-color:#1B7F4B;background:#EAF6EE}
+.opt.wrong{border-color:#B42318;background:#FBEDEB}
+.tick{width:22px;height:22px;border-radius:6px;border:2px solid #AEB6BF;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;color:#fff;margin-top:2px}
+.opt.on .tick{border-color:#2F4BD6;background:#2F4BD6}
+.opt.right .tick{border-color:#1B7F4B;background:#1B7F4B}
+.opt.wrong .tick{border-color:#B42318;background:#B42318}
+.fb{font-size:15px;margin-top:6px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+.step{display:flex;gap:14px;align-items:flex-start}
+.stepnum{width:30px;height:30px;border-radius:50%;background:#172029;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-weight:800;font-size:14px;flex-shrink:0}
+</style>
+</helmet>
+<div style="min-height:1080px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="Main.dc.html">Getting the most out of agents</a>
+    <span class="muted small">Module 00 · What works and what doesn't</span>
+    <span style="flex-grow:1"></span>
+    <div class="dots" aria-label="Module 1 of 8"><span class="dot now"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <span class="muted small">Screen 3 of 6</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+    <section style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:22px">
+      <div>
+        <p class="eyebrow">Try it</p>
+        <h1 style="font-size:34px;margin-top:6px">Just ask</h1>
+        <p class="muted" style="margin-top:8px">The client wants a fridge activity. You have an agent. Let's do what most people do first.</p>
+      </div>
+
+      <div class="chat card" style="padding:22px">
+        <div class="msg you">
+          <div class="avatar you" aria-hidden="true">You</div>
+          <div><div class="who" style="text-align:right">You</div><div class="bubble you">Build a drag-and-drop fridge activity for the food hygiene course.</div></div>
+        </div>
+        <div class="msg">
+          <div class="avatar agent" aria-hidden="true">A</div>
+          <div><div class="who">Agent</div><div class="bubble agent">Done! I've built a fridge activity. It has five shelves and fourteen food items, a 60-second timer to keep it exciting, a leaderboard so learners can compete, and confetti when they finish. I assumed the standard fridge rules. I ran through it myself and it works great. Want me to add sound effects?</div></div>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <h2 style="font-size:20px">Tick everything that went wrong here.</h2>
+        <sc-for list="{{opts}}" as="o" hint-placeholder-count="5">
+          <button class="opt {{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.toggle}}">
+            <span class="tick" aria-hidden="true"><sc-if value="{{o.on}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"></path></svg></sc-if></span>
+            <span style="display:flex;flex-direction:column;gap:2px">
+              <span style="font-weight:700">{{o.label}}</span>
+              <sc-if value="{{o.showFeedback}}" hint-placeholder-val="{{false}}"><span class="fb"><strong>{{o.verdict}}</strong> {{o.feedback}}</span></sc-if>
+            </span>
+          </button>
+        </sc-for>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px">
+          <sc-if value="{{notSubmitted}}" hint-placeholder-val="{{true}}"><button class="btn primary" onClick="{{submit}}">Check my answer</button></sc-if>
+          <sc-if value="{{submitted}}" hint-placeholder-val="{{false}}"><button class="btn ghost" onClick="{{reset}}">Try again</button></sc-if>
+        </div>
+      </div>
+    </section>
+
+    <aside style="flex:1 1 300px;display:flex;flex-direction:column;gap:14px">
+      <sc-if value="{{notSubmitted}}" hint-placeholder-val="{{true}}">
+        <div class="card" style="display:flex;flex-direction:column;gap:8px">
+          <p class="eyebrow">What to watch for</p>
+          <p class="muted">Read the agent's reply twice. Count the things you did not ask for. Count the things it decided. Notice who tested it.</p>
+        </div>
+      </sc-if>
+      <sc-if value="{{submitted}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="display:flex;flex-direction:column;gap:16px">
+          <p class="eyebrow">What just happened</p>
+          <div class="step"><span class="stepnum">1</span><p><strong>It filled every gap with a guess.</strong> Agents do not stop at a gap; they fill it, and they sound sure when they do. The timer came from a gap you left.</p></div>
+          <div class="step"><span class="stepnum">2</span><p><strong>It built more than you asked.</strong> Given room, an agent builds into it. More is not better; more is more to check.</p></div>
+          <div class="step"><span class="stepnum">3</span><p><strong>It marked its own homework.</strong> The agent that built it is the worst judge of it. It believes its own plan.</p></div>
+          <div class="step" style="border-top:1px solid #D9DEE3;padding-top:14px"><span class="stepnum" style="background:#0E7C86">4</span><p><strong>Here is the part that works.</strong> The same agent, pointed at someone else's work with a clear question, is sharp. That asymmetry is the whole workflow: box the builder, then let the reviewers loose.</p></div>
+        </div>
+      </sc-if>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="Main.dc.html">Back</a>
+    <span class="muted small">00 · screen 3 of 6</span>
+    <a class="btn primary" href="M01-Brief.dc.html">Next: what just happened</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { picked: {}, submitted: false }; }
+  renderVals() {
+    const s = this.state;
+    const base = [
+      { label: 'It built things nobody asked for: the timer, the leaderboard, the confetti.', right: true, feedback: 'Every gap in your ask was filled with a guess, and the guesses were fun rather than right.' },
+      { label: 'It invented the rules.', right: true, feedback: '"I assumed the standard fridge rules" means it decided what the client\'s course teaches.' },
+      { label: 'It checked its own work.', right: true, feedback: '"I ran through it myself and it works great" is the builder marking its own homework.' },
+      { label: 'It should have said no.', right: false, feedback: 'It did nothing wrong by building; the ask left it nothing to build to.' },
+      { label: 'It was too slow.', right: false, feedback: 'It was fast. Speed is not the problem; direction is.' }
+    ];
+    const opts = base.map((o, i) => {
+      const on = !!s.picked[i];
+      let cls = on ? 'on' : '';
+      if (s.submitted) { cls = o.right ? 'right' : 'wrong'; }
+      const toggle = () => { if (s.submitted) return; const p = Object.assign({}, s.picked); p[i] = !on; this.setState({ picked: p }); };
+      return { label: o.label, feedback: o.feedback, on: on, cls: cls, pressed: on ? 'true' : 'false', toggle: toggle, showFeedback: s.submitted, verdict: o.right ? 'Yes.' : 'No.' };
+    });
+    return {
+      opts: opts,
+      submitted: s.submitted,
+      notSubmitted: !s.submitted,
+      submit: () => this.setState({ submitted: true }),
+      reset: () => this.setState({ picked: {}, submitted: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

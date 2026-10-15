@@ -154,3 +154,27 @@ set it up; it comes before the brief.
   format, look and feel, a pass mark, and whether Ross's name appears.
 - PLAN.md's status, §5 and log updated; the idea bead's notes point at the
   draft; committed to main.
+
+## Ross: show me the modules as a designed course
+
+- Can you create a Claude Design artifact for this? I'd like to see your
+  modules in the context of a designed course. That'll make it easier for
+  me to decide whether it's any good or not.
+
+## Agent: the first design pass
+
+- Built at https://claude.ai/artifact/My3Z79MHvyCBktJsMfAggM: ten
+  artboards, each a working page. The course home with the thesis, the
+  open box and the eight modules; then the key screen of each module, with
+  its interaction working: the vague ask and "tick what went wrong", the
+  fridge brief with the decisions filling in, the beads and the acceptance
+  pick, build-the-box drawing its walls, the finding's journey with you as
+  the skeptic, the pull request and merge-or-not, the check that missed,
+  name-the-wall scored with the box complete; and the check-and-takeaway
+  shape every module ends on. Links join them in course order.
+- Own look, as the presentation's first pass: light ground, one indigo
+  accent for the course and the walls, teal for the agent and amber for
+  the learner in the chat, Manrope and Atkinson Hyperlegible. The box is a
+  pentagon of walls round the builder, with the retro as a ring round it.
+- The canvas's source is copied into `docs/design/2026-10-15-first-pass/`
+  with a README, so the design phase leaves an artefact in the repo.

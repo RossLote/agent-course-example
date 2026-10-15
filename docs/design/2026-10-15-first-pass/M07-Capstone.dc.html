@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Module 07: name the wall</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px 22px;box-sizing:border-box}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#D9DEE3}.dot.done{background:#2F4BD6}.dot.now{background:#fff;border:2px solid #2F4BD6;box-sizing:border-box}
+.row{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid #D9DEE3}
+.row.right{background:#EAF6EE;margin:0 -22px;padding:12px 22px}
+.row.wrong{background:#FBEDEB;margin:0 -22px;padding:12px 22px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:40px;padding:6px 14px;border-radius:999px;border:2px solid #AEB6BF;background:#fff;font:inherit;font-size:15px;cursor:pointer;color:#172029}
+.chip:hover{border-color:#172029}
+.chip.on{border-color:#2F4BD6;background:#2F4BD6;color:#fff}
+.chip.key{border-color:#1B7F4B;background:#1B7F4B;color:#fff}
+.fb{font-size:15px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+.wallbar{position:absolute;left:50%;top:50%;width:128px;height:10px;border-radius:5px;background:#2F4BD6}
+.walllbl{position:absolute;left:50%;top:50%;font-size:13px;color:#172029;white-space:nowrap;font-weight:700}
+.loop{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.loop .st{font-size:14px;padding:6px 12px;border-radius:8px;background:#fff;border:1px solid #D9DEE3}
+.loop .ar{color:#AEB6BF}
+</style>
+</helmet>
+<div style="min-height:1080px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="Main.dc.html">Getting the most out of agents</a>
+    <span class="muted small">Module 07 · Put it together</span>
+    <span style="flex-grow:1"></span>
+    <div class="dots" aria-label="Module 8 of 8"><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot now"></span></div>
+    <span class="muted small">Screen 3 of 6 · scored</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-direction:column;gap:24px">
+    <div>
+      <p class="eyebrow">Capstone</p>
+      <h1 style="font-size:34px;margin-top:6px">Name the wall</h1>
+      <p class="muted" style="margin-top:8px">Round two: a hint after two wrong drops (D9), eggs in the salad drawer (D10). You laid out the loop on the last screen. Now six things go wrong. For each, pick the wall that handles it.</p>
+    </div>
+
+    <div class="loop card" style="padding:12px 16px">
+      <span class="eyebrow" style="margin-right:6px">The loop you ordered</span>
+      <span class="st">brief</span><span class="ar" aria-hidden="true">›</span><span class="st">epic</span><span class="ar" aria-hidden="true">›</span><span class="st">epic review</span><span class="ar" aria-hidden="true">›</span><span class="st">build, in boxes</span><span class="ar" aria-hidden="true">›</span><span class="st">simplify · review · adversarial</span><span class="ar" aria-hidden="true">›</span><span class="st">walkthrough and pull request</span><span class="ar" aria-hidden="true">›</span><span class="st">you judge</span><span class="ar" aria-hidden="true">›</span><span class="st">retro</span>
+    </div>
+
+    <section style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+      <div class="card" style="flex:999 1 600px;min-width:0;display:flex;flex-direction:column">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+          <div class="row {{r.cls}}">
+            <p><strong>{{r.text}}</strong></p>
+            <div class="chips">
+              <sc-for list="{{r.chips}}" as="c" hint-placeholder-count="6">
+                <button class="chip {{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.label}}</button>
+              </sc-for>
+            </div>
+            <sc-if value="{{r.showFeedback}}" hint-placeholder-val="{{false}}"><p class="fb"><strong>{{r.verdict}}</strong> {{r.feedback}}</p></sc-if>
+          </div>
+        </sc-for>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding-top:14px;border-top:1px solid #D9DEE3">
+          <sc-if value="{{notSubmitted}}" hint-placeholder-val="{{true}}"><button class="btn primary" onClick="{{submit}}">Check my answers</button><span class="muted small">{{answeredCount}} of 6 answered</span></sc-if>
+          <sc-if value="{{submitted}}" hint-placeholder-val="{{false}}"><button class="btn ghost" onClick="{{reset}}">Try again</button><p><strong>{{score}} out of 6</strong>, plus 8 for the loop: <strong>{{total}} out of 14</strong>.</p></sc-if>
+        </div>
+      </div>
+
+      <div style="flex:1 1 320px;display:flex;flex-direction:column;align-items:center;gap:12px">
+        <div style="position:relative;width:380px;height:380px">
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:356px;height:356px;border:3px dashed #B45309;border-radius:50%"></div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateY(188px);font-size:13px;font-weight:700;color:#B45309;background:#F3F5F7;padding:0 8px;white-space:nowrap">the retro: round again, change the check</div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;border-radius:50%;background:#fff;border:2px solid #172029;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-weight:700;font-size:14px;color:#172029">the builder</div>
+          <div class="wallbar" style="transform:translate(-50%,-50%) rotate(0deg) translateY(-112px)"></div>
+          <div class="walllbl" style="transform:translate(-50%,-50%) rotate(0deg) translateY(-142px) rotate(0deg)">01 the record</div>
+          <div class="wallbar" style="transform:translate(-50%,-50%) rotate(72deg) translateY(-112px)"></div>
+          <div class="walllbl" style="transform:translate(-50%,-50%) rotate(72deg) translateY(-146px) rotate(-72deg)">02 done</div>
+          <div class="wallbar" style="transform:translate(-50%,-50%) rotate(144deg) translateY(-112px)"></div>
+          <div class="walllbl" style="transform:translate(-50%,-50%) rotate(144deg) translateY(-146px) rotate(-144deg)">03 the gate</div>
+          <div class="wallbar" style="transform:translate(-50%,-50%) rotate(216deg) translateY(-112px)"></div>
+          <div class="walllbl" style="transform:translate(-50%,-50%) rotate(216deg) translateY(-146px) rotate(-216deg)">04 other agents</div>
+          <div class="wallbar" style="transform:translate(-50%,-50%) rotate(288deg) translateY(-112px)"></div>
+          <div class="walllbl" style="transform:translate(-50%,-50%) rotate(288deg) translateY(-146px) rotate(-288deg)">05 evidence</div>
+        </div>
+        <p class="muted small" style="text-align:center;max-width:320px">That is the whole workflow. Everything else is detail.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="M06-Retro.dc.html">Back</a>
+    <span class="muted small">07 · screen 3 of 6</span>
+    <a class="btn primary" href="Check.dc.html">Next: try this tomorrow</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { answers: {}, submitted: false }; }
+  renderVals() {
+    const s = this.state;
+    const walls = ['the record', 'done', 'the gate', 'other agents', 'evidence', 'the arrow'];
+    const base = [
+      { text: 'The builder added a "hint streak" counter nobody asked for.', key: 0, feedback: 'The record. A gap in the brief was filled with a guess.' },
+      { text: 'The builder says the hint is done, and you cannot say whether it is.', key: 1, feedback: 'Done. No acceptance a reviewer can see.' },
+      { text: 'While adding the hint it changed the score screen\'s wording too.', key: 2, feedback: 'The gate. Its files were not limited, or the change was not rejected.' },
+      { text: 'The gate is green, and the hint code is a copy of the message code with one word changed.', key: 3, feedback: 'Other agents. Simplify\'s reuse question.' },
+      { text: 'It is nine in the morning and there is a forty-file change waiting.', key: 4, feedback: 'Evidence. Door, undo, walkthrough against the demo script.' },
+      { text: 'A colleague found that the hint shows after two wrong drops of the same item, which nobody specified and no check questioned.', key: 5, feedback: 'The arrow. Which check would have caught it; does it repeat; change the check.' }
+    ];
+    const rows = base.map((r, ri) => {
+      const a = s.answers[ri];
+      const isRight = a === r.key;
+      let cls = '';
+      if (s.submitted) { cls = isRight ? 'right' : 'wrong'; }
+      return { text: r.text, feedback: r.feedback, cls: cls, showFeedback: s.submitted, verdict: isRight ? 'Yes.' : 'No.',
+        chips: walls.map((w, wi) => {
+          const on = a === wi;
+          let ccls = on ? 'on' : '';
+          if (s.submitted && wi === r.key) { ccls = 'key'; }
+          return { label: w, cls: ccls, pressed: on ? 'true' : 'false',
+            pick: () => { if (s.submitted) return; const n = Object.assign({}, s.answers); n[ri] = wi; this.setState({ answers: n }); } };
+        }) };
+    });
+    const answeredCount = base.filter((r, ri) => s.answers[ri] !== undefined).length;
+    const score = base.filter((r, ri) => s.answers[ri] === r.key).length;
+    return { rows: rows, submitted: s.submitted, notSubmitted: !s.submitted, answeredCount: answeredCount, score: score, total: score + 8,
+      submit: () => this.setState({ submitted: true }), reset: () => this.setState({ answers: {}, submitted: false }) };
+  }
+}
+</script>
+</body>
+</html>

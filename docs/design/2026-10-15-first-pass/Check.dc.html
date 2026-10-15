@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Check and takeaway</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:32px 24px;box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
+.brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px 22px;box-sizing:border-box}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.btn.primary{background:#2F4BD6;color:#fff}.btn.primary:hover{background:#1F37A8;color:#fff}
+.btn.ghost{background:#fff;color:#172029;border:1.5px solid #AEB6BF}.btn.ghost:hover{border-color:#172029;color:#172029}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#D9DEE3}.dot.done{background:#2F4BD6}.dot.now{background:#fff;border:2px solid #2F4BD6;box-sizing:border-box}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:14px 16px;border-radius:10px;border:2px solid #D9DEE3;background:#fff;font:inherit;cursor:pointer;color:#172029;box-sizing:border-box}
+.opt:hover{border-color:#AEB6BF}
+.opt.right{border-color:#1B7F4B;background:#EAF6EE}
+.opt.wrong{border-color:#B42318;background:#FBEDEB}
+.opt.dim{opacity:0.6}
+.radio{width:22px;height:22px;border-radius:50%;border:2px solid #AEB6BF;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:#fff;color:#fff}
+.opt.right .radio{border-color:#1B7F4B;background:#1B7F4B}
+.opt.wrong .radio{border-color:#B42318;background:#B42318}
+.fb{font-size:15px;margin-top:4px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-top:1px solid #D9DEE3;background:#fff;margin-top:auto;flex-wrap:wrap}
+.wallbar{position:absolute;left:50%;top:50%;width:128px;height:8px;border-radius:5px;border:2px dashed #AEB6BF;box-sizing:border-box}
+.wallbar.up{height:10px;border:0;background:#2F4BD6}
+.walllbl{position:absolute;left:50%;top:50%;font-size:13px;color:#5B6672;white-space:nowrap;font-weight:700}
+.walllbl.up{color:#172029}
+.take{background:#172029;color:#fff;border-radius:12px;padding:24px 28px;font-size:21px;line-height:1.4;font-family:Manrope,sans-serif;font-weight:600}
+</style>
+</helmet>
+<div style="min-height:1000px;display:flex;flex-direction:column;background:#F3F5F7">
+  <header class="topbar">
+    <a class="brand" href="Main.dc.html">Getting the most out of agents</a>
+    <span class="muted small">Module 01 · Write it down</span>
+    <span style="flex-grow:1"></span>
+    <div class="dots" aria-label="Module 2 of 8"><span class="dot done"></span><span class="dot now"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <span class="muted small">Screens 5 and 6 of 6</span>
+  </header>
+
+  <main class="wrap" style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+    <section style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:22px">
+      <div>
+        <p class="eyebrow">Check · 1 of 2</p>
+        <h1 style="font-size:30px;margin-top:6px">The agent asks five questions. You have time to answer two. What do you do?</h1>
+        <p class="muted small" style="margin-top:6px">Every module ends with two of these. Each option tells you why, right or wrong.</p>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{opts}}" as="o" hint-placeholder-count="3">
+          <button class="opt {{o.cls}}" onClick="{{o.pick}}">
+            <span class="radio" aria-hidden="true"><sc-if value="{{o.chosen}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="6"></circle></svg></sc-if></span>
+            <span style="display:flex;flex-direction:column;gap:2px">
+              <span style="font-weight:700">{{o.label}}</span>
+              <sc-if value="{{o.chosen}}" hint-placeholder-val="{{false}}"><span class="fb">{{o.feedback}}</span></sc-if>
+            </span>
+          </button>
+        </sc-for>
+        <sc-if value="{{answered}}" hint-placeholder-val="{{false}}"><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px"><button class="btn ghost" onClick="{{reset}}">Try again</button><button class="btn primary" onClick="{{next}}">Question 2</button></div></sc-if>
+      </div>
+
+      <sc-if value="{{showTake}}" hint-placeholder-val="{{true}}">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <p class="eyebrow">Takeaway</p>
+          <div class="take">The agent asks, you decide, the decisions are written down. The builder works from the record, not from your memory of a conversation.</div>
+        </div>
+      </sc-if>
+    </section>
+
+    <aside style="flex:1 1 320px;display:flex;flex-direction:column;align-items:center;gap:12px">
+      <div style="position:relative;width:340px;height:340px">
+        <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;border-radius:50%;background:#fff;border:2px solid #D9DEE3;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-weight:700;font-size:14px;color:#5B6672">the builder</div>
+        <div class="wallbar up" style="transform:translate(-50%,-50%) rotate(0deg) translateY(-112px)"></div>
+        <div class="walllbl up" style="transform:translate(-50%,-50%) rotate(0deg) translateY(-142px) rotate(0deg)">01 the record</div>
+        <div class="wallbar" style="transform:translate(-50%,-50%) rotate(72deg) translateY(-112px)"></div>
+        <div class="walllbl" style="transform:translate(-50%,-50%) rotate(72deg) translateY(-146px) rotate(-72deg)">02 done</div>
+        <div class="wallbar" style="transform:translate(-50%,-50%) rotate(144deg) translateY(-112px)"></div>
+        <div class="walllbl" style="transform:translate(-50%,-50%) rotate(144deg) translateY(-146px) rotate(-144deg)">03 the gate</div>
+        <div class="wallbar" style="transform:translate(-50%,-50%) rotate(216deg) translateY(-112px)"></div>
+        <div class="walllbl" style="transform:translate(-50%,-50%) rotate(216deg) translateY(-146px) rotate(-216deg)">04 other agents</div>
+        <div class="wallbar" style="transform:translate(-50%,-50%) rotate(288deg) translateY(-112px)"></div>
+        <div class="walllbl" style="transform:translate(-50%,-50%) rotate(288deg) translateY(-146px) rotate(-288deg)">05 evidence</div>
+      </div>
+      <p class="muted small" style="text-align:center;max-width:300px">The box gains its first wall. Four to go, then the arrow.</p>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <a class="btn ghost" href="M01-Brief.dc.html">Back</a>
+    <span class="muted small">01 · screens 5 and 6 of 6</span>
+    <a class="btn primary" href="M02-Epic.dc.html">Next module: define done before you start</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { chosen: null, showTake: false }; }
+  renderVals() {
+    const s = this.state;
+    const base = [
+      { label: 'Answer two and let it guess the rest.', right: false, feedback: 'Guessing is what module 00 showed. The three gaps will be filled.' },
+      { label: 'Say "your defaults, except..." for the ones you disagree with.', right: true, feedback: 'Yes. The recommended answers are there so that this is a complete reply in one line.' },
+      { label: 'Ask it to stop asking and start building.', right: false, feedback: 'It will, and it will fill the gaps.' }
+    ];
+    const answered = s.chosen !== null;
+    const opts = base.map((o, i) => {
+      const chosen = s.chosen === i;
+      let cls = '';
+      if (answered) { cls = chosen ? (o.right ? 'right' : 'wrong') : 'dim'; }
+      return { label: o.label, feedback: o.feedback, chosen: chosen, cls: cls, pick: () => { if (answered) return; this.setState({ chosen: i }); } };
+    });
+    return { opts: opts, answered: answered, showTake: s.showTake,
+      reset: () => this.setState({ chosen: null, showTake: false }), next: () => this.setState({ showTake: true }) };
+  }
+}
+</script>
+</body>
+</html>
