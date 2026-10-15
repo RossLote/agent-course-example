@@ -2,8 +2,11 @@
 
 Status: idea raised on 2026-10-15 in the presentation repo's session and captured here
 (`docs/conversations/2026-10-15-where-the-course-starts.md`); repo, beads and toolchain set
-up the same day. Idea bead: `agent-course-r4n`. Next step: `/brief agent-course-r4n`, with a learning
-designer in the room.
+up the same day. Idea bead: `agent-course-r4n`. Content draft written the same day at Ross's request, with the content
+decisions made by the agent (`docs/course/README.md` §9; log
+`docs/conversations/2026-10-15-what-the-course-teaches.md`). Next: Ross reviews the
+draft, Claude Design mocks it up, then `/brief agent-course-r4n` for what §10 there leaves
+open.
 
 ## 1. The occasion
 
@@ -82,6 +85,11 @@ with it, so it is a different piece of writing.
 
 ## 5. Open questions for the brief
 
+Settled on 2026-10-15 by the content draft (`docs/course/README.md` §9): who the learner
+is, the objectives and the modules, what is assessed, how designers review (the draft,
+then the walkthrough), and what carries over from the talk. Still open (§10 there): the
+package format and the LMS launch, the authoring format, look and feel, a pass mark.
+
 - Which package format the company's LMS launches (cmi5, a plain xAPI package, SCORM), and
   how the record store's endpoint and credentials reach the course at launch.
 - Who the learner is (developers, learning designers, everyone) and what they should do
@@ -109,3 +117,6 @@ durable record here.
 - 2026-10-15: idea raised in the presentation repo's session and assessed; repo and beads
   initialised; toolchain scaffolded with every gate green; this document written; idea bead
   `agent-course-r4n` filed. Next: `/brief agent-course-r4n`.
+- 2026-10-15, later: Ross asked the agent to decide the content rather than answer rounds
+  of questions, since he is not a learning designer. Storyboard draft in `docs/course/`: README
+  with decisions C1–C15, eight modules, glossary. Next: Ross reviews, Claude Design, the brief.

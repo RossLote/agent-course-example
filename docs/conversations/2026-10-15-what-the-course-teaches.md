@@ -113,3 +113,44 @@ set it up; it comes before the brief.
 - Taken as settled: nobody touches a real agent; examples need not be the real
   record; Ross designs round one himself and Claude Design mocks it up once
   the content is fixed.
+
+## Ross: you decide; I'll review the draft
+
+- LED and LXD are the same role, just different acronyms.
+- Honestly, I don't want to think about this too much. I'd like you to make
+  as many of the decisions as possible. Believe it or not, I'm not an LXD,
+  so I'm not going to pretend to know how to make a good course.
+- Come up with the course content: something interactive, something
+  interesting, completely based on my workflow, and go from there. I'll
+  review the draft. Normally we'd do a brief and you'd ask me loads of
+  questions, but at this point I'm relying on you.
+
+## Agent: the storyboard, and fifteen decisions
+
+- I read the brief, epic, epic-review, orchestrate, adversarial-review, pr
+  and retro skills and the skeptic agent so the course says what the
+  workflow does, and took one real run's numbers from the presentation
+  repo's epic.
+- I wrote the draft as a storyboard in `docs/course/`: a README (who it is
+  for, the one message, the outcome, the worked example, the module shape,
+  the fake agent, assessment, statements, decisions C1–C15 with reasons,
+  what stays open for the brief), eight modules with every screen, the
+  full script of every fake-agent interaction and every check question
+  with its feedback, and a glossary.
+- The decisions, in short: eight modules following the loop, about fifty
+  minutes, each standalone; every module shows something going wrong, then
+  the practice, then the learner tries it on a scripted fake agent, then
+  two checks, then a takeaway, and a box diagram gains one wall per module
+  (the record, done, the gate, other agents, evidence, the retro's arrow).
+  The worked example is a fridge-stacking activity for a client's
+  food-hygiene course that the authoring tool cannot do. The fake agent is
+  scripted choose-a-reply with deliberate wrong turns; free text is only
+  played back. Examples are invented, with one real card of numbers and the
+  check-that-missed story told without names. The workflow's own names,
+  introduced in plain words, with a glossary. Second person, Ross credited.
+  Checks give feedback on every option; score reported, no pass mark in
+  round one. Text and interaction only; WCAG 2.2 AA.
+- Left for the brief: the package format and LMS launch, the authoring
+  format, look and feel, a pass mark, and whether Ross's name appears.
+- PLAN.md's status, §5 and log updated; the idea bead's notes point at the
+  draft; committed to main.
