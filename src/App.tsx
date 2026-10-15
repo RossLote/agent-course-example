@@ -2,10 +2,12 @@ import { useEffect, useRef } from 'react';
 import { course } from './content/index.ts';
 import { HomePage } from './course/home/HomePage.tsx';
 import { ModuleFrame } from './course/frame/ModuleFrame.tsx';
-import { NO_ANSWERS } from './course/frame/progress.ts';
-import { useCourseAnswers } from './course/frame/useCourseAnswers.ts';
 import { formatRoute, useRoute, type Route } from './course/route.ts';
 import { ScenarioPage } from './course/scenario/ScenarioPage.tsx';
+import { progress } from './progress/index.ts';
+import { homeNext, moduleAnswers, modulesDone, moduleStatus } from './progress/progress.ts';
+import type { ProgressStore } from './progress/store.ts';
+import { useProgress, useVisit } from './progress/useProgress.ts';
 
 /**
  * After a navigation, focus moves to the new page's heading, so a keyboard or screen reader
@@ -24,18 +26,27 @@ function useFocusHeadingOnNavigate(route: Route) {
   }, [key]);
 }
 
-/** The course: the scenario, the home page, or a module, by the route in the hash. */
-export default function App() {
+export interface AppProps {
+  /** The learner's progress; the course's own store unless a test gives one. */
+  store?: ProgressStore;
+}
+
+/**
+ * The course: the scenario, the home page, or a module, by the route in the hash. Progress
+ * comes from the store: the frame's events go into it, every module screen shown is recorded
+ * as reached, and the home page shows each module's status and where to go on.
+ */
+export default function App({ store = progress }: AppProps) {
   const route = useRoute();
   useFocusHeadingOnNavigate(route);
-  const { answers, onEvent } = useCourseAnswers();
+  const { doc, onEvent } = useProgress(store);
+  const module = route.page === 'module' ? course.modules.find((m) => m.slug === route.slug) : undefined;
+  useVisit(store, module, route.page === 'module' ? route.screen : 1);
 
-  if (route.page === 'module') {
-    const module = course.modules.find((m) => m.slug === route.slug);
-    if (module) {
-      return <ModuleFrame course={course} module={module} screen={route.screen} answers={answers[module.slug] ?? NO_ANSWERS} onEvent={onEvent} />;
-    }
+  if (route.page === 'module' && module) {
+    return <ModuleFrame course={course} module={module} screen={route.screen} answers={moduleAnswers(doc, module.slug)} onEvent={onEvent} />;
   }
   if (route.page === 'scenario') return <ScenarioPage course={course} />;
-  return <HomePage course={course} />;
+  const statuses = Object.fromEntries(course.modules.map((m) => [m.slug, moduleStatus(doc, m.slug)]));
+  return <HomePage course={course} done={modulesDone(course, doc)} statuses={statuses} next={homeNext(course, doc)} />;
 }

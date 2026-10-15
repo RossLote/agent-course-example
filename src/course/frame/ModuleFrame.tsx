@@ -5,9 +5,8 @@ import { Copy } from '../../screens/scene/Copy.tsx';
 import type { ModuleAnswers, ScreenEvent } from '../../screens/types.ts';
 import { navigate, type Route } from '../route.ts';
 import { TopBar } from '../TopBar.tsx';
-import { answerKey, awaitsAnswer, moduleProgress } from './progress.ts';
+import { answerKey, awaitsAnswer, moduleProgress, type EventSource } from './progress.ts';
 import { ScreenView } from './ScreenView.tsx';
-import type { EventSource } from './useCourseAnswers.ts';
 import './ModuleFrame.css';
 
 const HOME: Route = { page: 'home' };

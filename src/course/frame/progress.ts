@@ -1,7 +1,14 @@
 // A module's answers and score, worked out from the events its screens send (PLAN.md §6a, "The
-// score"). The frame and the progress store (.9) both use these, so the score is counted once.
-import type { Screen } from '../../content/index.ts';
+// score"). The frame and the progress store (src/progress/) both use these, so the score is
+// counted once.
+import type { Module, Screen } from '../../content/index.ts';
 import type { AnswerRecord, ModuleAnswers, ModuleProgress, ScreenEvent } from '../../screens/types.ts';
+
+/** Where an event came from: what the frame adds to a screen's event. */
+export interface EventSource {
+  module: Module;
+  screen: Screen;
+}
 
 /** A module nothing has been answered in yet. */
 export const NO_ANSWERS: ModuleAnswers = {};
@@ -54,7 +61,8 @@ export function moduleProgress(module: { screens: readonly Screen[] }, answers: 
 /**
  * The records once an event is taken in: the latest answer and score per slug win. `answered`
  * replaces the slug's record; `interacted` replaces its answer; `fridge-ended` its score (and
- * its answer when it carries one); `takeaway-reached` changes nothing here (.9 records it).
+ * its answer when it carries one); `takeaway-reached` changes nothing here (the progress store
+ * records it as the module's completion).
  */
 export function recordEvent(answers: ModuleAnswers, event: ScreenEvent): ModuleAnswers {
   const update = (slug: string, record: AnswerRecord): ModuleAnswers => ({ ...answers, [slug]: record });

@@ -1,11 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import type { Screen } from '../../content/index.ts';
+import { moduleAnswers } from '../../progress/progress.ts';
+import { createProgressStore } from '../../progress/store.ts';
+import { useProgress } from '../../progress/useProgress.ts';
 import type { ModuleAnswers, ScreenProps } from '../../screens/types.ts';
+import { createMemoryTracker } from '../../xapi/tracker.ts';
 import { fixtureCourse } from './fixture.ts';
 import { ModuleFrame, type ModuleFrameProps } from './ModuleFrame.tsx';
 import { NO_ANSWERS } from './progress.ts';
-import { useCourseAnswers } from './useCourseAnswers.ts';
 
 // The chat is swapped for a probe that shows what the frame hands a screen and reports a pick.
 vi.mock('../../screens/index.ts', async (importOriginal) => {
@@ -181,11 +184,12 @@ describe('ModuleFrame', () => {
   });
 });
 
-describe('the answers held for the session', () => {
+describe('the answers held by the progress store', () => {
+  const store = createProgressStore(course, createMemoryTracker({ id: 'https://example.org/frame-test/' }));
   function Session({ slug, at }: { slug: string; at: number }) {
-    const { answers, onEvent } = useCourseAnswers();
+    const { doc, onEvent } = useProgress(store);
     const shown = course.modules.find((m) => m.slug === slug)!;
-    return <ModuleFrame course={course} module={shown} screen={at} answers={answers[slug] ?? NO_ANSWERS} onEvent={onEvent} />;
+    return <ModuleFrame course={course} module={shown} screen={at} answers={moduleAnswers(doc, slug)} onEvent={onEvent} />;
   }
 
   it('turns Next on once a scored screen sends answered, and keeps every answer across screens and modules', () => {
