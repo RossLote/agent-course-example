@@ -30,7 +30,7 @@ describe('CompareScreen', () => {
     expect(right.querySelectorAll('[data-drop-target]')).toHaveLength(4);
     expect(left.getAttribute('data-feedback')).toBe('flash');
     expect(right.getAttribute('data-feedback')).toBe('reason');
-    expect(within(left).getByRole('timer').textContent).toBe('1:00');
+    expect(within(left).getByRole('timer').textContent).toBe('0:15');
     expect(left.querySelectorAll('.fridge-board-rows li')).toHaveLength(3);
     expect(right.querySelector('.fridge-board')).toBeNull();
     expect(within(right).queryByRole('timer')).toBeNull();

@@ -254,20 +254,43 @@
   color: var(--right);
 }
 
-/* The timer pill and its No timer button (WCAG 2.2.1), beside the placed count and the score. */
-.fridge-pill[data-low] {
+/* The timer pill, beside the placed count and the score. In the last five seconds (and at
+   zero) it reads red and the cabinet's outline turns red; while it still runs it shows a
+   speaker and pulses, where motion is allowed. */
+.fridge-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fridge-timer[data-low] {
   background: var(--wrong);
 }
 
-.fridge-no-timer {
-  min-height: 36px;
-  padding: 0 12px;
-  font-size: 14px;
+.fridge-timer-icon {
+  flex-shrink: 0;
 }
 
-.fridge-no-timer:disabled {
-  opacity: 0.6;
-  cursor: default;
+.fridge[data-warning] .fridge-cabinet {
+  border-color: var(--wrong);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fridge-timer[data-pulse] {
+    animation: fridge-pulse 1s ease-in-out infinite;
+  }
+}
+
+@keyframes fridge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--wrong) 45%, transparent);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--wrong) 0%, transparent);
+  }
 }
 
 /* The cabinet and the leaderboard side by side, stacked when there is no room. */
@@ -313,12 +336,21 @@
   font-weight: 700;
 }
 
-/* Time's up: the file's message, bordered as well as coloured, so it is not colour alone. */
+/* Time's up: the file's message and Reset in the tray's place, bordered as well as coloured,
+   so it is not colour alone. */
 .fridge-timeup {
-  padding: 10px 14px;
-  border: 1px solid var(--wrong);
-  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 2px solid var(--wrong);
+  border-radius: 10px;
   background: var(--wrong-soft);
+}
+
+.fridge-timeup p {
+  flex: 1 1 auto;
 }
 
 /* A wrong drop on a flash fridge: the item that came back is red and stays so (the static
@@ -415,10 +447,3 @@
   }
 }
 
-/* Time is up: the tray is locked. */
-.fridge-item:disabled {
-  border-color: var(--line);
-  color: var(--muted);
-  cursor: default;
-  opacity: 0.6;
-}

@@ -32,7 +32,6 @@ export function fridgeWords(fridge: Fridge, play: FridgePlay): string {
   const last = play.last;
   if (last === null) return '';
   if (last.kind === 'reset') return 'Every item is back in the tray.';
-  if (last.kind === 'no-timer') return 'Timer off.';
   const item = fridge.items.find((candidate) => 'item' in last && candidate.id === last.item);
   if (last.kind === 'time-up') {
     if (fridge.timer === 'none') return '';

@@ -62,7 +62,7 @@ score:
   right: 100
   wrong: -50
 timer:
-  seconds: 60
+  seconds: 15
   message: "**Time's up!** Better luck next time."
 leaderboard:
   - name: Sam

@@ -33,9 +33,8 @@ describe('fridgeWords', () => {
     );
   });
 
-  it('announces the timer ending with its markup taken off, and the timer going off', () => {
+  it('announces the timer ending with its markup taken off', () => {
     expect(fridgeWords(oneShot, after({ kind: 'time-up' }))).toBe("Time's up! Better luck next time.");
-    expect(fridgeWords(oneShot, after({ kind: 'no-timer' }))).toBe('Timer off.');
   });
 
   it('says the item held when time ran out went back to the tray, after the message', () => {
