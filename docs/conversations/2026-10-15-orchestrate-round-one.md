@@ -36,3 +36,24 @@ the agent working alone, so the log is short.
 ## Ross: carry on
 
 - Continue.
+
+## Agent: the run, up to the pause
+
+- The eighteen beads are built and merged on agent-course-wqw/round-one, the
+  full gate was green, then a simplify pass (30 applied, 16 skipped), a plain
+  review (8 found, 4 fixed, one decision reversed: a launch with no
+  registration keeps its own local key) and an adversarial review (37
+  confirmed, 2 closed by decision, 35 filed as fix beads in four batches).
+- Batches B and C are merged; A (progress, State, the frame) and E (the
+  package and e2e) were still with their workers. A first recording of the
+  walkthrough exists; it is re-recorded once the fixes land.
+
+## Ross: pause here
+
+- We're close to the session limit. Find a good place to pause and write a
+  handoff.
+
+## Agent: paused, handoff written
+
+- Paused with A and E in their worktrees, uncommitted. The handoff says how
+  to finish them, re-record the walkthrough and open the pull request.
