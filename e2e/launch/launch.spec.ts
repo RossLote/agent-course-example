@@ -114,6 +114,7 @@ test('a launch sends every statement and State write to the record store with th
   }
   expect(lastState()).toEqual({
     version: 1,
+    savedAt: expect.any(String),
     modules: {
       '00': {
         reached: 7,
@@ -128,5 +129,53 @@ test('a launch sends every statement and State write to the record store with th
     },
   });
 
+  expect(external).toEqual([]);
+});
+
+test('a State read that fails holds every State write back until a later read answers', async ({ page, baseURL }) => {
+  test.setTimeout(60_000);
+  const origin = new URL(baseURL!).origin;
+  const endpoint = `${origin}/lrs/`;
+  const external = await keepLocal(page, origin);
+
+  // The record store: the first State read fails with a 500, every later one answers 404.
+  const requests: Recorded[] = [];
+  await page.route(`${endpoint}**`, async (route) => {
+    const request: Request = route.request();
+    const url = new URL(request.url());
+    const body = request.postData();
+    requests.push({ method: request.method(), url, headers: await request.allHeaders(), body: body === null ? null : JSON.parse(body) });
+    const state = url.pathname.endsWith('/activities/state');
+    const reads = requests.filter((r) => r.url.pathname.endsWith('/activities/state') && r.method === 'GET').length;
+    if (state && request.method() === 'GET') return route.fulfill(reads === 1 ? { status: 500, body: 'down' } : { status: 404, body: '' });
+    if (state) return route.fulfill({ status: 204 });
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(['ok']) });
+  });
+
+  const search = sparkSearch({ endpoint, auth: AUTH, 'keydown-message': null, 'close-message': null });
+  await page.clock.install();
+  await page.goto(`/${search}`);
+  await page.getByRole('link', { name: 'Take the job' }).click();
+  await expect(heading(page)).toHaveText(HOME_HEADING);
+  await playModule00(page);
+  await expect(page.getByRole('banner')).toContainText('1 of 8 done');
+  // The read is tried again at most once every 30 s, before a write.
+  await page.clock.runFor(30_000);
+
+  const isState = (r: Recorded) => r.url.pathname.endsWith('/activities/state');
+  const isStateWrite = (r: Recorded) => isState(r) && r.method !== 'GET';
+  const statements = () => requests.filter((r) => r.url.pathname.endsWith('/statements')).flatMap((r) => (Array.isArray(r.body) ? r.body : [r.body]) as Statement[]);
+  await expect.poll(() => (requests.filter(isStateWrite).at(-1)?.body as { modules?: Record<string, { completed?: boolean }> } | undefined)?.modules?.['00']?.completed).toBe(true);
+  // The module's completed goes out once, when the read answers.
+  await expect.poll(() => statements().filter((s) => s.verb.id === `${VERB}completed` && s.object.id === `${COURSE_ID}modules/00`).length).toBe(1);
+
+  // No State write before the read that answered.
+  const states = requests.filter(isState).map((r) => r.method);
+  expect(states.slice(0, 2)).toEqual(['GET', 'GET']);
+  expect(states.slice(2).every((method) => method === 'PUT')).toBe(true);
+  for (const request of requests) {
+    expect(request.headers['x-experience-api-version'], `${request.method} ${request.url}`).toBe('1.0.2');
+    expect(request.headers.authorization, `${request.method} ${request.url}`).toBe(AUTH);
+  }
   expect(external).toEqual([]);
 });

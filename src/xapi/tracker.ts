@@ -1,10 +1,11 @@
 // The Tracker (D20): the one interface the course talks to the record store through. With a
-// launch it is @xapi/xapi on the fetch adapter at version 1.0.2; without one it is an
-// in-memory store whose statements the preview drawer lists (D18).
+// launch it is @xapi/xapi on fetch at version 1.0.2; without one it is an in-memory store whose
+// statements the preview drawer lists (D18).
 import XAPI, { type Statement } from '@xapi/xapi';
+import { fetchAdapter, RecordStoreError } from './adapter.ts';
 import { courseActivityId, type Launch } from './launch.ts';
 import { createQueue } from './queue.ts';
-import { isStateDocument, localStateKey, readLocalState, STATE_ID, writeLocalState, type StateDocument } from './state.ts';
+import { isStateDocument, localStateKey, readLocalState, STATE_ID, writeLocalState, type StateDocument, type StateRead } from './state.ts';
 
 /** The statements the in-memory store has received, oldest first, and a way to hear of more. */
 export interface StatementLog {
@@ -21,12 +22,20 @@ export interface Tracker {
   readonly log: StatementLog | null;
   /** Queues a statement and returns at once; a failure is retried once, then logged, never thrown. */
   send(statement: Statement): void;
-  /** The State document, or null when there is none, the read fails, or the answer is not a JSON object. Never rejects. */
-  getState(): Promise<StateDocument | null>;
+  /** What a State read found (state.ts, StateRead). Never rejects. */
+  getState(): Promise<StateRead>;
   /** Writes the State document (queued with the statements, with a launch) and its localStorage copy. Returns at once. */
   setState(doc: StateDocument): void;
+  /** Writes the localStorage copy alone. */
+  setLocalState(doc: StateDocument): void;
   /** The localStorage copy for this course and registration, or null. */
   getLocalState(): StateDocument | null;
+  /**
+   * Sends what is still queued at once, as the page is hidden or closed: the statements as one
+   * POST and the latest State document as its PUT, with `keepalive` so they outlive the page.
+   * They leave the queue, so nothing is sent twice; a failure is ignored. Nothing in preview.
+   */
+  flush(): void;
   /** Settles when every queued request has been sent or dropped (for tests). */
   idle(): Promise<void>;
 }
@@ -36,14 +45,35 @@ export function createTracker(course: { id: string }, launch: Launch | null): Tr
   return launch ? createLrsTracker(course, launch) : createMemoryTracker(course);
 }
 
+/** Flushes `tracker` whenever the page is hidden or closed (pagehide, or visibilitychange to hidden); returns the unsubscribe. */
+export function flushWhenHidden(tracker: Tracker): () => void {
+  const flush = () => tracker.flush();
+  const hidden = () => {
+    if (document.visibilityState === 'hidden') tracker.flush();
+  };
+  window.addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', hidden);
+  return () => {
+    window.removeEventListener('pagehide', flush);
+    document.removeEventListener('visibilitychange', hidden);
+  };
+}
+
+const NO_STATE: StateRead = { status: 'none' };
+const UNKNOWN_STATE: StateRead = { status: 'unknown' };
+
+/** A queued request: a statement, or a State write, which takes the latest document on its first try. */
+type Request = { type: 'statement'; statement: Statement } | { type: 'state'; doc: StateDocument | null };
+
 /**
  * The tracker for a launch: statements and State to the launch's record store, in order. A State
  * write is queued only when none is waiting already, and sends the latest document when its turn
  * comes, so a burst of changes is one write.
  */
 export function createLrsTracker(course: { id: string }, launch: Launch, { retryDelayMs = 1000 } = {}): Tracker {
-  const xapi = new XAPI({ endpoint: launch.endpoint, auth: launch.auth, version: '1.0.2', adapter: 'fetch' });
-  const queue = createQueue(retryDelayMs);
+  const config = { endpoint: launch.endpoint, auth: launch.auth, version: '1.0.2' } as const;
+  const xapi = new XAPI({ ...config, adapter: fetchAdapter() });
+  const keepalive = new XAPI({ ...config, adapter: fetchAdapter({ keepalive: true }) });
   const localKey = localStateKey(course, launch);
   const where = {
     agent: launch.actor,
@@ -53,36 +83,52 @@ export function createLrsTracker(course: { id: string }, launch: Launch, { retry
   };
   // The latest document no queued write has taken yet; null when there is none.
   let unsent: StateDocument | null = null;
+  const queue = createQueue<Request>(
+    (request) => {
+      if (request.type === 'statement') return xapi.sendStatement({ statement: request.statement });
+      // The latest document is taken on the first try; a retry sends the same one.
+      if (request.doc === null) {
+        request.doc = unsent;
+        unsent = null;
+      }
+      return request.doc ? xapi.setState({ ...where, state: request.doc }) : Promise.resolve();
+    },
+    (request) => (request.type === 'state' ? 'the State write' : `the ${request.statement.verb.display?.['en-US'] ?? request.statement.verb.id} statement`),
+    retryDelayMs,
+  );
+  const ignore = () => {};
   return {
     launch,
     log: null,
     send(statement) {
-      queue.add(`the ${statement.verb.display?.['en-US'] ?? statement.verb.id} statement`, () => xapi.sendStatement({ statement }));
+      queue.add({ type: 'statement', statement });
     },
     async getState() {
       try {
         const { data } = await xapi.getState(where);
-        return isStateDocument(data) ? data : null;
-      } catch {
-        return null;
+        return isStateDocument(data) ? { status: 'found', doc: data } : NO_STATE;
+      } catch (error) {
+        return error instanceof RecordStoreError && error.status === 404 ? NO_STATE : UNKNOWN_STATE;
       }
     },
     setState(doc) {
       writeLocalState(localKey, doc);
       const queued = unsent !== null;
       unsent = doc;
-      if (queued) return;
-      // The latest document is taken on the first try; a retry sends the same one.
-      let state: StateDocument | null = null;
-      queue.add('the State write', () => {
-        if (state === null) {
-          state = unsent ?? doc;
-          unsent = null;
-        }
-        return xapi.setState({ ...where, state });
-      });
+      if (!queued) queue.add({ type: 'state', doc: null });
     },
+    setLocalState: (doc) => writeLocalState(localKey, doc),
     getLocalState: () => readLocalState(localKey),
+    flush() {
+      const requests = queue.take();
+      const statements = requests.flatMap((r) => (r.type === 'statement' ? [r.statement] : []));
+      // A waiting write that has not taken its document yet sends the latest, which is `unsent`.
+      const writes = requests.flatMap((r) => (r.type === 'state' ? [r.doc ?? unsent] : []));
+      const state = writes.at(-1) ?? null;
+      unsent = null;
+      if (statements.length > 0) keepalive.sendStatements({ statements }).catch(ignore);
+      if (state) keepalive.setState({ ...where, state }).catch(ignore);
+    },
     idle: () => queue.idle(),
   };
 }
@@ -106,12 +152,14 @@ export function createMemoryTracker(course: { id: string }): Tracker {
       statements = [...statements, jsonCopy(statement)];
       for (const listener of listeners) listener();
     },
-    getState: () => Promise.resolve(state && jsonCopy(state)),
+    getState: () => Promise.resolve(state ? { status: 'found', doc: jsonCopy(state) } : NO_STATE),
     setState(doc) {
       state = jsonCopy(doc);
       writeLocalState(localKey, doc);
     },
+    setLocalState: (doc) => writeLocalState(localKey, doc),
     getLocalState: () => readLocalState(localKey),
+    flush() {},
     idle: () => Promise.resolve(),
   };
 }

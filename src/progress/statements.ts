@@ -4,7 +4,8 @@
 // a wrong-then-right check sends two; the effects send completed on a module, and completed on
 // the course when the last module completes and again whenever its score changes after that.
 // A module's completed comes from its effect, never from `takeaway-reached` itself: the takeaway
-// reports each time it shows, and only the first completes the module.
+// reports each time it shows, and only the first completes the module. While State is read the
+// store holds the effects back and hands them over with the load (an update with no cause).
 import type { Statement } from '@xapi/xapi';
 import type { Launch } from '../xapi/launch.ts';
 import { courseCompleted, moduleCompleted, screenStatement, type StatementCourse } from '../xapi/statements.ts';
@@ -12,9 +13,9 @@ import type { Tracker } from '../xapi/tracker.ts';
 import type { ProgressEffect } from './progress.ts';
 import type { ProgressStore, ProgressUpdate } from './store.ts';
 
-/** The statements one update sends, in order: the screen's own, then each effect's. */
+/** The statements one update sends, in order: the screen's own (none for a visit or a load), then each effect's. */
 export function updateStatements(course: StatementCourse, launch: Launch | null, { cause, effects }: ProgressUpdate): Statement[] {
-  const own = cause.type === 'event' && cause.event.type !== 'takeaway-reached' ? [screenStatement(course, launch, cause.module, cause.screen, cause.event)] : [];
+  const own = cause?.type === 'event' && cause.event.type !== 'takeaway-reached' ? [screenStatement(course, launch, cause.module, cause.screen, cause.event)] : [];
   return [...own, ...effects.map((effect) => effectStatement(course, launch, effect))];
 }
 
