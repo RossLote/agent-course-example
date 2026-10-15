@@ -269,3 +269,147 @@
   margin-top: 4px;
   color: var(--right);
 }
+
+/* The timer pill and its No timer button (WCAG 2.2.1), beside the placed count and the score. */
+.fridge-pill[data-low] {
+  background: var(--wrong);
+}
+
+.fridge-no-timer {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.fridge-no-timer:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* The cabinet and the leaderboard side by side, stacked when there is no room. */
+.fridge-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.fridge-body .fridge-cabinet {
+  flex: 999 1 300px;
+  min-width: 0;
+}
+
+.fridge-board {
+  display: flex;
+  flex: 1 1 150px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 14px;
+}
+
+.fridge-board-title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fridge-board-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.fridge-board-rows li[data-learner] {
+  font-weight: 700;
+}
+
+/* Time's up: the file's message, bordered as well as coloured, so it is not colour alone. */
+.fridge-timeup {
+  padding: 10px 14px;
+  border: 1px solid var(--wrong);
+  border-radius: 8px;
+  background: var(--wrong-soft);
+}
+
+/* A wrong drop on a flash fridge: the item that came back is red and stays so (the static
+   state), and shakes in a short flash where motion is allowed. */
+.fridge[data-feedback='flash'] .fridge-item[data-returned] {
+  border-color: var(--wrong);
+  background: var(--wrong-soft);
+  color: var(--wrong);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fridge[data-feedback='flash'] .fridge-item[data-returned] {
+    animation: fridge-flash 600ms ease-out;
+  }
+}
+
+@keyframes fridge-flash {
+  0%,
+  40% {
+    background: var(--wrong);
+    color: #fff;
+    transform: translateX(0);
+  }
+  10%,
+  30% {
+    transform: translateX(-4px);
+  }
+  20% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* The confetti banner: the finish line on ink, with a few pieces that drop in. */
+.fridge-score[data-confetti] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.fridge-confetti {
+  display: flex;
+  gap: 8px;
+}
+
+.fridge-confetto {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fridge-confetto {
+    animation: fridge-confetti 900ms ease-out backwards;
+  }
+}
+
+@keyframes fridge-confetti {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) rotate(0deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+/* Time is up: the tray is locked. */
+.fridge-item:disabled {
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: default;
+  opacity: 0.6;
+}

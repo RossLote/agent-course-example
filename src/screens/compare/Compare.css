@@ -1,0 +1,62 @@
+/* The compare screen (docs/design/2026-10-15-first-pass/M05-TwoFridges.dc.html). */
+
+.compare {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Two fridges side by side, stacked when a column would be narrower than a fridge can be. */
+.compare-fridges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.compare-table-card {
+  padding: 12px 22px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  overflow-x: auto;
+}
+
+.compare-table-card .eyebrow {
+  padding: 8px 0 4px;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.compare-table th {
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.compare-table thead th {
+  border-top: 0;
+}
+
+.compare-table tbody th {
+  color: var(--ink);
+}
+
+.compare-wall {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
