@@ -28,15 +28,18 @@ export interface MessageProps {
   children: ReactNode;
   /** A bubble as wide as the conversation, for the brief's questions. */
   wide?: boolean;
-  /** For a message focus moves to (the brief's closing message). */
-  tabIndex?: number;
+  /**
+   * Names a message focus moves to (the brief's rounds after the first, and its closing
+   * message): its `data-message`, and focusable from script only.
+   */
+  anchor?: string;
 }
 
 /** One message: the speaker's avatar and name over the bubble, the learner's on the right. */
-export function Message({ who, children, wide = false, tabIndex }: MessageProps) {
+export function Message({ who, children, wide = false, anchor }: MessageProps) {
   const speaker = SPEAKERS[who];
   return (
-    <li tabIndex={tabIndex} className={wide ? 'chat-msg chat-msg-wide' : 'chat-msg'} data-who={who}>
+    <li data-message={anchor} tabIndex={anchor === undefined ? undefined : -1} className={wide ? 'chat-msg chat-msg-wide' : 'chat-msg'} data-who={who}>
       <span className="chat-avatar" aria-hidden="true">
         {speaker.avatar}
       </span>

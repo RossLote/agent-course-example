@@ -25,12 +25,18 @@ export interface Score {
  * Everything a screen reports, through the one callback the frame gives it.
  * - `answered`: a Check press on a scored screen (one per press: wrong then right is two).
  *   `score` is 1 of 1 for a check, n of the card count for an order, n of the row count for a
- *   scored match. `response` is the choice in words, as the statement carries it (the option's
- *   label, the order of the cards' labels, each row's pick).
+ *   scored match.
  * - `interacted`: one option pick on an unscored screen (a chat reply, a brief chip, an
- *   unscored choose or match); `response` is the option's label.
+ *   unscored choose or match).
  * - `fridge-ended`: a fridge play ended; `slug` is the fridge's name ("one-shot").
  * - `takeaway-reached`: the module's takeaway is showing, which completes the module.
+ *
+ * `response` is the pick in words, as the statement carries it, and each screen sends its own
+ * shape: a choose, the option's label (a scored one's pick, or each pick of an unscored one); a
+ * match, "<row>: <target>" for a row (an unscored one sends one per row, a scored one every row
+ * joined by "; "); a brief, "D<n>: <chip label>"; a chat, the reply's label; an order, the cards'
+ * labels in the order left, joined by "; ". The labels are copy, markers and all; the xAPI layer
+ * (src/xapi/statements.ts) strips the `**` and `*` before it sends them.
  */
 export type ScreenEvent =
   | { type: 'answered'; slug: string; right: boolean; score: Score; response: string; answer: SavedAnswer }

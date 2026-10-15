@@ -2,27 +2,28 @@ import { useId, useState } from 'react';
 import type { ScreenOf } from '../../content/index.ts';
 import { CheckButton } from '../parts/CheckButton.tsx';
 import { Mark, ToneIcon } from '../parts/Tone.tsx';
-import { indexBelow, savedField } from '../saved.ts';
+import { fittingList, indexBelow, savedField } from '../saved.ts';
 import { Blocks } from '../scene/Blocks.tsx';
 import { Copy } from '../scene/Copy.tsx';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
 import { BoxPanel } from './BoxPanel.tsx';
 import './Choose.css';
 
-type Option = ScreenOf<'choose'>['options'][number];
+type Choose = ScreenOf<'choose'>;
+type Option = Choose['options'][number];
 
 /** What a choose saves: the picked options' positions, in order. */
 type ChooseAnswer = { picked: number[] };
 
 /**
- * The picks a saved answer holds, or undefined when there is none. Any saved answer renders the
- * screen checked; positions that are not options are dropped.
+ * The picks a saved answer holds, or undefined when there is none or it does not fit the screen
+ * (saved.ts): every pick an option, none twice, one for a single choice and at least one for a
+ * multi, as a Check press leaves them.
  */
-function savedPicks(saved: SavedAnswer | undefined, count: number): number[] | undefined {
-  if (saved === undefined) return undefined;
-  const picked = savedField(saved, 'picked');
-  if (!Array.isArray(picked)) return [];
-  return picked.filter((i): i is number => indexBelow(i, count));
+function savedPicks(saved: SavedAnswer | undefined, screen: Choose): number[] | undefined {
+  const picked = fittingList(savedField(saved, 'picked'), (i): i is number => indexBelow(i, screen.options.length));
+  if (picked === undefined || new Set(picked).size !== picked.length) return undefined;
+  return (screen.mode === 'single' ? picked.length === 1 : picked.length > 0) ? picked : undefined;
 }
 
 /** Right when the picks are exactly the right options. */
@@ -60,12 +61,12 @@ function Result({ options, picked, single }: { options: readonly Option[]; picke
  *
  * A scored choose (a check) reports `answered` on every Check press; an unscored one reports
  * `interacted` on Check, once per picked option, each carrying the whole pick. The saved answer
- * is `{picked}`, and the screen renders from it checked.
+ * is `{picked}`, and the screen renders from it checked (unanswered when it does not fit).
  */
 export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'choose'>) {
   const { options } = screen;
   const single = screen.mode === 'single';
-  const [initial] = useState(() => savedPicks(saved, options.length));
+  const [initial] = useState(() => savedPicks(saved, screen));
   const [picked, setPicked] = useState<readonly number[]>(initial ?? []);
   const [checked, setChecked] = useState(initial !== undefined);
   const name = useId();
@@ -153,6 +154,7 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
           waiting={picked.length === 0}
           hint={single ? 'Choose an answer first.' : 'Tick at least one first.'}
           label={screen.checkLabel}
+          tryAgainLabel={screen.tryAgainLabel}
           onCheck={check}
           onTryAgain={tryAgain}
         />

@@ -58,6 +58,13 @@ describe('CompareScreen', () => {
     expect(fridges[1].compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  it("renders each fridge's title in the table's header as copy", () => {
+    const oneShot = { ...course.fridges['one-shot'], title: 'Module 00: **one-shot**' };
+    render(<CompareScreen screen={compare} module={module05} course={{ ...course, fridges: { ...course.fridges, 'one-shot': oneShot } }} progress={NO_PROGRESS} onEvent={vi.fn()} />);
+    const header = within(screen.getByRole('table')).getAllByRole('columnheader')[1];
+    expect(header.innerHTML).toBe('Module 00: <strong>one-shot</strong>');
+  });
+
   it('keeps the two fridges apart: each sends its own fridge-ended', () => {
     const { left, right, onEvent } = renderCompare();
     for (const item of course.fridges.accepted.items) drop(right, item.name, item.shelf);

@@ -147,7 +147,7 @@ describe('App with progress', () => {
     expect(screen.getByRole<HTMLInputElement>('radio', { name: 'Confirmed, citing A.' }).checked).toBe(true);
     expect(document.querySelector('.choice-feedback')?.textContent).toMatch(/^Yes\. Line 41 returns .* You cited the line\.$/);
     expect(screen.getByText('The fix')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Try another verdict' })).toBeTruthy();
   });
 
   it('reads "8 of 8 done", every card "Done" and "Review from module 00" once all eight are done', () => {

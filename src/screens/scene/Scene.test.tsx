@@ -137,6 +137,24 @@ describe('Blocks', () => {
     const shown = [...container.querySelector('.blocks')!.children];
     expect(shown.map((el) => el.className)).toEqual(['scene-card', 'block block-quote']);
   });
+
+  it("renders an aside's term, a list marker, a stat's value and a quote's attribution as copy", () => {
+    const { container } = render(
+      <Blocks
+        progress={progress}
+        blocks={[
+          { type: 'aside', term: 'the *gate*', text: 'The checks.' },
+          { type: 'list', items: [{ text: 'A step.', marker: '**ch 2**' }] },
+          { type: 'stats', items: [{ value: '**16**', caption: 'pieces' }] },
+          { type: 'quote', text: 'A line.', attribution: '*Ross*' },
+        ]}
+      />,
+    );
+    expect(container.querySelector('dfn')?.innerHTML).toBe('the <em>gate</em>');
+    expect(container.querySelector('.block-list-marker')?.innerHTML).toBe('<strong>ch 2</strong>');
+    expect(container.querySelector('.block-stat-value')?.innerHTML).toBe('<strong>16</strong>');
+    expect(container.querySelector('figcaption')?.innerHTML).toBe('<em>Ross</em>');
+  });
 });
 
 describe('Copy', () => {

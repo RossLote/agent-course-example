@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { course } from '../../content/index.ts';
 import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
@@ -161,9 +161,16 @@ describe('OrderScreen, from a saved answer', () => {
     expect(onEvent).not.toHaveBeenCalled();
   });
 
-  it('renders a saved answer that is not every card once checked in the start order', () => {
-    const { container } = renderOrder({ order: ['retro'] });
-    expect(order(container)).toEqual(shown.start);
-    expect(result()).toBe('4 of 8 in the right place');
+  it('renders unanswered, in the start order, from a saved answer that is not every card once', () => {
+    const misfits: SavedAnswer[] = ['placeholder', { order: ['retro'] }, { order: [...correct.slice(0, 7), 'brief'] }, { order: [...correct.slice(0, 7), 'nonsense'] }];
+    for (const saved of misfits) {
+      const { container } = renderOrder(saved);
+      expect(order(container), JSON.stringify(saved)).toEqual(shown.start);
+      expect(states(container)).toEqual(Array(8).fill('none'));
+      expect(result()).toBe('');
+      expect(screen.getByRole('button', { name: 'Check the order' })).toBeTruthy();
+      expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+      cleanup();
+    }
   });
 });

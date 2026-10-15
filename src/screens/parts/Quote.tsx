@@ -9,7 +9,11 @@ export function Quote({ className, text, attribution }: { className: string; tex
           “<Copy text={text} />”
         </p>
       </blockquote>
-      {attribution !== undefined && <figcaption>{attribution}</figcaption>}
+      {attribution !== undefined && (
+        <figcaption>
+          <Copy text={attribution} />
+        </figcaption>
+      )}
     </figure>
   );
 }

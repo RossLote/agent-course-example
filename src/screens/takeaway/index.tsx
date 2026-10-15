@@ -20,7 +20,11 @@ export function TakeawayScreen({ screen, module, course, progress, onEvent }: Sc
     <div className="takeaway">
       <div className="takeaway-row">
         <div className="takeaway-text">
-          {screen.eyebrow !== undefined && <p className="eyebrow">{screen.eyebrow}</p>}
+          {screen.eyebrow !== undefined && (
+            <p className="eyebrow">
+              <Copy text={screen.eyebrow} />
+            </p>
+          )}
           <h1 className="takeaway-card">
             <Copy text={screen.text} />
           </h1>

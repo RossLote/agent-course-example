@@ -39,6 +39,15 @@ describe('content/', () => {
     expect(Object.keys(course.fridges).sort()).toEqual(['accepted', 'one-shot']);
   });
 
+  it('ends every module the same way: the takeaway says "Takeaway", and Check 1 of 2 says what a check is', () => {
+    for (const m of course.modules) {
+      expect(m.screens.at(-1), `module ${m.slug}`).toMatchObject({ type: 'takeaway', eyebrow: 'Takeaway' });
+      for (const s of m.screens.filter((s) => s.eyebrow === 'Check · 1 of 2')) {
+        expect(s, `module ${m.slug}`).toMatchObject({ intro: 'Every module ends with two of these. Each option tells you why, right or wrong.' });
+      }
+    }
+  });
+
   it('fails on a misspelt field, naming the file and the path to it', () => {
     const bad = withFile('modules/00.yaml', (m) => {
       screensOf(m)[0].headnig = 'A typo';

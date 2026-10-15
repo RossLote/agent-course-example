@@ -4,7 +4,7 @@ import type { ScreenOf } from '../../content/index.ts';
 import { ChatLog, Chip, Message } from '../chat/Conversation.tsx';
 import { useFocusAfterRender } from '../parts/useFocusAfterRender.ts';
 import { Copy } from '../scene/Copy.tsx';
-import { indexBelow, savedField } from '../saved.ts';
+import { fittingList, indexBelow, savedField } from '../saved.ts';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
 import './Brief.css';
 
@@ -18,17 +18,17 @@ type BriefAnswer = { picked: (number | null)[]; defaults: boolean };
 
 const ROUNDS = ['one', 'two', 'three', 'four', 'five'];
 
-/** The state a saved answer holds; picks that are not chips of their question are dropped. */
-function savedState(saved: SavedAnswer | undefined, questions: readonly Question[]): BriefAnswer {
-  const picks = savedField(saved, 'picked');
-  const list = Array.isArray(picks) ? picks : [];
-  return {
-    picked: questions.map((q, i) => {
-      const chip = list[i];
-      return indexBelow(chip, q.chips.length) ? chip : null;
-    }),
-    defaults: savedField(saved, 'defaults') === true,
-  };
+/**
+ * The state a saved answer holds, or undefined when there is none or it does not fit the screen
+ * (saved.ts): a chip of its question or null for every question, and "Your defaults" pressed
+ * only once every question is answered.
+ */
+function savedState(saved: SavedAnswer | undefined, questions: readonly Question[]): BriefAnswer | undefined {
+  const isPick = (chip: unknown, q: number): chip is number | null => chip === null || indexBelow(chip, questions[q].chips.length);
+  const picked = fittingList(savedField(saved, 'picked'), isPick, questions.length);
+  const defaults = savedField(saved, 'defaults');
+  if (picked === undefined || typeof defaults !== 'boolean' || (defaults && picked.includes(null))) return undefined;
+  return { picked, defaults };
 }
 
 /** The position of a question's recommended chip (the schema makes sure there is exactly one). */
@@ -47,16 +47,19 @@ function recommended(question: Question): number {
  * round is answered the next appears, opening with its playback message. "Your defaults" on the
  * last round picks the recommended chip of every question left, shows the learner's one-line
  * reply, and reports one `interacted` per decision it fills. With every decision filled, the
- * agent's closing message and the comparison card appear.
+ * agent's closing message and the comparison card appear. Focus moves on to what a press makes
+ * appear: the next round's playback message, or the closing message once the brief is closed.
  *
- * The saved answer is `{picked, defaults}`, and the screen renders from it as it was left.
+ * The saved answer is `{picked, defaults}`, and the screen renders from it as it was left
+ * (unanswered when it does not fit).
  */
 export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
   const { rounds, panel } = screen;
   const questions = rounds.flatMap((round) => round.questions);
-  const [state, setState] = useState(() => savedState(saved, questions));
+  const [state, setState] = useState(() => savedState(saved, questions) ?? { picked: questions.map(() => null), defaults: false });
   const root = useRef<HTMLDivElement>(null);
-  // Pressing "Your defaults" removes it; focus goes on to the agent's closing message.
+  // A press that opens a round or closes the brief adds its message below the chip, unannounced
+  // (and "Your defaults" goes); focus goes on to that message.
   const focusNext = useFocusAfterRender(root);
   const panelId = useId();
   const hintId = useId();
@@ -65,10 +68,15 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
   const { picked } = state;
   // The first question of each round, by its position across the rounds.
   const starts = rounds.map((_, r) => rounds.slice(0, r).reduce((n, round) => n + round.questions.length, 0));
-  const answered = (r: number) => picked.slice(starts[r], starts[r] + rounds[r].questions.length).every((p) => p !== null);
-  // A round shows once every round before it is answered.
-  let shown = 1;
-  while (shown < rounds.length && answered(shown - 1)) shown += 1;
+  const answeredIn = (list: readonly (number | null)[], r: number) => list.slice(starts[r], starts[r] + rounds[r].questions.length).every((p) => p !== null);
+  const answered = (r: number) => answeredIn(picked, r);
+  /** The rounds showing: a round shows once every round before it is answered. */
+  const shownIn = (list: readonly (number | null)[]) => {
+    let n = 1;
+    while (n < rounds.length && answeredIn(list, n - 1)) n += 1;
+    return n;
+  };
+  const shown = shownIn(picked);
   const last = rounds.length - 1;
   const filled = picked.filter((p) => p !== null).length;
   const closed = filled === questions.length;
@@ -83,6 +91,9 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
     const next = { ...state, picked: picked.map((p, i) => (i === q ? c : p)) };
     setState(next);
     report(q, next);
+    const opens = shownIn(next.picked);
+    if (!closed && !next.picked.includes(null)) focusNext('[data-message="closing"]');
+    else if (opens > shown) focusNext(`[data-message="round-${opens - 1}"]`);
   };
 
   const takeDefaults = () => {
@@ -90,7 +101,7 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
     const next = { picked: picked.map((p, q) => (left.includes(q) ? recommended(questions[q]) : p)), defaults: true };
     setState(next);
     for (const q of left) report(q, next);
-    focusNext('.chat-msg[tabindex="-1"]');
+    focusNext('[data-message="closing"]');
   };
 
   const note = fillTemplate(panel.note, { filled, total: questions.length });
@@ -105,7 +116,7 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
             </p>
           </Message>
           {rounds.slice(0, shown).map((round, r) => (
-            <Message key={r} who="agent" wide>
+            <Message key={r} who="agent" wide anchor={r > 0 ? `round-${r}` : undefined}>
               <p>
                 <Copy text={round.message} />
               </p>
@@ -160,7 +171,7 @@ export function BriefScreen({ screen, saved, onEvent }: ScreenProps<'brief'>) {
             </Message>
           )}
           {closed && (
-            <Message who="agent" tabIndex={-1}>
+            <Message who="agent" anchor="closing">
               <p>
                 <Copy text={screen.closing} />
               </p>

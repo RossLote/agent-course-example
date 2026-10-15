@@ -237,6 +237,7 @@ screens:
     heading: >-
       A pull request's door line says "Two-way door" but the change deletes a column of learner
       data. What is wrong?
+    intro: Every module ends with two of these. Each option tells you why, right or wrong.
     nav: check
     options:
       - label: Nothing; the code can be reverted.
@@ -271,6 +272,7 @@ screens:
         feedback: Then the proof was cut for length.
 
   - type: takeaway
+    eyebrow: Takeaway
     nav: takeaway
     text: >-
       **You still sign off. You just do not start from the code.** Door, undo, evidence against

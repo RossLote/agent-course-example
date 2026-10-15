@@ -32,8 +32,12 @@ export function CompareScreen({ screen, course, progress, onEvent }: ScreenProps
           <thead>
             <tr>
               <th scope="col">Aspect</th>
-              <th scope="col">{left.fridge.title}</th>
-              <th scope="col">{right.fridge.title}</th>
+              <th scope="col">
+                <Copy text={left.fridge.title} />
+              </th>
+              <th scope="col">
+                <Copy text={right.fridge.title} />
+              </th>
               <th scope="col">Wall</th>
             </tr>
           </thead>

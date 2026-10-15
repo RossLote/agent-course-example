@@ -117,6 +117,7 @@ screens:
     mode: single
     eyebrow: Check · 1 of 2
     heading: The client asks for two things that were not in the brief. What does that mean?
+    intro: Every module ends with two of these. Each option tells you why, right or wrong.
     nav: check
     options:
       - label: The brief failed.
@@ -152,6 +153,7 @@ screens:
           to reading everything.
 
   - type: takeaway
+    eyebrow: Takeaway
     nav: takeaway
     text: >-
       **Expect a second round. When a check misses, change the check.** The process is not set in

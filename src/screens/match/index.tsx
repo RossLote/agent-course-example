@@ -1,8 +1,8 @@
 import { useId, useState } from 'react';
 import type { ScreenOf } from '../../content/index.ts';
-import { CheckButton } from '../parts/CheckButton.tsx';
+import { CheckButton, CheckResult } from '../parts/CheckButton.tsx';
 import { Mark } from '../parts/Tone.tsx';
-import { savedField } from '../saved.ts';
+import { fittingList, savedField } from '../saved.ts';
 import { Blocks } from '../scene/Blocks.tsx';
 import { Copy } from '../scene/Copy.tsx';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
@@ -11,21 +11,16 @@ import './Match.css';
 
 type Match = ScreenOf<'match'>;
 
-/** What a match saves: each row's picked target id, or null where a row has none. */
+/** What a match saves: each row's picked target id (Check waits for a pick on every row). */
 type MatchAnswer = { picks: (string | null)[] };
 
 /**
- * The picks a saved answer holds, one per row, or undefined when there is none. Any saved answer
- * renders the screen checked; a pick that is not one of the targets counts as none.
+ * The picks a saved answer holds, one per row, or undefined when there is none or it does not
+ * fit the screen (saved.ts): a target id for every row, as a Check press leaves them.
  */
-function savedPicks(saved: SavedAnswer | undefined, match: Match): (string | null)[] | undefined {
-  if (saved === undefined) return undefined;
-  const picks = savedField(saved, 'picks');
-  const list = Array.isArray(picks) ? picks : [];
-  return match.rows.map((_, i) => {
-    const pick = list[i];
-    return typeof pick === 'string' && match.targets.some((t) => t.id === pick) ? pick : null;
-  });
+function savedPicks(saved: SavedAnswer | undefined, match: Match): string[] | undefined {
+  const isTarget = (pick: unknown): pick is string => typeof pick === 'string' && match.targets.some((t) => t.id === pick);
+  return fittingList(savedField(saved, 'picks'), isTarget, match.rows.length);
 }
 
 /**
@@ -36,7 +31,8 @@ function savedPicks(saved: SavedAnswer | undefined, match: Match): (string | nul
  *
  * A scored match reports `answered` on every Check press, a point per row right; an unscored one
  * reports `interacted` on Check, once per row with that row's pick, each carrying the whole
- * answer. The saved answer is `{picks}`, and the screen renders from it checked.
+ * answer. The saved answer is `{picks}`, and the screen renders from it checked (unanswered when
+ * it does not fit).
  */
 export function MatchScreen({ screen, progress, saved, onEvent }: ScreenProps<'match'>) {
   const { rows, targets } = screen;
@@ -136,6 +132,7 @@ export function MatchScreen({ screen, progress, saved, onEvent }: ScreenProps<'m
             waiting={answered < rows.length}
             hint="Pick an answer on every row first."
             label={screen.checkLabel}
+            tryAgainLabel={screen.tryAgainLabel}
             onCheck={check}
             onTryAgain={tryAgain}
           />
@@ -144,9 +141,7 @@ export function MatchScreen({ screen, progress, saved, onEvent }: ScreenProps<'m
               {answered} of {rows.length} answered
             </span>
           )}
-          <p className="check-result" role="status">
-            {checked && `${right} out of ${rows.length} right`}
-          </p>
+          <CheckResult>{checked && `${right} out of ${rows.length} right`}</CheckResult>
         </div>
       </div>
     </div>
