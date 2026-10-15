@@ -158,3 +158,16 @@ of them is built.
   the page during Thinking. The full gate is green (400 unit tests, 6 e2e
   specs, the package check), and the walkthrough passed all nine steps and is
   sent to you.
+
+## Ross: keep Back and Next in view
+
+- One more, quickly: on a long screen Back and Next are below the scroll. Lock
+  them to the bottom of the window so they're always in view; then I can see
+  whether Next is open and I can skip something.
+
+## Agent: the footer sticks
+
+- Done on the round-two branch: the footer sticks to the foot of the window,
+  under the drag ghost and the statements drawer, and a control you tab to
+  stops above it rather than under it. Checked in Chromium at desktop and
+  phone widths; the unit and e2e tiers are green.

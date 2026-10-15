@@ -420,6 +420,10 @@ bead, except where a rule here replaces one.
   visual pieces are the status pills, the verdict pills and the red timer warning. No new
   dependency. *Reason:* the round's design pass kept the first pass's look unchanged, and
   package.json stays as round one left it.
+- **Back and Next always in view.** The frame's footer, Back and Next, sticks to the foot of
+  the window however long the screen is; a control scrolled into view stops above it, never
+  under it (WCAG 2.4.11). *Reason:* Ross could not see on a long screen whether Next was
+  open, so whether he could skip it (added 2026-10-15 after round two).
 
 ## 6a. Engine terms
 

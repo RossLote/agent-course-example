@@ -58,15 +58,26 @@
   background: var(--surface);
 }
 
+/* Back and Next stay in view at the foot of the window however long the screen is, so a
+   learner can always see whether Next is open; under the drag ghost and the statements drawer. */
 .frame-foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px 16px;
-  padding: 20px 24px;
+  padding: 20px 24px calc(20px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--line);
   background: var(--surface);
+}
+
+/* A control scrolled into view (by Tab, or a focus move) stops above the footer, never under
+   it (WCAG 2.4.11). The footer is about 85px tall, two rows on a phone. */
+html:has(.frame-foot) {
+  scroll-padding-bottom: 140px;
 }
 
 .frame-next {
