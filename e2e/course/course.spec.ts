@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { choose, COURSE_ID, drag, fridge, heading, HOME_HEADING, keepLocal, marked, next, playModule00, solidWalls, tick } from './play.ts';
+import { choose, COURSE_ID, drag, fridge, heading, HOME_HEADING, keepLocal, next, playModule00, solidWalls, tick, verdicts } from './play.ts';
 
 // The whole course in preview, played as the ACCEPTANCE BAR plays it (steps 1 to 12), and the
 // statements drawer read at the end: every statement the play sent, oldest first, as D19 and
@@ -20,7 +20,7 @@ const checks = (slug: string) => [answered(`modules/${slug}/checks/1`, true), an
 const MODULE_00 = [
   line('initialized', 'course'),
   ...interacted('modules/00/interactions/what-went-wrong', 5),
-  // Raw chicken right (+100), cheese wrong (-50); out of 100 for each of the 14 items.
+  // Raw chicken right (+100), cheese wrong (-50); out of 100 for each of the 14 items. Sent at time-up.
   played('one-shot', 50, 1400),
   answered('modules/00/checks/1', false),
   answered('modules/00/checks/1', true),
@@ -31,6 +31,7 @@ const MODULE_00 = [
 /** The whole play's statements, oldest first. */
 const FULL_PLAY = [
   ...MODULE_00,
+  // Five chip picks, then three for Your defaults; Send answers sends nothing.
   ...interacted('modules/01/interactions/fridge-brief', 8),
   ...checks('01'),
   completed('01'),
@@ -103,7 +104,7 @@ async function match(page: Page, rows: readonly [string, string][], check: strin
 test('the whole course in preview sends every statement, in order, and comes back done', async ({ page, baseURL }) => {
   test.setTimeout(180_000);
   const external = await keepLocal(page, new URL(baseURL!).origin);
-  // The one-shot's minute runs on the page's clock, not the test's.
+  // The one-shot's fifteen seconds and the brief's Thinking run on the page's clock, not the test's.
   await page.clock.install();
 
   // 1. The scenario, in preview: the badge, and initialized in the drawer.
@@ -120,20 +121,35 @@ test('the whole course in preview sends every statement, in order, and comes bac
   await expect(page.getByRole('blockquote')).toContainText('have agents look at what the agents have done');
   await expect(page.locator('[data-wall][data-state="dashed"]')).toHaveCount(5);
   const cards = page.getByRole('region', { name: 'The modules' }).getByRole('link');
+  const pills = cards.locator('.module-card-status');
   await expect(cards).toHaveCount(8);
-  for (const card of await cards.all()) await expect(card).toContainText('Not started');
+  await expect(pills).toHaveText(Array.from({ length: 8 }, () => 'Not started'));
 
   // 3 and 4. Module 00, then the drawer so far.
   await playModule00(page);
   await expect(page.getByRole('banner')).toContainText('1 of 8 done');
-  await expect(cards.first()).toContainText('Done');
+  // The done card's pill says so, and the card is marked done (its green border).
+  await expect(pills).toHaveText(['Done', ...Array.from({ length: 7 }, () => 'Not started')]);
+  await expect(cards.first()).toHaveAttribute('data-status', 'done');
+  await expect(cards.nth(1)).toHaveAttribute('data-status', 'not-started');
   expect(await drawerLines(page, MODULE_00.length)).toEqual(MODULE_00);
 
-  // 5. Module 01: the brief, round one by its first chips, round two by "Your defaults".
+  // 5. Module 01: the brief one round at a time, round one by its first chips and Send
+  // answers, round two by "Your defaults"; the page's clock runs the fade and the Thinking.
   await open(page, '01', 'Where did the timer come from?');
   await next(page, 'How a brief goes');
   await next(page, 'The fridge brief');
   const decisions = page.locator('.brief-decision[data-filled]');
+  const chat = page.getByRole('list', { name: 'The conversation' });
+  const send = page.getByRole('button', { name: 'Send answers' });
+  const defaults = page.getByRole('button', { name: 'Your defaults' });
+  // The learner's messages' bubbles: the opening, then the latest line under it.
+  const learner = chat.locator('[data-who="learner"] .chat-bubble');
+  // Round one alone: Send answers off until every question is answered, and no Your defaults.
+  await expect(send).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.getByText('Answer every question, then send.')).toBeVisible();
+  await expect(defaults).toHaveCount(0);
+  await expect(page.getByRole('group', { name: '6. A timer?' })).toHaveCount(0);
   for (const question of [
     '1. Who does this, and where?',
     '2. Which shelves, which items, and whose rules?',
@@ -145,10 +161,35 @@ test('the whole course in preview sends every statement, in order, and comes bac
   }
   await expect(page.getByText('5 of 8 decisions.')).toBeVisible();
   await expect(decisions).toHaveCount(5);
+  await expect(send).not.toHaveAttribute('aria-disabled');
+  // The clock stands still, so the round's fade and the agent's Thinking move only when run.
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await send.click();
+  // The round fades out, then the learner's line takes its place and the agent thinks.
+  await expect(page.locator('.brief-chat')).toHaveAttribute('data-phase', 'leaving');
+  await page.clock.runFor(400);
+  await expect(learner).toHaveCount(2);
+  await expect(learner.last()).toHaveText('My answers to 1 to 5.');
+  await expect(chat).toContainText('Thinking…');
+  await expect(page.getByRole('group', { name: '1. Who does this, and where?' })).toHaveCount(0);
+  await page.clock.runFor(1500);
+  // Round two in the same place, focus on its message; the learner line stays above it.
+  await expect(page.locator('[data-message="round-1"]')).toBeFocused();
+  await expect(chat).toContainText('Took your answers as D1 to D5 on the right.');
+  await expect(learner.last()).toHaveText('My answers to 1 to 5.');
+  await expect(chat).not.toContainText('Thinking…');
   await expect(page.getByRole('group', { name: '6. A timer?' })).toBeVisible();
-  await page.getByRole('button', { name: 'Your defaults' }).click();
+  await expect(send).toHaveAttribute('aria-disabled', 'true');
+  await defaults.click();
   await expect(page.getByText('8 of 8 decisions.')).toBeVisible();
   await expect(decisions).toHaveCount(8);
+  await page.clock.runFor(400);
+  await expect(learner).toHaveCount(2);
+  await expect(learner.last()).toHaveText('Your defaults.');
+  await expect(chat).toContainText('Thinking…');
+  await page.clock.runFor(1500);
+  await expect(page.locator('[data-message="closing"]')).toBeFocused();
+  await page.clock.resume();
   await expect(page.getByText("That's the brief.")).toBeVisible();
   await expect(page.getByText("Compare this with module 00's one-line ask.")).toBeVisible();
   await next(page, 'What the record is for');
@@ -169,8 +210,7 @@ test('the whole course in preview sends every statement, in order, and comes bac
   await expect(page.locator('.frame-side .block-list-item')).toHaveCount(6);
   await next(page, 'Bead .3 has no acceptance yet. Pick the three lines a reviewer could check.');
   await tick(page, ['Pressing Enter on the focused tomatoes', 'The screen reader says', 'Pressing Escape while an item is picked up']);
-  await expect(marked(page, 'right')).toHaveCount(3);
-  await expect(marked(page, 'wrong')).toHaveCount(3);
+  await verdicts(page, ['right-tick', 'right-leave', 'right-tick', 'right-leave', 'right-tick', 'right-leave'], '6 of 6 right.');
   await next(page, 'The epic review');
   await expect(await choose(page, 'Fix the epic now')).toHaveAttribute('data-state', 'right');
   await next(page, 'Which of these is acceptance a reviewer can check?');
@@ -190,6 +230,8 @@ test('the whole course in preview sends every statement, in order, and comes bac
     ['A unit test that every item has exactly one right shelf', 'Its own working area', 'Done means', "The gate's own output pasted"],
     'Check my box',
   );
+  // The demo script left unticked: a wall missed.
+  await verdicts(page, ['right-tick', 'right-leave', 'missed', 'right-tick', 'right-leave', 'right-tick', 'right-tick'], '6 of 7 right: one missed.');
   await expect(page.locator('.choose-box-wall[data-state="up"]')).toHaveCount(4);
   await expect(page.locator('.choose-box-caption')).toHaveText(/^4 of 4 walls up\./);
   await next(page, 'The same bead, twice');
@@ -290,8 +332,7 @@ test('the whole course in preview sends every statement, in order, and comes bac
   await expect(page.locator('.block-card')).toHaveCount(5);
   await next(page, 'What would you change?');
   await tick(page, ['Add a lens to the finders', 'Look back over the last few runs', 'Add a test for the exact case']);
-  await expect(marked(page, 'right')).toHaveCount(3);
-  await expect(marked(page, 'wrong')).toHaveCount(2);
+  await verdicts(page, ['right-leave', 'right-tick', 'right-leave', 'right-tick', 'right-tick'], '5 of 5 right.');
   await next(page, 'The client asks for two things that were not in the brief. What does that mean?');
   await expect(await choose(page, 'Round two: a short brief')).toHaveAttribute('data-state', 'right');
   await next(page, 'A review missed a bug that a person caught. What is the useful question?');
@@ -342,7 +383,8 @@ test('the whole course in preview sends every statement, in order, and comes bac
   await page.getByRole('link', { name: 'Take the job' }).click();
   await expect(heading(page)).toHaveText(HOME_HEADING);
   await expect(page.getByRole('banner')).toContainText('8 of 8 done');
-  for (const card of await cards.all()) await expect(card).toContainText('Done');
+  await expect(pills).toHaveText(Array.from({ length: 8 }, () => 'Done'));
+  for (const card of await cards.all()) await expect(card).toHaveAttribute('data-status', 'done');
   await open(page, '04', 'The build was green');
   await next(page, 'Three layers, three kinds of mistake');
   await next(page, 'Follow one finding');

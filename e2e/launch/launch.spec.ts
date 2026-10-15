@@ -159,8 +159,9 @@ test('a State read that fails holds every State write back until a later read an
   await expect(heading(page)).toHaveText(HOME_HEADING);
   await playModule00(page);
   await expect(page.getByRole('banner')).toContainText('1 of 8 done');
-  // The read is tried again at most once every 30 s, before a write.
-  await page.clock.runFor(30_000);
+  // The read is tried again at most once every 30 s, before a write. Jump the clock past it
+  // rather than run through it, so the read's own 4 s wait starts afresh and its answer lands.
+  await page.clock.fastForward(30_000);
 
   const isState = (r: Recorded) => r.url.pathname.endsWith('/activities/state');
   const isStateWrite = (r: Recorded) => isState(r) && r.method !== 'GET';

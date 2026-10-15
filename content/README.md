@@ -188,7 +188,7 @@ optional reply options, each with the agent's scripted answer. No free text, no 
   messages:
     - >-
       Done! I've built a fridge activity. It has five shelves and fourteen food items, a
-      60-second timer to keep it exciting, … Want me to add sound effects?
+      15-second timer to keep it exciting, … Want me to add sound effects?
   replies:                     # optional
     prompt: What do you say?   # optional
     options:                   # two or more
@@ -208,6 +208,19 @@ The ranked questions with chips (module 01). Each question has two or more chips
 one `recommended: true` (drawn dashed); each chip carries the `decision` it writes into the
 panel. Questions number on across the rounds as D1, D2, …; round two's `message` is the
 playback. `defaults` is the button on the last round that picks every recommended chip left.
+
+The rounds come one at a time, under the learner's `opening`. Each round ends with a "Send
+answers" button, off until every question in the round has an answer, and the hint "Answer
+every question, then send." beside it. The last round also has the `defaults` button, until
+every question in it is answered. Sending, or pressing `defaults`, fades the round out and
+leaves one learner line in its place: "My answers to 1 to 5." (the round's questions,
+numbered across the rounds), or the `defaults` reply. Then the agent shows "Thinking…" for
+about a second and a half, and the next round's `message` arrives in the same place, or,
+after the last round, the `closing` and the `comparison`. On screen at any time are the
+opening, the latest learner line and the agent's current turn; the panel keeps every
+decision. Send answers, its hint, the learner line and Thinking are fixed words in the
+screen's code, not fields here. Every chip pick sends `interacted`, and `defaults` sends one
+for each decision it fills; Send answers sends nothing.
 
 ```yaml
 # screen
@@ -252,7 +265,17 @@ playback. `defaults` is the button on the last round that picks every recommende
 
 Options with right or wrong and feedback. `mode: multi` is "tick everything" with a Check
 button; `mode: single` is one pick (every check). A single choice has exactly one right
-option, a multi choice at least one. Optional extras:
+option, a multi choice at least one.
+
+Once checked, a single choice marks the pick right or wrong with its feedback and dims the
+rest. A multi choice judges what the learner did with every option, ticked or left: a pill
+beside the label says "Right to tick" or "Right to leave it" (green, with a tick), or
+"Shouldn't be ticked" or "Missed: should be ticked" (red, with a cross), and the option's
+`feedback` sits under it. A summary under the list counts them: "5 of 5 right." when every
+choice is right, else, for example, "3 of 5 right: one tick shouldn't be there, and one
+missed." The verdicts and the summary are fixed words in the screen's code, not fields here.
+
+Optional extras:
 
 - `body`: blocks above the prompt (excerpts, a pull request).
 - `reveal` on an option: blocks shown only when that option is chosen (module 04's fix).
@@ -374,12 +397,20 @@ correct. A card's `feedback` shows when it is out of place.
 
 One fridge, from its file in `content/fridge/`.
 
+A timed fridge (a file with a `timer`, the one-shot's fifteen seconds) counts down from the
+learner's first pick-up, and the timer cannot be switched off: there is no control for it,
+and no mute. Its last five seconds warn: the timer turns red and pulses (no pulse under
+reduced motion), the fridge's outline turns red, and a short beep sounds at 0:05, 0:04, 0:03,
+0:02 and 0:01 and a long low tone at 0:00, made in the page, nothing fetched. At 0:00 the
+tray gives way to the timer's `message` and one Reset button (`resetLabel`). An untimed
+fridge (`timer: none`) has none of this.
+
 ```yaml
 # screen
 - type: fridge
   eyebrow: Try it
   heading: Try what it built
-  intro: Optional, a minute long. The timer starts as soon as you pick something up.
+  intro: Optional, fifteen seconds. The timer starts as soon as you pick something up.
   fridge: one-shot
 ```
 
@@ -514,7 +545,7 @@ feedback: reason               # reason: a wrong drop returns with its reason (e
                                # flash: it flashes and returns; the learner is told only that it returned
 score:
   mode: right-first-time       # or: { mode: points, right: 100, wrong: -50 } (never below zero)
-timer: none                    # or: { seconds: 60, message: "**Time's up!** Better luck next time." }
+timer: none                    # or: { seconds: 15, message: "**Time's up!** Better luck next time." }
 leaderboard: none              # or rows in rank order, exactly one of them the learner's:
                                #   - { name: Sam, score: 1400 }
                                #   - { name: You, learner: true }

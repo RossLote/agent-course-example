@@ -25,7 +25,8 @@ test('the app opens on the scenario, takes the job to the home page, and fetches
   expect(new URL(page.url()).hash).toBe('#/home');
   const cards = page.getByRole('region', { name: 'The modules' }).getByRole('link');
   await expect(cards).toHaveCount(8);
-  for (const card of await cards.all()) await expect(card).toContainText('Not started');
+  // Each card's status is a pill in its top row, beside the number.
+  await expect(cards.locator('.module-card-head .module-card-status')).toHaveText(Array.from({ length: 8 }, () => 'Not started'));
   await expect(page.locator('[data-wall][data-state="dashed"]')).toHaveCount(5);
 
   expect(external).toEqual([]);

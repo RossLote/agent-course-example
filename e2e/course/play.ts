@@ -1,5 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { readContent } from '../../scripts/content.ts';
+import { VERDICT_LABELS, type Verdict } from '../../src/screens/choose/labels.ts';
 
 // The e2e specs' shared moves: the course id as course.yaml gives it, the home page's heading,
 // the guard that keeps every request on the local server, the frame's Next, a pointer drag, and
@@ -87,8 +88,18 @@ export async function tick(page: Page, labels: readonly string[], check = 'Check
   await page.getByRole('button', { name: check }).click();
 }
 
-/** The marked options of a checked choose screen. */
-export const marked = (page: Page, state: 'right' | 'wrong') => page.locator(`.choice[data-state="${state}"]`);
+/**
+ * A checked multi choose, option by option: what the learner did with each (its data-state and
+ * its pill's words), and the summary under the list, which is the screen's live region.
+ */
+export async function verdicts(page: Page, expected: readonly Verdict[], summary: string): Promise<void> {
+  const options = page.locator('.choice');
+  await expect(options).toHaveCount(expected.length);
+  for (const [i, verdict] of expected.entries()) await expect(options.nth(i)).toHaveAttribute('data-state', verdict);
+  await expect(options.locator('.choice-verdict')).toHaveText(expected.map((verdict) => VERDICT_LABELS[verdict]));
+  await expect(page.locator('.choice-summary')).toHaveText(summary);
+  await expect(page.getByRole('status').filter({ hasText: summary })).toBeVisible();
+}
 
 /** The takeaway's box: the walls drawn solid. */
 export const solidWalls = (page: Page) => page.locator('[data-wall][data-state="solid"]');
@@ -96,8 +107,9 @@ export const solidWalls = (page: Page) => page.locator('[data-wall][data-state="
 /**
  * Module 00 from the home page to its takeaway and back home, as the bar's steps 3 and 4 play
  * it: the chat, all five ticked, the one-shot (raw chicken on the lower middle stays, cheese
- * on the bottom returns, then the clock runs the timer out), check 1 wrong then right, check 2
- * right. The page's clock must be installed before it loaded.
+ * on the bottom returns, then the clock runs the fifteen seconds out through the last five's
+ * warning), check 1 wrong then right, check 2 right. The page's clock must be installed before
+ * it loaded; it is paused for the countdown and runs on again after it.
  */
 export async function playModule00(page: Page): Promise<void> {
   await page.getByRole('region', { name: 'The modules' }).getByRole('link', { name: /^00 · / }).click();
@@ -116,25 +128,40 @@ export async function playModule00(page: Page): Promise<void> {
     'It should have said no.',
     'It was too slow.',
   ]);
-  await expect(marked(page, 'right')).toHaveCount(3);
-  await expect(marked(page, 'wrong')).toHaveCount(2);
+  await verdicts(page, ['right-tick', 'right-tick', 'right-tick', 'wrong-tick', 'wrong-tick'], "3 of 5 right: 2 ticks shouldn't be there.");
   await expect(page.locator('.choice-feedback')).toHaveCount(5);
   await expect(page.getByText('What just happened')).toBeVisible();
   await expect(page.locator('.block-card')).toHaveCount(4);
 
   await next(page, 'Try what it built');
+  await expect(page.getByRole('main')).toContainText('Optional, fifteen seconds.');
   const oneShot = fridge(page, 'Module 00: "Build me a fridge activity"');
-  await expect(oneShot.timer).toHaveText('1:00');
+  await expect(oneShot.timer).toHaveText('0:15');
+  // No switching the timer off.
+  await expect(oneShot.root.getByRole('button', { name: /timer/i })).toHaveCount(0);
+  // The page's clock stands still from here, so the countdown moves only when the test runs it.
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await drag(page, oneShot.item('Raw chicken'), oneShot.shelf('lower-middle'));
   await expect(oneShot.onShelf('lower-middle')).toHaveText(['Raw chicken']);
   await drag(page, oneShot.item('Cheese'), oneShot.shelf('bottom'));
   await expect(oneShot.status).toHaveText('Cheese returned to the tray.');
   await expect(oneShot.item('Cheese')).toBeVisible();
   await expect(oneShot.onShelf('bottom')).toHaveCount(0);
-  // The countdown ticks once a second; run the page's clock through the minute.
-  await page.clock.runFor(60_000);
+  await expect(oneShot.timer).toHaveText('0:15');
+  await expect(oneShot.root).not.toHaveAttribute('data-warning');
+  // Ten seconds on, the last five warn: the timer red and pulsing, the fridge outlined red.
+  await page.clock.runFor(10_000);
+  await expect(oneShot.timer).toHaveText('0:05');
+  await expect(oneShot.timer).toHaveAttribute('data-low', 'true');
+  await expect(oneShot.timer).toHaveAttribute('data-pulse', 'true');
+  await expect(oneShot.root).toHaveAttribute('data-warning', 'true');
+  // At 0:00 the tray gives way to the file's message and one Reset.
+  await page.clock.runFor(5_000);
   await expect(oneShot.timer).toHaveText('0:00');
-  await expect(oneShot.root).toContainText("Time's up!");
+  await expect(oneShot.root.locator('.fridge-timeup')).toContainText("Time's up! Better luck next time.");
+  await expect(oneShot.tray).toHaveCount(0);
+  await expect(oneShot.root.getByRole('button', { name: 'Reset' })).toHaveCount(1);
+  await page.clock.resume();
 
   await next(page, 'Your agent built a feature you never mentioned. What most likely happened?');
   const misread = await choose(page, 'It misread your message.');
