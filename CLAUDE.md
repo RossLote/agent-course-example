@@ -60,18 +60,62 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 
 ## Build & Test
 
-_Add your build and test commands here_
+Vite + React + TypeScript at the repo root, the presentation repo's toolchain. Node 22.22.2 or
+newer on 22, 24.15.0 or newer on 24, or 26 and later (`engines` in package.json: the range the
+pinned tools declare; an older 24 only warns).
 
 ```bash
-# Example:
-# npm install
-# npm test
+npm ci                 # install exactly what package-lock.json pins
+npx playwright install chromium   # once, if Playwright's pinned Chromium is missing
+npm run dev            # dev server (Vite)
+npm run build          # type-check (tsc -b) and build to dist/ (gitignored)
+npm run preview        # serve the built dist/
+npm run lint           # ESLint, zero warnings allowed
+npm run typecheck      # tsc -b over src/ and e2e/ (the type-check half of build)
+npm run test           # Vitest unit tests (src/**/*.test.ts[x])
+npm run gate:fast      # lint + typecheck + unit
+npm run gate           # gate:fast + e2e; there is no integration tier
+npm run e2e            # Playwright e2e, Chromium only (e2e/, excluding e2e/walkthrough/)
+E2E_PORT=5281 npx playwright test e2e/smoke   # one spec, on its own port (default 5280)
+npm run walkthrough    # the throwaway e2e/walkthrough/*.spec.ts the orchestrator writes
+                       # (e2e/walkthrough/recorder.ts is its committed step helper), with
+                       # video and slowMo, 1280x800, into docs/demos/$DEMO_ID/ (gitignored);
+                       # SLOW_MO sets the delay in ms (default 250)
 ```
+
+The e2e web server starts on `E2E_PORT` and is never reused, so parallel runs need distinct
+ports; the defaults (5280, walkthrough 5290) differ from the presentation repo's so both can
+run at once. Nothing is fetched from the network at run time, and the smoke spec asserts it.
 
 ## Architecture Overview
 
-_Add a brief overview of your project architecture_
+Nothing is built yet: `src/App.tsx` is a placeholder the gates check. The brief settles the
+shape (PLAN.md §5). The plan's current thinking is that the learning designers author the
+modules as data in the repo and the agents build the engine that renders them and sends the
+xAPI statements, so a wording change needs no run.
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+### Conversation log
+
+Every conversation with Ross on this project is logged in `docs/conversations/`, one file
+per session, named `YYYY-MM-DD-<slug>.md` with the same frontmatter as the existing files
+(date, stage, title, participants, source). An entry reads like the conversation it was:
+Ross's turns in the first person, in his voice ("I want…", "my workflow"), and the agent's
+turns in the first person as the agent, addressing Ross as "you". Entries summarise what each
+side said; they are not verbatim. Ross dictates, so condense his words to the point he was
+making, keep his decisions and his reasons, and drop the hesitations and false starts. Write
+the entry during the session and keep it current as the conversation moves, not at the end.
+The logs are the project's record, which the brief and the epic cite, so they are part of
+the product, not working notes.
+
+Every log keeps the presentation repo's shape, so the same tooling can read both. A turn is
+a `## Ross: <subtitle>` or `## Agent: <subtitle>` heading followed by its body (bullets,
+numbered items or prose); the subtitle is a few words naming the turn and is never left off
+(never a bare `## Agent`). Headings that are not turns, such as the log's `# ` title or a
+`## Closed` note, are left as they are. In a brief-stage log, a round is a
+`## Agent: round N` heading (optionally `round N, <a few words>`) holding that round's
+questions, followed by the next `## Ross: round N → Dn Dm` heading holding the answer,
+with the decisions the round produced listed on the heading (for example
+`## Ross: round 2 → D21 D22`). Turns outside a round (a first reaction, a tangent, a yes,
+an exchange about filing) keep an ordinary subtitle and are not rounds.

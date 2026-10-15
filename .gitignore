@@ -5,3 +5,17 @@
 .beads-credential-key
 .beads/proxieddb/
 *.gate.lock*
+
+# App toolchain (npm, Vite, TypeScript, Vitest, Playwright)
+node_modules/
+dist/
+*.tsbuildinfo
+*.local
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+coverage/
+
+# Walkthrough recordings (npm run walkthrough); attached to the PR, never committed
+docs/demos/

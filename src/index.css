@@ -1,0 +1,29 @@
+/* Nothing is fetched from the network at run time; fonts, once chosen, are bundled. */
+:root {
+  --font-sans: system-ui, sans-serif;
+  color-scheme: light dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 4rem 1rem;
+}
