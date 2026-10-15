@@ -17,10 +17,11 @@ export function isStateDocument(value: unknown): value is StateDocument {
 
 /**
  * The localStorage key for a course and a launch: `agent-course:<course id>:<registration>`,
- * with "preview" for the registration when there is no launch or it has none.
+ * with "preview" when there is no launch and "launch" for a launch without a registration, so a
+ * launched learner never reads or overwrites preview's copy.
  */
 export function localStateKey(course: { id: string }, launch: Launch | null): string {
-  return `agent-course:${course.id}:${launch?.registration ?? 'preview'}`;
+  return `agent-course:${course.id}:${launch === null ? 'preview' : (launch.registration ?? 'launch')}`;
 }
 
 /** The document stored under `key`, or null when there is none, it is not one, or storage is unavailable. */

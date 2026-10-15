@@ -376,6 +376,14 @@ export const moduleFile = z
     if (m.screens[last].type !== 'takeaway') ctx.addIssue({ code: 'custom', path: ['screens', last], message: 'the last screen must be the takeaway' });
     const slugs = m.screens.flatMap((s, i) => ('slug' in s ? [{ id: s.slug, path: ['screens', i, 'slug'] }] : []));
     uniqueIds(slugs, ctx, 'slug');
+    // A fridge's answers are kept under its name, beside the screens' slugs, so the two must differ.
+    const taken = new Set(slugs.map((s) => s.id));
+    m.screens.forEach((s, i) => {
+      const fridges = s.type === 'fridge' ? { fridge: s.fridge } : s.type === 'compare' ? { left: s.left, right: s.right } : {};
+      for (const [field, name] of Object.entries(fridges)) {
+        if (taken.has(name)) ctx.addIssue({ code: 'custom', path: ['screens', i, field], message: `fridge "${name}" has the same name as a screen's slug; their answers would be kept as one` });
+      }
+    });
   });
 export type ModuleFile = z.infer<typeof moduleFile>;
 

@@ -47,7 +47,7 @@ function BlockHeading({ level, className = 'eyebrow block-heading', children }: 
 }
 
 function BlockView({ block, progress, level }: { block: Block; progress: ModuleProgress; level: Level }) {
-  const heading = 'heading' in block && block.heading !== undefined && <BlockHeading level={level}>{block.heading}</BlockHeading>;
+  const heading = 'heading' in block && block.heading !== undefined && <BlockHeading level={level}><Copy text={block.heading} /></BlockHeading>;
   switch (block.type) {
     case 'paragraph':
       return (
@@ -106,7 +106,7 @@ function BlockView({ block, progress, level }: { block: Block; progress: ModuleP
     case 'table':
       return (
         <table className="block block-table">
-          {block.heading !== undefined && <caption className="eyebrow block-heading">{block.heading}</caption>}
+          {block.heading !== undefined && <caption className="eyebrow block-heading"><Copy text={block.heading} /></caption>}
           {block.header && (
             <thead>
               <tr>
@@ -138,7 +138,7 @@ function BlockView({ block, progress, level }: { block: Block; progress: ModuleP
             <div key={i} className="scene-card block-column">
               {column.heading !== undefined && (
                 <BlockHeading level={level} className="block-column-heading">
-                  {column.heading}
+                  <Copy text={column.heading} />
                 </BlockHeading>
               )}
               <Blocks blocks={column.blocks} progress={progress} level={column.heading !== undefined ? 3 : level} />
@@ -149,7 +149,7 @@ function BlockView({ block, progress, level }: { block: Block; progress: ModuleP
     case 'mono':
       return (
         <figure className="block block-mono">
-          {block.heading !== undefined && <figcaption>{block.heading}</figcaption>}
+          {block.heading !== undefined && <figcaption><Copy text={block.heading} /></figcaption>}
           <pre>{block.text}</pre>
         </figure>
       );

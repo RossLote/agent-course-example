@@ -5,7 +5,7 @@ import { strFromU8, unzipSync } from 'fflate';
 import { LAUNCH_FILE } from './tincan.ts';
 
 /** An index.html src or href that is root-absolute ("/assets", "//host") or off-site ("https:"). */
-const absoluteHtmlRef = /\b(?:src|href)\s*=\s*["']?((?:\/|https?:)[^"'\s>]*)/gi;
+const absoluteHtmlRef = /(?<![\w-])(?:src|href)\s*=\s*["']?((?:\/|https?:)[^"'\s>]*)/gi;
 
 /** A stylesheet url() that is root-absolute or off-site. */
 const absoluteCssUrl = /\burl\(\s*["']?((?:\/|https?:)[^"')\s]*)/gi;
