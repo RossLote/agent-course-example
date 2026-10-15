@@ -1,7 +1,12 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { course } from '../content/index.ts';
 import { Fridge } from './Fridge.tsx';
+import { playTone, wakeTones } from './tones.ts';
+
+// jsdom has no Web Audio: the tones are counted here, and made in ./tones.test.ts.
+vi.mock('./tones.ts', () => ({ playTone: vi.fn(), wakeTones: vi.fn() }));
+beforeEach(() => vi.clearAllMocks());
 
 const accepted = course.fridges.accepted;
 const oneShot = course.fridges['one-shot'];
@@ -176,7 +181,7 @@ describe('Fridge, the one-shot file as a plain fridge', () => {
     const f = renderFridge(oneShot, 'one-shot');
     expect(f.container.querySelectorAll('[data-drop-target]')).toHaveLength(5);
     expect(f.trayNames()).toHaveLength(14);
-    expect(screen.getByRole('button', { name: 'Reset' })).toBeTruthy();
+    expect(resets()).toEqual([f.container.querySelector('.fridge-head .fridge-reset')]);
   });
 
   it('keeps a right drop and returns a wrong one, saying only that it returned', () => {
@@ -201,22 +206,81 @@ const ONE_SHOT_RIGHT: [string, string][] = oneShot.items.map((item) => [item.nam
 const pass = (seconds: number) => act(() => void vi.advanceTimersByTime(seconds * 1000));
 const clock = () => screen.getByRole('timer').textContent;
 const score = () => screen.getByText(/^score \d+$/).textContent;
+const tones = () => vi.mocked(playTone).mock.calls.map(([tone]) => tone);
+/** The Reset that takes the tray's place when time is up. */
+const timeUpReset = () => within(document.querySelector<HTMLElement>('.fridge-timeup')!).getByRole('button', { name: 'Reset' });
+/** Every button named Reset: one at a time, the header's or, when time is up, the message's. */
+const resets = () => screen.getAllByRole('button', { name: 'Reset' });
 
 describe('Fridge, the one-shot extras', () => {
   afterEach(() => vi.useRealTimers());
 
-  it('shows 1:00, waits for a first pick up, then counts down each second', () => {
+  it('shows 0:15, waits for a first pick up, then counts down each second', () => {
     vi.useFakeTimers();
     const f = renderFridge(oneShot, 'one-shot');
-    expect(clock()).toBe('1:00');
+    expect(clock()).toBe('0:15');
     pass(5);
-    expect(clock()).toBe('1:00');
+    expect(clock()).toBe('0:15');
     fireEvent.click(f.item('Cheese'));
     pass(3);
-    expect(clock()).toBe('0:57');
-    pass(50);
-    expect(clock()).toBe('0:07');
+    expect(clock()).toBe('0:12');
+    pass(6);
+    expect(clock()).toBe('0:06');
+    expect(screen.getByRole('timer').hasAttribute('data-low')).toBe(false);
+  });
+
+  it('warns from 0:05: a red, pulsing timer with a speaker, a red outline, and a short beep each second', () => {
+    vi.useFakeTimers();
+    const f = renderFridge(oneShot, 'one-shot');
+    const timer = () => screen.getByRole('timer');
+    fireEvent.click(f.item('Cheese'));
+    pass(9);
+    expect(clock()).toBe('0:06');
+    expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(false);
+    expect(timer().querySelector('svg')).toBeNull();
+    expect(tones()).toEqual([]);
+    pass(1);
+    expect(clock()).toBe('0:05');
+    expect(timer().hasAttribute('data-low')).toBe(true);
+    expect(timer().hasAttribute('data-pulse')).toBe(true);
+    expect(timer().querySelector('svg')!.getAttribute('aria-hidden')).toBe('true');
+    expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(true);
+    expect(tones()).toEqual(['beep']);
+    pass(4);
+    expect(clock()).toBe('0:01');
+    expect(tones()).toEqual(['beep', 'beep', 'beep', 'beep', 'beep']);
+  });
+
+  it('plays six tones in a play that runs out, five short and one long, made after the first pick up', () => {
+    vi.useFakeTimers();
+    const f = renderFridge(oneShot, 'one-shot');
+    expect(wakeTones).not.toHaveBeenCalled();
+    fireEvent.click(f.item('Cheese'));
+    expect(wakeTones).toHaveBeenCalledTimes(1);
+    fireEvent.click(f.item('Cheese'));
+    fireEvent.click(f.item('Butter'));
+    expect(wakeTones).toHaveBeenCalledTimes(1);
+    pass(15);
+    expect(tones()).toEqual(['beep', 'beep', 'beep', 'beep', 'beep', 'end']);
+    pass(30);
+    expect(tones()).toHaveLength(6);
+    // At zero the timer stays red but stops pulsing, and the outline stays red.
     expect(screen.getByRole('timer').hasAttribute('data-low')).toBe(true);
+    expect(screen.getByRole('timer').hasAttribute('data-pulse')).toBe(false);
+    expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(true);
+  });
+
+  it('wakes the tones again on a new play’s first pick up, and plays none when every item is placed in time', () => {
+    vi.useFakeTimers();
+    const f = renderFridge(oneShot, 'one-shot');
+    for (const [item, shelf] of ONE_SHOT_RIGHT) drop(f, item, shelf);
+    pass(30);
+    expect(tones()).toEqual([]);
+    expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+    expect(wakeTones).toHaveBeenCalledTimes(1);
+    fireEvent.click(f.item('Cheese'));
+    expect(wakeTones).toHaveBeenCalledTimes(2);
   });
 
   it('starts the timer when a drag begins as well as when something is picked up', () => {
@@ -228,32 +292,34 @@ describe('Fridge, the one-shot extras', () => {
     document.elementFromPoint = () => null;
     fireEvent.pointerDown(cheese, { pointerId: 1, isPrimary: true, button: 0, clientX: 0, clientY: 0 });
     pass(2);
-    expect(clock()).toBe('1:00');
+    expect(clock()).toBe('0:15');
+    expect(wakeTones).not.toHaveBeenCalled();
     fireEvent.pointerMove(cheese, { pointerId: 1, clientX: 40, clientY: 40 });
+    expect(wakeTones).toHaveBeenCalledTimes(1);
     pass(2);
-    expect(clock()).toBe('0:58');
+    expect(clock()).toBe('0:13');
   });
 
-  it('ends at zero with the file’s message, locks the tray, and sends one fridge-ended with the points', () => {
+  it('ends at zero with the file’s message and Reset in the tray’s place, and sends one fridge-ended with the points', () => {
     vi.useFakeTimers();
     const f = renderFridge(oneShot, 'one-shot');
     drop(f, 'Raw chicken', 'Lower middle');
-    pass(59);
+    pass(14);
     expect(clock()).toBe('0:01');
     expect(f.onEvent).not.toHaveBeenCalled();
     pass(1);
     expect(clock()).toBe('0:00');
     expect(screen.getByText("Time's up!").tagName).toBe('STRONG');
+    expect(f.container.querySelector('.fridge-timeup p')!.textContent).toBe("Time's up! Better luck next time.");
+    expect(resets()).toEqual([timeUpReset()]);
+    expect(f.container.querySelector('.fridge-head .fridge-reset')).toBeNull();
     expect(f.status()).toBe("Time's up! Better luck next time.");
     expect(f.live()).toBe("Time's up! Better luck next time.");
     expect(f.container.querySelector('.fridge-score')).toBeNull();
 
-    for (const item of f.container.querySelectorAll<HTMLButtonElement>('.fridge-tray button')) expect(item.disabled).toBe(true);
-    fireEvent.click(f.item('Cheese'));
-    fireEvent.keyDown(f.item('Cheese'), { key: 'Enter' });
-    expect(f.item('Cheese').getAttribute('aria-pressed')).toBe('false');
-    expect(f.trayNames()).toContain('Cheese');
-    expect(f.onShelf('Top shelf')).toEqual([]);
+    expect(f.container.querySelector('.fridge-tray')).toBeNull();
+    expect(f.trayNames()).toEqual([]);
+    expect(f.onShelf('Lower middle')).toEqual(['Raw chicken']);
     expect(f.shelf('Top shelf')).toHaveProperty('disabled', true);
 
     pass(30);
@@ -266,37 +332,10 @@ describe('Fridge, the one-shot extras', () => {
     });
   });
 
-  it('stops the countdown with No timer, before or during a play, and then ends only when every item is placed', () => {
-    vi.useFakeTimers();
-    const f = renderFridge(oneShot, 'one-shot');
-    const noTimer = screen.getByRole('button', { name: 'No timer' });
-    fireEvent.click(f.item('Cheese'));
-    pass(10);
-    expect(clock()).toBe('0:50');
-    fireEvent.click(noTimer);
-    expect(screen.queryByRole('timer')).toBeNull();
-    expect(f.status()).toBe('Timer off.');
-    expect(noTimer).toHaveProperty('disabled', true);
-    pass(300);
-    expect(screen.queryByText("Time's up!")).toBeNull();
-    expect(f.onEvent).not.toHaveBeenCalled();
-
-    fireEvent.click(f.shelf('Top shelf'));
-    for (const [item, shelf] of ONE_SHOT_RIGHT.slice(1)) drop(f, item, shelf);
-    expect(f.onEvent).toHaveBeenCalledTimes(1);
-    expect(f.onEvent).toHaveBeenCalledWith(expect.objectContaining({ score: { raw: 1400, max: 1400 }, answer: expect.objectContaining({ timeLeft: null }) }));
-  });
-
-  it('can switch the timer off before the first pick up, and Tab reaches the control', () => {
-    vi.useFakeTimers();
-    const f = renderFridge(oneShot, 'one-shot');
-    const noTimer = screen.getByRole('button', { name: 'No timer' });
-    expect(noTimer.tabIndex).toBe(0);
-    fireEvent.click(noTimer);
-    drop(f, 'Cheese', 'Top shelf');
-    pass(120);
-    expect(screen.queryByText("Time's up!")).toBeNull();
-    expect(f.onShelf('Top shelf')).toEqual(['Cheese']);
+  it('has no No timer control: the one-shot’s timer cannot be switched off', () => {
+    renderFridge(oneShot, 'one-shot');
+    expect(screen.queryByRole('button', { name: /timer/i })).toBeNull();
+    expect(screen.getAllByRole('button').map((button) => button.textContent)).not.toContain('No timer');
   });
 
   it('flashes a wrong drop and returns it, saying only that it returned, while raw chicken stays on the lower middle', () => {
@@ -348,6 +387,7 @@ describe('Fridge, the one-shot extras', () => {
     expect(screen.queryByRole('timer')).toBeNull();
     expect(screen.queryByRole('button', { name: 'No timer' })).toBeNull();
     expect(screen.queryByText(/^score /)).toBeNull();
+    expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(false);
   });
 
   it('shows the confetti banner with the final points on placing all 14, and stops the timer', () => {
@@ -379,31 +419,39 @@ describe('Fridge, the one-shot extras', () => {
     vi.useFakeTimers();
     const f = renderFridge(oneShot, 'one-shot');
     drop(f, 'Cheese', 'Top shelf');
-    pass(20);
+    pass(5);
     fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
     expect(f.trayNames()).toHaveLength(14);
     expect(score()).toBe('score 0');
-    expect(clock()).toBe('1:00');
+    expect(clock()).toBe('0:15');
     pass(10);
-    expect(clock()).toBe('1:00');
+    expect(clock()).toBe('0:15');
     expect(f.status()).toBe('Every item is back in the tray.');
     fireEvent.click(f.item('Cheese'));
     pass(1);
-    expect(clock()).toBe('0:59');
+    expect(clock()).toBe('0:14');
   });
 
-  it('resets after time is up, unlocks the tray and reports the next end again', () => {
+  it('resets after time is up from the Reset in the tray’s place, brings the tray back with focus on it, and reports the next end again', () => {
     vi.useFakeTimers();
     const f = renderFridge(oneShot, 'one-shot');
     fireEvent.click(f.item('Cheese'));
-    pass(60);
+    pass(15);
     expect(f.onEvent).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+    timeUpReset().focus();
+    fireEvent.click(timeUpReset());
     expect(screen.queryByText("Time's up!")).toBeNull();
+    expect(f.trayNames()).toHaveLength(14);
+    expect(document.activeElement).toBe(f.item('Cheese'));
+    expect(resets()).toHaveLength(1);
+    expect(f.container.querySelector('.fridge-head .fridge-reset')).toBe(resets()[0]);
+    expect(clock()).toBe('0:15');
+    expect(f.container.querySelector('section')!.hasAttribute('data-warning')).toBe(false);
     fireEvent.click(f.item('Cheese'));
     expect(f.item('Cheese').getAttribute('aria-pressed')).toBe('true');
-    pass(60);
+    pass(15);
     expect(f.onEvent).toHaveBeenCalledTimes(2);
+    expect(tones()).toHaveLength(12);
   });
 
   it('stops the timer and sends nothing when it is left mid-play', () => {
@@ -428,23 +476,20 @@ describe('Fridge, the one-shot extras', () => {
     expect(f.onEvent).not.toHaveBeenCalled();
   });
 
-  it('renders a saved play that ran out of time with its message and a locked tray, and one with the timer off', () => {
-    const timedOut = renderFridge(oneShot, 'one-shot', { placements: { cheese: 'top' }, wrongFirst: [], points: 100, timeLeft: 0 });
+  it('renders a saved play that ran out of time with its message and Reset in the tray’s place', () => {
+    const f = renderFridge(oneShot, 'one-shot', { placements: { cheese: 'top' }, wrongFirst: [], points: 100, timeLeft: 0 });
     expect(screen.getByText("Time's up!")).toBeTruthy();
-    expect(timedOut.container.querySelector('.fridge-score')).toBeNull();
-    expect(timedOut.item('Yoghurt')).toHaveProperty('disabled', true);
-    timedOut.unmount();
-
-    renderFridge(oneShot, 'one-shot', { placements: Object.fromEntries(oneShot.items.map((i) => [i.id, i.shelf])), wrongFirst: [], points: 1400, timeLeft: null });
-    expect(screen.queryByRole('timer')).toBeNull();
-    expect(screen.getByRole('button', { name: 'No timer' })).toHaveProperty('disabled', true);
+    expect(f.container.querySelector('.fridge-score')).toBeNull();
+    expect(f.container.querySelector('.fridge-tray')).toBeNull();
+    expect(resets()).toEqual([timeUpReset()]);
+    expect(clock()).toBe('0:00');
   });
 
   it('still accepts a saved play without points or a timer, working the points out from its drops', () => {
     const f = renderFridge(oneShot, 'one-shot', { placements: { cheese: 'top', milk: 'door' }, wrongFirst: ['cheese'] });
     expect(score()).toBe('score 150');
     expect(f.item('Yoghurt')).toHaveProperty('disabled', false);
-    expect(clock()).toBe('1:00');
+    expect(clock()).toBe('0:15');
   });
 });
 
@@ -461,9 +506,17 @@ describe('Fridge, a saved play that no longer fits its file', () => {
     const f = renderFridge(oneShot, 'one-shot', { placements, wrongFirst, points: 1400, timeLeft: 5 });
     expect(f.trayNames()).toHaveLength(14);
     expect(score()).toBe('score 0');
-    expect(clock()).toBe('1:00');
+    expect(clock()).toBe('0:15');
     expect(f.container.querySelector('.fridge-score')).toBeNull();
-    expect(screen.getByRole('button', { name: 'No timer' })).toHaveProperty('disabled', false);
+  });
+
+  it('starts a fresh play for a finished one saved with its timer switched off (round one’s No timer)', () => {
+    const f = renderFridge(oneShot, 'one-shot', { placements: ALL_RIGHT, wrongFirst: [], points: 1400, timeLeft: null });
+    expect(f.trayNames()).toHaveLength(14);
+    expect(score()).toBe('score 0');
+    expect(clock()).toBe('0:15');
+    expect(f.container.querySelector('.fridge-score')).toBeNull();
+    expect(f.onEvent).not.toHaveBeenCalled();
   });
 });
 
@@ -481,40 +534,20 @@ function pointerDrag(f: ReturnType<typeof renderFridge>, name: string, shelf: st
   return item;
 }
 
-describe('Fridge, focus when a control turns itself off', () => {
+describe('Fridge, focus when time runs out', () => {
   afterEach(() => vi.useRealTimers());
 
-  it('moves focus from No timer to the held item, which the arrows still move', () => {
-    const f = renderFridge(oneShot, 'one-shot');
-    f.item('Cheese').focus();
-    fireEvent.keyDown(f.item('Cheese'), { key: 'Enter' });
-    const noTimer = screen.getByRole('button', { name: 'No timer' });
-    noTimer.focus();
-    fireEvent.click(noTimer);
-    expect(document.activeElement).toBe(f.item('Cheese'));
-    expect(f.item('Cheese').getAttribute('aria-pressed')).toBe('true');
-    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
-    expect(f.status()).toBe('Cheese. Upper middle.');
-  });
-
-  it('moves focus from No timer to the tray’s first item when nothing is held', () => {
-    const f = renderFridge(oneShot, 'one-shot');
-    const noTimer = screen.getByRole('button', { name: 'No timer' });
-    noTimer.focus();
-    fireEvent.click(noTimer);
-    expect(document.activeElement).toBe(f.item('Cheese'));
-  });
-
-  it('puts the held item back when time is up, says so with the message, and moves focus to Reset', () => {
+  it('puts the held item back when time is up, says so with the message, and moves focus to the Reset in the tray’s place', () => {
     vi.useFakeTimers();
     const f = renderFridge(oneShot, 'one-shot');
     f.item('Cheese').focus();
     fireEvent.keyDown(f.item('Cheese'), { key: 'Enter' });
-    pass(60);
-    expect(f.item('Cheese').getAttribute('aria-pressed')).toBe('false');
+    pass(15);
+    expect(f.trayNames()).toEqual([]);
     expect(f.status()).toBe("Time's up! Better luck next time. Cheese put back in the tray.");
     expect(f.live()).toBe("Time's up! Better luck next time. Cheese put back in the tray.");
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Reset' }));
+    expect(resets()).toEqual([timeUpReset()]);
+    expect(document.activeElement).toBe(timeUpReset());
   });
 
   it('leaves focus alone at time up when it is outside the fridge', () => {
@@ -522,7 +555,7 @@ describe('Fridge, focus when a control turns itself off', () => {
     const f = renderFridge(oneShot, 'one-shot');
     fireEvent.click(f.item('Cheese'));
     expect(document.activeElement).toBe(document.body);
-    pass(60);
+    pass(15);
     expect(document.activeElement).toBe(document.body);
   });
 });
@@ -546,27 +579,12 @@ describe('Fridge, repeated and overlapping moves', () => {
     expect(liveRaw()).not.toBe(first.live);
   });
 
-  it('keeps No timer off through a reset', () => {
-    vi.useFakeTimers();
-    const f = renderFridge(oneShot, 'one-shot');
-    fireEvent.click(screen.getByRole('button', { name: 'No timer' }));
-    drop(f, 'Cheese', 'Top shelf');
-    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
-    expect(f.trayNames()).toHaveLength(14);
-    expect(screen.queryByRole('timer')).toBeNull();
-    expect(screen.getByRole('button', { name: 'No timer' }).getAttribute('aria-pressed')).toBe('true');
-    fireEvent.click(f.item('Cheese'));
-    pass(120);
-    expect(screen.queryByText("Time's up!")).toBeNull();
-    expect(f.item('Cheese').getAttribute('aria-pressed')).toBe('true');
-  });
-
   it('cancels a drag when time runs out mid-drag: the ghost goes, the capture is let go, and nothing drops', () => {
     vi.useFakeTimers();
     const f = renderFridge(oneShot, 'one-shot');
     const cheese = pointerDrag(f, 'Cheese', 'top', { up: false });
     expect(f.container.querySelector('.drag-ghost')).not.toBeNull();
-    pass(60);
+    pass(15);
     expect(screen.getByText("Time's up!")).toBeTruthy();
     expect(f.container.querySelector('.drag-ghost')).toBeNull();
     expect(cheese.releasePointerCapture).toHaveBeenCalledWith(1);

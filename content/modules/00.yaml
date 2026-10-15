@@ -21,7 +21,7 @@ screens:
     messages:
       - >-
         Done! I've built a fridge activity. It has five shelves and fourteen food items, a
-        60-second timer to keep it exciting, a leaderboard so learners can compete, and confetti
+        15-second timer to keep it exciting, a leaderboard so learners can compete, and confetti
         when they finish. I assumed the standard fridge rules. I ran through it myself and it
         works great. Want me to add sound effects?
     side:
@@ -42,7 +42,7 @@ screens:
       - type: quote
         text: >-
           Done! I've built a fridge activity. It has five shelves and fourteen food items, a
-          60-second timer to keep it exciting, a leaderboard so learners can compete, and confetti
+          15-second timer to keep it exciting, a leaderboard so learners can compete, and confetti
           when they finish. I assumed the standard fridge rules. I ran through it myself and it
           works great. Want me to add sound effects?
         attribution: The agent
@@ -89,7 +89,7 @@ screens:
     eyebrow: Try it
     heading: Try what it built
     nav: try what it built
-    intro: Optional, a minute long. The timer starts as soon as you pick something up.
+    intro: Optional, fifteen seconds. The timer starts as soon as you pick something up.
     fridge: one-shot
 
   - type: choose

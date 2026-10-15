@@ -14,7 +14,6 @@ export type FridgeOutcome =
   | { kind: 'put-back'; item: string }
   | { kind: 'placed'; item: string; shelf: string }
   | { kind: 'returned'; item: string; shelf: string }
-  | { kind: 'no-timer' }
   /** Time ran out, with the item that was held then, which went back to the tray. */
   | { kind: 'time-up'; item?: string }
   | { kind: 'reset' };
@@ -26,10 +25,7 @@ export interface FridgePlay {
   wrongFirst: readonly string[];
   /** Points so far on a points fridge: the file's right and wrong drops added up, never below zero. */
   points: number;
-  /**
-   * Seconds left; null when the file has no timer or the learner switched it off (which holds
-   * through a reset), 0 once time is up.
-   */
+  /** Seconds left; null when the file has no timer, 0 once time is up. There is no switching it off. */
   timeLeft: number | null;
   /** Whether the countdown has begun: the learner's first pick up or drag. */
   started: boolean;
@@ -56,9 +52,7 @@ export type FridgeAction =
   | { type: 'start' }
   /** One second passes. Counts down only once the play has started. */
   | { type: 'tick' }
-  /** Switch the timer off, before or during a play. */
-  | { type: 'no-timer' }
-  /** Empty the shelves and start a new play, its timer off if the learner switched it off. */
+  /** Empty the shelves and start a new play, its timer waiting for a new first pick up. */
   | { type: 'reset' };
 
 /** The seconds a fridge's timer starts from, or null when its file has none. */
@@ -76,6 +70,27 @@ export function allPlaced(fridge: Fridge, play: FridgePlay): boolean {
 
 /** Whether the timer ran out. */
 export const timedOut = (play: FridgePlay): boolean => play.timeLeft === 0;
+
+/** The last seconds of a timed fridge, which warn: red, a pulse and a tone each second (PLAN.md §6, "The last five seconds"). */
+export const WARNING_SECONDS = 5;
+
+/**
+ * Whether the play is in its last seconds or ran out: the timer and the fridge's outline read
+ * red. A play with every item placed has nothing left to warn about.
+ */
+export function isWarning(fridge: Fridge, play: FridgePlay): boolean {
+  return play.started && play.timeLeft !== null && play.timeLeft <= WARNING_SECONDS && !allPlaced(fridge, play);
+}
+
+/**
+ * The tone an action sounds: a short beep as the countdown reaches each of its last five
+ * seconds, a long one as it reaches zero, so a play that runs out sounds six. Null for any
+ * action that does not count down.
+ */
+export function toneOf(before: FridgePlay, after: FridgePlay): 'beep' | 'end' | null {
+  if (before.timeLeft === null || after.timeLeft === null || after.timeLeft >= before.timeLeft || after.timeLeft > WARNING_SECONDS) return null;
+  return after.timeLeft === 0 ? 'end' : 'beep';
+}
 
 /** Whether the play has ended: every item is on its shelf, or time is up. */
 export function isFinished(fridge: Fridge, play: FridgePlay): boolean {
@@ -111,8 +126,7 @@ function pointsAfter(fridge: Fridge, play: FridgePlay, right: boolean): number {
 export function fridgeReducer(fridge: Fridge, play: FridgePlay, action: FridgeAction): FridgePlay {
   const turn = play.turn + 1;
   if (action.type === 'reset') {
-    const fresh = newPlay(fridge);
-    return { ...fresh, timeLeft: play.timeLeft === null ? null : fresh.timeLeft, last: { kind: 'reset' }, turn };
+    return { ...newPlay(fridge), last: { kind: 'reset' }, turn };
   }
   if (isFinished(fridge, play)) return play;
 
@@ -125,8 +139,6 @@ export function fridgeReducer(fridge: Fridge, play: FridgePlay, action: FridgeAc
       if (timeLeft > 0) return { ...play, timeLeft };
       return { ...play, timeLeft: 0, held: null, last: play.held === null ? { kind: 'time-up' } : { kind: 'time-up', item: play.held.item }, turn };
     }
-    case 'no-timer':
-      return play.timeLeft === null ? play : { ...play, timeLeft: null, last: { kind: 'no-timer' }, turn };
     case 'pick': {
       if (play.placements[action.item] !== undefined || !fridge.items.some((item) => item.id === action.item)) return play;
       if (play.held?.item === action.item) return { ...play, held: null, last: { kind: 'put-back', item: action.item }, turn };
@@ -160,8 +172,8 @@ export function fridgeReducer(fridge: Fridge, play: FridgePlay, action: FridgeAc
 
 /**
  * The play as the answer the fridge-ended event carries and a saved play renders from: its
- * placements and the items wrong first time, and the points and the seconds left (null when the
- * timer was off, 0 when time ran out) so a finished one-shot comes back as it ended.
+ * placements and the items wrong first time, and the points and the seconds left (null on a
+ * fridge with no timer, 0 when time ran out) so a finished one-shot comes back as it ended.
  */
 export function savedPlay(play: FridgePlay): SavedAnswer {
   return { placements: { ...play.placements }, wrongFirst: [...play.wrongFirst], points: play.points, timeLeft: play.timeLeft };
@@ -171,9 +183,11 @@ export function savedPlay(play: FridgePlay): SavedAnswer {
  * A play from a saved answer: its placements and the items wrong first time. A saved play that
  * no longer fits this fridge file (an item or a shelf it has not got, or an item on a shelf that
  * is not its own, when the play recorded it as right) is no saved play: its points and its time
- * were for drops this file would not keep, so the learner starts a fresh one. The points and the
- * time left are read when they are there (an answer from before they existed has neither: its
- * points are worked out from the drops, its timer is untouched). Anything else is a fresh play.
+ * were for drops this file would not keep, so the learner starts a fresh one. So is a play on a
+ * timed fridge saved with its timer switched off (round one's No timer, since withdrawn): it was
+ * not a play of this fridge. The points and the time left are read when they are there (an
+ * answer from before they existed has neither: its points are worked out from the drops, its
+ * timer is untouched). Anything else is a fresh play.
  */
 export function playFromSaved(fridge: Fridge, saved: SavedAnswer | undefined): FridgePlay {
   const fresh = newPlay(fridge);
@@ -181,9 +195,11 @@ export function playFromSaved(fridge: Fridge, saved: SavedAnswer | undefined): F
   const { placements: placed, wrongFirst: wrong, points, timeLeft } = saved;
   if (!isRecord(placed) || !Array.isArray(wrong)) return fresh;
   const wrongIds: readonly Json[] = wrong;
+  const seconds = timerSeconds(fridge);
   const fits =
     Object.entries(placed).every(([id, shelf]) => fridge.items.some((item) => item.id === id && item.shelf === shelf)) &&
-    wrongIds.every((id) => fridge.items.some((item) => item.id === id));
+    wrongIds.every((id) => fridge.items.some((item) => item.id === id)) &&
+    !(seconds !== null && timeLeft === null);
   if (!fits) return fresh;
   const placements: Record<string, string> = {};
   for (const item of fridge.items) {
@@ -194,7 +210,6 @@ export function playFromSaved(fridge: Fridge, saved: SavedAnswer | undefined): F
   const worked = fridge.score.mode === 'points'
     ? Math.max(0, fridge.score.right * Object.keys(placements).length + fridge.score.wrong * wrongFirst.length)
     : 0;
-  const seconds = timerSeconds(fridge);
-  const left = seconds === null || timeLeft === null ? null : typeof timeLeft === 'number' ? Math.min(Math.max(Math.floor(timeLeft), 0), seconds) : seconds;
+  const left = seconds === null ? null : typeof timeLeft === 'number' ? Math.min(Math.max(Math.floor(timeLeft), 0), seconds) : seconds;
   return { ...drops, points: typeof points === 'number' && points >= 0 ? points : worked, timeLeft: left, started: isFinished(fridge, { ...drops, timeLeft: left }) };
 }
