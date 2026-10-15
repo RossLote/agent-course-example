@@ -15,7 +15,8 @@ export type FridgeOutcome =
   | { kind: 'placed'; item: string; shelf: string }
   | { kind: 'returned'; item: string; shelf: string }
   | { kind: 'no-timer' }
-  | { kind: 'time-up' }
+  /** Time ran out, with the item that was held then, which went back to the tray. */
+  | { kind: 'time-up'; item?: string }
   | { kind: 'reset' };
 
 export interface FridgePlay {
@@ -25,7 +26,10 @@ export interface FridgePlay {
   wrongFirst: readonly string[];
   /** Points so far on a points fridge: the file's right and wrong drops added up, never below zero. */
   points: number;
-  /** Seconds left; null when the file has no timer or the learner switched it off, 0 once time is up. */
+  /**
+   * Seconds left; null when the file has no timer or the learner switched it off (which holds
+   * through a reset), 0 once time is up.
+   */
   timeLeft: number | null;
   /** Whether the countdown has begun: the learner's first pick up or drag. */
   started: boolean;
@@ -54,7 +58,7 @@ export type FridgeAction =
   | { type: 'tick' }
   /** Switch the timer off, before or during a play. */
   | { type: 'no-timer' }
-  /** Empty the shelves and start a new play. */
+  /** Empty the shelves and start a new play, its timer off if the learner switched it off. */
   | { type: 'reset' };
 
 /** The seconds a fridge's timer starts from, or null when its file has none. */
@@ -106,7 +110,10 @@ function pointsAfter(fridge: Fridge, play: FridgePlay, right: boolean): number {
 /** The next play after an action. A finished play takes nothing but a reset. */
 export function fridgeReducer(fridge: Fridge, play: FridgePlay, action: FridgeAction): FridgePlay {
   const turn = play.turn + 1;
-  if (action.type === 'reset') return { ...newPlay(fridge), last: { kind: 'reset' }, turn };
+  if (action.type === 'reset') {
+    const fresh = newPlay(fridge);
+    return { ...fresh, timeLeft: play.timeLeft === null ? null : fresh.timeLeft, last: { kind: 'reset' }, turn };
+  }
   if (isFinished(fridge, play)) return play;
 
   switch (action.type) {
@@ -115,7 +122,8 @@ export function fridgeReducer(fridge: Fridge, play: FridgePlay, action: FridgeAc
     case 'tick': {
       if (!play.started || play.timeLeft === null) return play;
       const timeLeft = play.timeLeft - 1;
-      return timeLeft > 0 ? { ...play, timeLeft } : { ...play, timeLeft: 0, held: null, last: { kind: 'time-up' }, turn };
+      if (timeLeft > 0) return { ...play, timeLeft };
+      return { ...play, timeLeft: 0, held: null, last: play.held === null ? { kind: 'time-up' } : { kind: 'time-up', item: play.held.item }, turn };
     }
     case 'no-timer':
       return play.timeLeft === null ? play : { ...play, timeLeft: null, last: { kind: 'no-timer' }, turn };
@@ -133,13 +141,16 @@ export function fridgeReducer(fridge: Fridge, play: FridgePlay, action: FridgeAc
       if (play.held === null) return play;
       return fridgeReducer(fridge, play, { type: 'drop', item: play.held.item, shelf: fridge.shelves[play.held.cursor].id });
     case 'drop': {
+      // A drop lets go of the held item only when it is the one dropped: a drag of another
+      // item leaves a keyboard or click pick up where it was.
       const item = fridge.items.find((candidate) => candidate.id === action.item);
       if (item === undefined || play.placements[item.id] !== undefined || !fridge.shelves.some((shelf) => shelf.id === action.shelf)) return play;
+      const held = play.held?.item === item.id ? null : play.held;
       if (item.shelf === action.shelf) {
-        return { ...play, placements: { ...play.placements, [item.id]: action.shelf }, points: pointsAfter(fridge, play, true), held: null, last: { kind: 'placed', item: item.id, shelf: action.shelf }, turn };
+        return { ...play, placements: { ...play.placements, [item.id]: action.shelf }, points: pointsAfter(fridge, play, true), held, last: { kind: 'placed', item: item.id, shelf: action.shelf }, turn };
       }
       const wrongFirst = play.wrongFirst.includes(item.id) ? play.wrongFirst : [...play.wrongFirst, item.id];
-      return { ...play, wrongFirst, points: pointsAfter(fridge, play, false), held: null, last: { kind: 'returned', item: item.id, shelf: action.shelf }, turn };
+      return { ...play, wrongFirst, points: pointsAfter(fridge, play, false), held, last: { kind: 'returned', item: item.id, shelf: action.shelf }, turn };
     }
     case 'put-back':
       if (play.held === null) return play;
@@ -157,11 +168,12 @@ export function savedPlay(play: FridgePlay): SavedAnswer {
 }
 
 /**
- * A play from a saved answer: its placements and the items wrong first time, keeping only what
- * this fridge file still has (an item on its own shelf), so an edited file never breaks it.
- * The points and the time left are read when they are there (an answer from before they existed
- * has neither: its points are worked out from the drops, its timer is untouched). Anything else
- * is a fresh play.
+ * A play from a saved answer: its placements and the items wrong first time. A saved play that
+ * no longer fits this fridge file (an item or a shelf it has not got, or an item on a shelf that
+ * is not its own, when the play recorded it as right) is no saved play: its points and its time
+ * were for drops this file would not keep, so the learner starts a fresh one. The points and the
+ * time left are read when they are there (an answer from before they existed has neither: its
+ * points are worked out from the drops, its timer is untouched). Anything else is a fresh play.
  */
 export function playFromSaved(fridge: Fridge, saved: SavedAnswer | undefined): FridgePlay {
   const fresh = newPlay(fridge);
@@ -169,9 +181,13 @@ export function playFromSaved(fridge: Fridge, saved: SavedAnswer | undefined): F
   const { placements: placed, wrongFirst: wrong, points, timeLeft } = saved;
   if (!isRecord(placed) || !Array.isArray(wrong)) return fresh;
   const wrongIds: readonly Json[] = wrong;
+  const fits =
+    Object.entries(placed).every(([id, shelf]) => fridge.items.some((item) => item.id === id && item.shelf === shelf)) &&
+    wrongIds.every((id) => fridge.items.some((item) => item.id === id));
+  if (!fits) return fresh;
   const placements: Record<string, string> = {};
   for (const item of fridge.items) {
-    if (placed[item.id] === item.shelf) placements[item.id] = item.shelf;
+    if (placed[item.id] !== undefined) placements[item.id] = item.shelf;
   }
   const wrongFirst = fridge.items.filter((item) => wrongIds.includes(item.id)).map((item) => item.id);
   const drops = { ...fresh, placements, wrongFirst };

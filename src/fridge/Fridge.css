@@ -179,6 +179,18 @@
   font-size: 15px;
 }
 
+/* Each drop's words come in afresh (a new span each turn), so a repeated sentence still shows a
+   change; a fade, not a movement, so it stays where motion is reduced. */
+.fridge-status[data-tone] .fridge-words {
+  animation: fridge-words-in 400ms ease-out;
+}
+
+@keyframes fridge-words-in {
+  from {
+    opacity: 0.2;
+  }
+}
+
 .fridge-status .tone-icon {
   flex-shrink: 0;
   margin-top: 4px;
@@ -310,7 +322,9 @@
 }
 
 /* A wrong drop on a flash fridge: the item that came back is red and stays so (the static
-   state), and shakes in a short flash where motion is allowed. */
+   state), and shakes in a short flash where motion is allowed. data-returned alternates between
+   even and odd turns, and each has its own (identical) keyframes, so a second wrong drop of the
+   same item changes the animation's name and flashes again. */
 .fridge[data-feedback='flash'] .fridge-item[data-returned] {
   border-color: var(--wrong);
   background: var(--wrong-soft);
@@ -321,9 +335,32 @@
   .fridge[data-feedback='flash'] .fridge-item[data-returned] {
     animation: fridge-flash 600ms ease-out;
   }
+
+  .fridge[data-feedback='flash'] .fridge-item[data-returned='odd'] {
+    animation-name: fridge-flash-again;
+  }
 }
 
 @keyframes fridge-flash {
+  0%,
+  40% {
+    background: var(--wrong);
+    color: #fff;
+    transform: translateX(0);
+  }
+  10%,
+  30% {
+    transform: translateX(-4px);
+  }
+  20% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fridge-flash-again {
   0%,
   40% {
     background: var(--wrong);

@@ -66,31 +66,37 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
   /**
    * Dispatches an action and keeps focus sensible: after a drop, on the next item in the tray
    * (or the score card when the play ends), or on the item that came back; after a put back,
-   * on the item. The shelves are off while nothing is held, so focus never stays on one.
+   * on the item. The shelves are off while nothing is held, so focus never stays on one. No timer
+   * turns itself off, so focus goes on to the held item or the tray's first; time up locks the
+   * tray and the shelves, so focus inside the fridge goes to Reset.
    */
   const act = (action: FridgeAction) => {
     const { before, after } = dispatch(action);
     const last = after.last;
-    if (after === before || last === null) return;
+    if (after.turn === before.turn || last === null) return;
     if (last.kind === 'placed') {
       const rest = trayItems(fridge, after);
       const at = Math.min(trayItems(fridge, before).findIndex((item) => item.id === last.item), rest.length - 1);
       focusNext(rest.length === 0 ? '.fridge-score' : `[data-item="${rest[at].id}"]`);
     } else if (last.kind === 'returned' || last.kind === 'put-back') {
       focusNext(`[data-item="${last.item}"]`);
+    } else if (last.kind === 'no-timer') {
+      focusNext(after.held === null ? '.fridge-item' : `[data-item="${after.held.item}"]`);
+    } else if (last.kind === 'time-up' && root.current?.contains(document.activeElement)) {
+      focusNext('.fridge-reset');
     }
   };
 
   // One tick a second while the countdown runs; leaving the screen mid-play clears it, and
   // nothing is sent.
-  const tick = useEffectEvent(() => dispatch({ type: 'tick' }));
+  const tick = useEffectEvent(() => act({ type: 'tick' }));
   useEffect(() => {
     if (!running) return;
     const interval = setInterval(() => tick(), 1000);
     return () => clearInterval(interval);
   }, [running]);
 
-  const { drag, handlers, swallowClick } = usePointerDrag(root, {
+  const { drag, handlers, swallowClick, cancel } = usePointerDrag(root, {
     onDrop: (item, shelf) => act({ type: 'drop', item, shelf }),
     onStart: () => dispatch({ type: 'start' }),
     enabled: !finished,
@@ -126,7 +132,15 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
         <h2 id={`${id}-title`} className="fridge-title">
           <Copy text={fridge.title} />
         </h2>
-        <button type="button" className="btn btn-ghost" onClick={() => act({ type: 'reset' })}>
+        <button
+          type="button"
+          className="btn btn-ghost fridge-reset"
+          onClick={() => {
+            // A drag still going when the play resets drops nothing into the new one.
+            cancel();
+            act({ type: 'reset' });
+          }}
+        >
           {fridge.resetLabel}
         </button>
       </div>
@@ -210,7 +224,8 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
             data-item={item.id}
             data-dragging={drag?.item === item.id || undefined}
             disabled={timeUp}
-            data-returned={(play.last?.kind === 'returned' && play.last.item === item.id) || undefined}
+            // Alternates with each turn, so a second wrong drop in a row flashes again.
+            data-returned={play.last?.kind === 'returned' && play.last.item === item.id ? (play.turn % 2 === 0 ? 'even' : 'odd') : undefined}
             aria-pressed={held?.item === item.id}
             aria-describedby={`${id}-hint`}
             {...handlers(item.id)}
@@ -227,7 +242,10 @@ export function Fridge({ fridge, name, saved, onEvent }: FridgeProps) {
 
       <Announce words={words} turn={play.turn} className="fridge-status" tone={tone}>
         {tone !== undefined && <ToneIcon tone={tone} size={16} />}
-        <span>{words}</span>
+        {/* A new span each turn, so a repeated sentence shows again. */}
+        <span key={play.turn} className="fridge-words">
+          {words}
+        </span>
       </Announce>
 
       {timeUp && timer !== null && (

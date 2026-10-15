@@ -448,6 +448,172 @@ describe('Fridge, the one-shot extras', () => {
   });
 });
 
+/** One-shot plays saved before the file was edited: none of them fits it now. */
+const ALL_RIGHT = Object.fromEntries(oneShot.items.map((i) => [i.id, i.shelf]));
+
+describe('Fridge, a saved play that no longer fits its file', () => {
+  it.each([
+    ['an item now on another shelf', { ...ALL_RIGHT, cheese: 'bottom' }, []],
+    ['an item the file no longer has', { ...ALL_RIGHT, pickles: 'door' }, []],
+    ['a shelf the file no longer has', { ...ALL_RIGHT, cheese: 'freezer' }, []],
+    ['a wrong-first item the file no longer has', ALL_RIGHT, ['pickles']],
+  ])('starts a fresh play for %s, not its points and time', (_, placements, wrongFirst) => {
+    const f = renderFridge(oneShot, 'one-shot', { placements, wrongFirst, points: 1400, timeLeft: 5 });
+    expect(f.trayNames()).toHaveLength(14);
+    expect(score()).toBe('score 0');
+    expect(clock()).toBe('1:00');
+    expect(f.container.querySelector('.fridge-score')).toBeNull();
+    expect(screen.getByRole('button', { name: 'No timer' })).toHaveProperty('disabled', false);
+  });
+});
+
+/** Drags an item by pointer onto the shelf with this id: jsdom has no layout, so the shelf is put under the pointer. */
+function pointerDrag(f: ReturnType<typeof renderFridge>, name: string, shelf: string, { up = true } = {}) {
+  const item = f.item(name);
+  item.setPointerCapture = vi.fn();
+  item.hasPointerCapture = () => true;
+  item.releasePointerCapture = vi.fn();
+  const target = f.container.querySelector(`[data-drop-target="${shelf}"]`);
+  document.elementFromPoint = () => target;
+  fireEvent.pointerDown(item, { pointerId: 1, isPrimary: true, button: 0, clientX: 0, clientY: 0 });
+  fireEvent.pointerMove(item, { pointerId: 1, clientX: 40, clientY: 40 });
+  if (up) fireEvent.pointerUp(item, { pointerId: 1, clientX: 40, clientY: 40 });
+  return item;
+}
+
+describe('Fridge, focus when a control turns itself off', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('moves focus from No timer to the held item, which the arrows still move', () => {
+    const f = renderFridge(oneShot, 'one-shot');
+    f.item('Cheese').focus();
+    fireEvent.keyDown(f.item('Cheese'), { key: 'Enter' });
+    const noTimer = screen.getByRole('button', { name: 'No timer' });
+    noTimer.focus();
+    fireEvent.click(noTimer);
+    expect(document.activeElement).toBe(f.item('Cheese'));
+    expect(f.item('Cheese').getAttribute('aria-pressed')).toBe('true');
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(f.status()).toBe('Cheese. Upper middle.');
+  });
+
+  it('moves focus from No timer to the tray’s first item when nothing is held', () => {
+    const f = renderFridge(oneShot, 'one-shot');
+    const noTimer = screen.getByRole('button', { name: 'No timer' });
+    noTimer.focus();
+    fireEvent.click(noTimer);
+    expect(document.activeElement).toBe(f.item('Cheese'));
+  });
+
+  it('puts the held item back when time is up, says so with the message, and moves focus to Reset', () => {
+    vi.useFakeTimers();
+    const f = renderFridge(oneShot, 'one-shot');
+    f.item('Cheese').focus();
+    fireEvent.keyDown(f.item('Cheese'), { key: 'Enter' });
+    pass(60);
+    expect(f.item('Cheese').getAttribute('aria-pressed')).toBe('false');
+    expect(f.status()).toBe("Time's up! Better luck next time. Cheese put back in the tray.");
+    expect(f.live()).toBe("Time's up! Better luck next time. Cheese put back in the tray.");
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Reset' }));
+  });
+
+  it('leaves focus alone at time up when it is outside the fridge', () => {
+    vi.useFakeTimers();
+    const f = renderFridge(oneShot, 'one-shot');
+    fireEvent.click(f.item('Cheese'));
+    expect(document.activeElement).toBe(document.body);
+    pass(60);
+    expect(document.activeElement).toBe(document.body);
+  });
+});
+
+describe('Fridge, repeated and overlapping moves', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('flashes and shows a second wrong drag of the same item again', () => {
+    const f = renderFridge(oneShot, 'one-shot');
+    const words = () => f.container.querySelector('.fridge-status .fridge-words');
+    const liveRaw = () => f.container.querySelector('[aria-live="polite"]')!.textContent;
+    pointerDrag(f, 'Cheese', 'bottom');
+    expect(f.status()).toBe('Cheese returned to the tray.');
+    const first = { flash: f.item('Cheese').getAttribute('data-returned'), words: words(), live: liveRaw() };
+    expect(first.flash).not.toBeNull();
+    pointerDrag(f, 'Cheese', 'door');
+    expect(f.status()).toBe('Cheese returned to the tray.');
+    expect(f.item('Cheese').getAttribute('data-returned')).not.toBeNull();
+    expect(f.item('Cheese').getAttribute('data-returned')).not.toBe(first.flash);
+    expect(words()).not.toBe(first.words);
+    expect(liveRaw()).not.toBe(first.live);
+  });
+
+  it('keeps No timer off through a reset', () => {
+    vi.useFakeTimers();
+    const f = renderFridge(oneShot, 'one-shot');
+    fireEvent.click(screen.getByRole('button', { name: 'No timer' }));
+    drop(f, 'Cheese', 'Top shelf');
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+    expect(f.trayNames()).toHaveLength(14);
+    expect(screen.queryByRole('timer')).toBeNull();
+    expect(screen.getByRole('button', { name: 'No timer' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(f.item('Cheese'));
+    pass(120);
+    expect(screen.queryByText("Time's up!")).toBeNull();
+    expect(f.item('Cheese').getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('cancels a drag when time runs out mid-drag: the ghost goes, the capture is let go, and nothing drops', () => {
+    vi.useFakeTimers();
+    const f = renderFridge(oneShot, 'one-shot');
+    const cheese = pointerDrag(f, 'Cheese', 'top', { up: false });
+    expect(f.container.querySelector('.drag-ghost')).not.toBeNull();
+    pass(60);
+    expect(screen.getByText("Time's up!")).toBeTruthy();
+    expect(f.container.querySelector('.drag-ghost')).toBeNull();
+    expect(cheese.releasePointerCapture).toHaveBeenCalledWith(1);
+    fireEvent.pointerMove(cheese, { pointerId: 1, clientX: 60, clientY: 60 });
+    fireEvent.pointerUp(cheese, { pointerId: 1, clientX: 60, clientY: 60 });
+    expect(f.container.querySelector('.drag-ghost')).toBeNull();
+    expect(f.onShelf('Top shelf')).toEqual([]);
+  });
+
+  it('cancels a drag when Reset is pressed mid-drag: nothing drops into the new play', () => {
+    const f = renderFridge();
+    const cheese = pointerDrag(f, 'Cheese', 'top', { up: false });
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(f.container.querySelector('.drag-ghost')).toBeNull();
+    fireEvent.pointerUp(cheese, { pointerId: 1, clientX: 40, clientY: 40 });
+    expect(f.onShelf('Top shelf')).toEqual([]);
+    expect(f.trayNames()).toContain('Cheese');
+    expect(f.status()).toBe('Every item is back in the tray.');
+  });
+
+  it('keeps a click or keyboard pick up when another item is dragged onto a shelf', () => {
+    const f = renderFridge();
+    fireEvent.click(f.item('Yoghurt'));
+    pointerDrag(f, 'Cheese', 'top');
+    expect(f.onShelf('Top shelf')).toEqual(['Cheese']);
+    expect(f.item('Yoghurt').getAttribute('aria-pressed')).toBe('true');
+    pointerDrag(f, 'Lettuce', 'top');
+    expect(f.trayNames()).toContain('Lettuce');
+    expect(f.item('Yoghurt').getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(f.shelf('Top shelf'));
+    expect(f.onShelf('Top shelf')).toEqual(['Cheese', 'Yoghurt']);
+  });
+
+  it('swallows only the click that ends a drag, not a later one with no pointer down', async () => {
+    const f = renderFridge();
+    pointerDrag(f, 'Cheese', 'bottom');
+    fireEvent.click(f.item('Cheese'));
+    expect(f.item('Cheese').getAttribute('aria-pressed')).toBe('false');
+
+    pointerDrag(f, 'Cheese', 'top');
+    expect(f.onShelf('Top shelf')).toEqual(['Cheese']);
+    await act(() => new Promise((resolve) => setTimeout(resolve)));
+    fireEvent.click(f.item('Yoghurt'));
+    expect(f.item('Yoghurt').getAttribute('aria-pressed')).toBe('true');
+  });
+});
+
 describe('two fridges on one page', () => {
   it('keeps their keys and their words to themselves', () => {
     render(
