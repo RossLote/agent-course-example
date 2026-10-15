@@ -63,3 +63,53 @@ set it up; it comes before the brief.
   design round one yourself.
 - Logged here; committed to main per your standing instruction, no remote to
   push to yet.
+
+## Ross: the learner, the thesis, and no real agent
+
+- The learner is the LEDs and LXDs, and anyone else who is interested. They
+  all have some technical background, and the developers could use it too.
+- It's mostly to teach what works and what doesn't when working with agents.
+  The thing I specifically want to emphasise is that agents are better at
+  reviewing than building. Whenever you have agents do anything, also have
+  agents look at what the agents have done. That is the emphasis of my whole
+  workflow: checking and rechecking, and having things in place that keep the
+  agents from wandering off. Tests are really good for this; with tests and
+  linting and whatever else in place you put the agent in a tight box it
+  can't wander off from.
+- The learner will not touch a real agent. We could have some fun
+  interactions where they talk to a fake agent and get fake responses.
+- The examples don't need to be the real record. This is not the same as the
+  presentation; we're teaching them how to do things and can give examples.
+  What I'm trying to show the LEDs is that they could use AI for things like
+  this: on the other side of the business the bespoke team sometimes has to
+  break away from the authoring tools and build in code, and I want to
+  emphasise that this is a thing we can do.
+- Once we've decided what we're going to do, we'll send it to Claude Design
+  for mockups. First, the content.
+
+## Agent: the content re-cut around the thesis
+
+- The loop stays as the worked example, but every module now teaches one wall
+  of the box or one layer of checking, in a fixed shape: something goes wrong
+  without the practice, the practice, the learner tries it on a fake agent,
+  and what it catches. Seven modules: what works and what doesn't (a vague
+  ask one-shotted wrong); write it down (the brief and the bead); define done
+  first (the epic's acceptance bar); the box (tests, lint, gates, the
+  worktree); agents checking agents (simplify, review, adversarial review;
+  the heart of the course); judging what comes back (the pull request as
+  evidence); round again (MVP then rounds, and when a check misses, add a
+  check, the training-vault story without names).
+- The fake agent is a scripted dialogue authored as data: the learner picks a
+  reply, the agent answers from the script, some branches wander off on
+  purpose. That fits content-separate-from-engine and needs nothing at run
+  time.
+- Four questions: the worked example (recommended a small bespoke learning
+  interaction a client asked for that the authoring tool cannot do, taken
+  from brief to pull request; alternatives this course itself or a generic
+  software feature); how far the fake agent goes (recommended scripted
+  choose-your-reply, no free text judged); vocabulary (plain words with the
+  real names in an aside, or the real names throughout); and what LED stands
+  for.
+- Taken as settled: nobody touches a real agent; examples need not be the real
+  record; Ross designs round one himself and Claude Design mocks it up once
+  the content is fixed.
