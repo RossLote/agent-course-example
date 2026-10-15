@@ -7,6 +7,7 @@ import { Blocks } from '../scene/Blocks.tsx';
 import { Copy } from '../scene/Copy.tsx';
 import type { SavedAnswer, ScreenProps } from '../types.ts';
 import { BoxPanel } from './BoxPanel.tsx';
+import { isRightVerdict, summaryLabel, verdictOf, VERDICT_LABELS } from './labels.ts';
 import './Choose.css';
 
 type Choose = ScreenOf<'choose'>;
@@ -31,33 +32,27 @@ function isRight(options: readonly Option[], picked: readonly number[]): boolean
   return options.every((o, i) => o.right === picked.includes(i));
 }
 
-/** The live region's words once checked. */
-function Result({ options, picked, single }: { options: readonly Option[]; picked: readonly number[]; single: boolean }) {
-  if (single) {
-    const chosen = options[picked[0]];
-    if (chosen === undefined) return null;
-    return (
-      <>
-        {chosen.right ? 'Right.' : 'Wrong.'} <Copy text={chosen.feedback} />
-      </>
-    );
-  }
-  const right = options.filter((o) => o.right).length;
-  const rightTicked = options.filter((o, i) => o.right && picked.includes(i)).length;
+/** A single choice's live region words once checked: right or wrong, and the pick's feedback. */
+function SingleResult({ chosen }: { chosen: Option | undefined }) {
+  if (chosen === undefined) return null;
   return (
     <>
-      Checked. You ticked {rightTicked} of the {right} right options and {picked.length - rightTicked} of the {options.length - right} wrong
-      ones. Each option now says why.
+      {chosen.right ? 'Right.' : 'Wrong.'} <Copy text={chosen.feedback} />
     </>
   );
 }
 
+/** Right or wrong, for a verdict's pill and the summary's band. */
+const toneOf = (right: boolean): 'right' | 'wrong' => (right ? 'right' : 'wrong');
+
 /**
  * Pick and be told why (PLAN.md §6a, "Screen types"): a prompt and options, ticked (multi) or
- * one picked (single), then Check marks them right or wrong with their feedback, and Try again
- * clears them. A multi choice marks every option by its own rightness; a single one marks the
- * pick and dims the rest. A picked option's reveal blocks show once checked, as do the after
- * blocks; the box panel draws the walls the ticked options name as they are ticked.
+ * one picked (single), then Check marks them with their feedback, and Try again clears them. A
+ * multi choice judges what the learner did with every option (PLAN.md §6, "The multi choose's
+ * verdicts"): a pill beside each label says whether ticking or leaving it was right, and a
+ * summary under the list counts them. A single one marks the pick right or wrong and dims the
+ * rest. A picked option's reveal blocks show once checked, as do the after blocks; the box panel
+ * draws the walls the ticked options name as they are ticked.
  *
  * A scored choose (a check) reports `answered` on every Check press; an unscored one reports
  * `interacted` on Check, once per picked option, each carrying the whole pick. The saved answer
@@ -94,6 +89,9 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
   };
 
   const walls = new Set(picked.flatMap((i) => options[i].wall ?? []));
+  // Once checked, a multi choice has a verdict on every option.
+  const verdicts = checked && !single ? options.map((o, i) => verdictOf(o.right, picked.includes(i))) : undefined;
+  const summary = verdicts && { tone: toneOf(verdicts.every(isRightVerdict)), words: summaryLabel(verdicts) };
   const reveals = checked ? picked.flatMap((i) => options[i].reveal ?? []) : [];
 
   const choices = (
@@ -105,10 +103,13 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
         <ul className="choice-list">
           {options.map((option, i) => {
             const on = picked.includes(i);
-            // Once checked, a multi choice marks every option; a single one marks its pick.
+            const verdict = verdicts?.[i];
+            // Once checked, a multi choice gives every option a verdict; a single one marks its pick.
             const marked = checked && (!single || on);
-            const state = marked ? (option.right ? 'right' : 'wrong') : checked ? 'dim' : on ? 'on' : undefined;
+            const state = verdict ?? (marked ? (option.right ? 'right' : 'wrong') : checked ? 'dim' : on ? 'on' : undefined);
+            const tone = verdict && toneOf(isRightVerdict(verdict));
             const feedbackId = `${name}-${i}`;
+            const verdictId = `${name}-${i}-verdict`;
             return (
               <li key={i} className="choice" data-state={state}>
                 <label className="choice-row">
@@ -119,7 +120,7 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
                     checked={on}
                     disabled={checked}
                     onChange={() => toggle(i)}
-                    aria-describedby={marked ? feedbackId : undefined}
+                    aria-describedby={verdict !== undefined ? `${verdictId} ${feedbackId}` : marked ? feedbackId : undefined}
                   />
                   <span className={single ? 'choice-box choice-box-radio' : 'choice-box'} aria-hidden="true">
                     {on &&
@@ -131,13 +132,22 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
                         <ToneIcon tone="right" />
                       ))}
                   </span>
-                  <span className="choice-label">
-                    <Copy text={option.label} />
+                  <span className="choice-text">
+                    <span className="choice-label">
+                      <Copy text={option.label} />
+                    </span>
+                    {/* Out of the option's name, read with its description instead. */}
+                    {verdict && tone && (
+                      <span id={verdictId} className="choice-verdict" data-tone={tone} aria-hidden="true">
+                        <ToneIcon tone={tone} size={16} />
+                        {VERDICT_LABELS[verdict]}
+                      </span>
+                    )}
                   </span>
                 </label>
                 {marked && (
                   <p id={feedbackId} className="choice-feedback">
-                    <Mark right={option.right} />
+                    {verdict === undefined && <Mark right={option.right} />}
                     <span>
                       <Copy text={option.feedback} />
                     </span>
@@ -148,6 +158,18 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
           })}
         </ul>
       </fieldset>
+      {/* The live region is in the page from the start, so it is heard once per Check; a multi
+          choice's summary shows as well. */}
+      <p className={summary ? 'choice-summary' : 'sr-only'} data-tone={summary?.tone} role="status">
+        {summary ? (
+          <>
+            <ToneIcon tone={summary.tone} size={16} />
+            {summary.words}
+          </>
+        ) : (
+          checked && <SingleResult chosen={options[picked[0]]} />
+        )}
+      </p>
       <div className="choice-actions">
         <CheckButton
           checked={checked}
@@ -159,9 +181,6 @@ export function ChooseScreen({ screen, progress, saved, onEvent }: ScreenProps<'
           onTryAgain={tryAgain}
         />
       </div>
-      <p className="sr-only" role="status">
-        {checked && <Result options={options} picked={picked} single={single} />}
-      </p>
     </div>
   );
 

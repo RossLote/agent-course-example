@@ -69,6 +69,28 @@
   opacity: 0.6;
 }
 
+/* A multi choice once checked (Tick-AllRight and Tick-Mixed in the round's design): what the
+   learner did with each option, rightly ticked or left in green, wrongly ticked or missed in red,
+   a missed one dashed. */
+.choice[data-state='right-tick'] {
+  border-color: var(--right);
+  background: var(--right-soft);
+}
+
+.choice[data-state='right-leave'] {
+  border-color: var(--right-line);
+}
+
+.choice[data-state='wrong-tick'] {
+  border-color: var(--wrong);
+  background: var(--wrong-soft);
+}
+
+.choice[data-state='missed'] {
+  border-color: var(--wrong);
+  border-style: dashed;
+}
+
 .choice-row {
   display: flex;
   align-items: flex-start;
@@ -132,6 +154,40 @@
   font-weight: 700;
 }
 
+/* The label and, once a multi choice is checked, its verdict pill at the right of the row; the
+   pill drops under the label when the row is too narrow for both. */
+.choice-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px 12px;
+  min-width: 0;
+}
+
+.choice-text .choice-label {
+  flex: 1 1 12em;
+}
+
+.choice-verdict {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 3px 12px 3px 8px;
+  border-radius: 999px;
+  background: var(--right);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.choice-verdict[data-tone='wrong'] {
+  background: var(--wrong);
+}
+
 .choice-feedback {
   display: flex;
   align-items: flex-start;
@@ -142,6 +198,28 @@
 
 .choice-feedback .mark {
   margin-left: -34px;
+}
+
+/* The summary under a multi choice's list once checked, a soft green or red band. */
+.choice-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-control);
+  background: var(--right-soft);
+  color: var(--right);
+  font-weight: 700;
+}
+
+.choice-summary[data-tone='wrong'] {
+  background: var(--wrong-soft);
+  color: var(--wrong);
+}
+
+.choice-summary .tone-icon {
+  flex-shrink: 0;
+  margin-top: 5px;
 }
 
 .choice-actions {
