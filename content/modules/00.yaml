@@ -88,6 +88,7 @@ screens:
   - type: fridge
     eyebrow: Try it
     heading: Try what it built
+    nav: try what it built
     intro: Optional, a minute long. The timer starts as soon as you pick something up.
     fridge: one-shot
 

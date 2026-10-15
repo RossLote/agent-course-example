@@ -26,6 +26,7 @@ screens:
 
   - type: scene
     heading: The walls
+    nav: the walls
     intro: Four walls the workflow puts up before a builder starts.
     blocks:
       - type: cards
@@ -114,6 +115,7 @@ screens:
 
   - type: scene
     heading: The same bead, twice
+    nav: the same bead, twice
     blocks:
       - type: columns
         columns:

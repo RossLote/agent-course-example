@@ -19,6 +19,7 @@ screens:
 
   - type: scene
     heading: A bead is not a ticket
+    nav: a bead is not a ticket
     blocks:
       - type: columns
         columns:
@@ -150,6 +151,7 @@ screens:
     mode: single
     eyebrow: Try it
     heading: The epic review
+    nav: the epic review
     intro: >-
       Before the epic runs, another agent reads it against the project and the decisions. It found
       this:

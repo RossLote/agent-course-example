@@ -16,6 +16,7 @@ screens:
 
   - type: scene
     heading: The first three lines
+    nav: the first three lines
     blocks:
       - type: list
         heading: The fridge pull request's top, as it would appear
@@ -44,6 +45,7 @@ screens:
 
   - type: scene
     heading: The rest of the page
+    nav: the rest of the page
     intro: What follows the three lines.
     blocks:
       - type: cards
@@ -158,6 +160,7 @@ screens:
     mode: single
     eyebrow: Try it
     heading: What do you do?
+    nav: "what do you do?"
     options:
       - label: Merge. Every chapter passes and the choice is reasonable.
         right: false

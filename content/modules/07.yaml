@@ -120,6 +120,7 @@ screens:
 
   - type: scene
     heading: Try this tomorrow
+    nav: try this tomorrow
     intro: Four cards for any agent, including the chat tools you already use.
     blocks:
       - type: cards

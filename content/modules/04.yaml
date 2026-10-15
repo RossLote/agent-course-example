@@ -32,6 +32,7 @@ screens:
 
   - type: scene
     heading: Three layers, three kinds of mistake
+    nav: three layers, three kinds of mistake
     intro: In the order they run.
     blocks:
       - type: cards

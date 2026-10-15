@@ -17,6 +17,7 @@ screens:
 
   - type: scene
     heading: How a brief goes
+    nav: how a brief goes
     blocks:
       - type: cards
         numbered: true
@@ -164,6 +165,7 @@ screens:
 
   - type: scene
     heading: What the record is for
+    nav: what the record is for
     blocks:
       - type: paragraph
         text: >-
