@@ -146,8 +146,10 @@ npm run gate           # gate:fast + e2e + package; there is no integration tier
 npm run e2e            # Playwright e2e, Chromium only (e2e/, excluding e2e/walkthrough/)
 npm run package        # build with relative asset paths into dist/agent-course/, write
                        # tincan.xml beside index.html, zip it as dist/agent-course.zip,
-                       # then reopen the zip and fail unless tincan.xml and index.html
-                       # are at its root and every asset path is relative
+                       # then reopen the zip and fail unless tincan.xml (naming
+                       # course.yaml's course) and index.html are at its root and every
+                       # asset path is relative; run it last: npm run build empties dist/,
+                       # the zip with it
 E2E_PORT=5281 npx playwright test e2e/smoke   # one spec, on its own port (default 5280)
 npm run walkthrough    # the throwaway e2e/walkthrough/*.spec.ts the orchestrator writes
                        # (e2e/walkthrough/recorder.ts is its committed step helper), with
