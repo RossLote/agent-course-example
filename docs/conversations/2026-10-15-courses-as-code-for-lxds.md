@@ -352,3 +352,44 @@ builds software. Nothing here changes the round-one epic.
 - Either way, not an afterthought means: on by default, one key, a visible
   listening state, the language set per user, and in the Rust route the
   client's vocabulary.
+
+## Ross: subscriptions settle dictation and login; is Tauri the recommendation?
+
+- My plan is a Claude subscription for the LXDs anyway, so dictation is not
+  a problem, and login is not a problem: the app points them at the right
+  installer and the login takes them through the right process.
+- About Tauri: I used it to build an app at version one. Are you suggesting
+  it as the framework, or just as an example of Rust plus a webview? I
+  don't mind using it, but it might be best to build from scratch.
+
+## Agent: Tauri 2 is the recommendation, not an example
+
+- Subscriptions noted: each LXD on their own claude.ai seat makes `/voice`
+  available and login a `claude auth login` in the browser. One rule stays:
+  the app points at the installer and the login and never holds or passes
+  credentials, which is what you described.
+- Tauri 2 is my recommendation for the shell, the preview window and the
+  packaging. From scratch in Rust means tao for the windows, wry for the
+  webview (both Tauri's own crates, which the Tauri team maintains), your
+  own IPC over wry's handler, and a packager; you would be rebuilding the
+  command layer and its access control, the bundler for dmg, msi, nsis,
+  AppImage and deb, signing and notarisation, the updater with signed
+  releases, the sidecar handling, and the dialog, file, store and global-
+  shortcut plugins, none of which is product. The preview needs exactly
+  what Tauri wraps: initialisation scripts, eval with a result, custom
+  protocols, navigation and page-load hooks, a second window by label.
+- What changed since version one: the allowlist is gone, replaced by
+  permissions, scopes and capabilities attached per window and webview, so
+  the preview window can be given nothing and the main window only what it
+  needs; most of the core API moved to official plugins; the IPC was
+  rewritten with raw bytes and a Channel type for streaming, which is what
+  the chat's stream needs; WebviewWindow types and multiwebview behind an
+  unstable flag; the updater is a plugin; a migrate command does most of
+  the config.
+- From scratch is right only if the UI is not a webview: egui or Slint for
+  a native Rust shell with wry for the preview alone, or Dioxus desktop,
+  which sits on wry and tao anyway. The chat, the media form and the course
+  tree are easier in HTML, and the preview needs a webview regardless.
+- Keep Tauri's surface small: a handful of plugins, the capabilities
+  explicit, the Rust in your own crates. If a reason to leave ever appears,
+  wry and tao are underneath and the Rust moves with you.
