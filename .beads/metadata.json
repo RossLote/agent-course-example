@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "agent_course",
+  "project_id": "8c1a37cd-0b1b-466a-88f7-1d3b0b3ecc00"
+}
