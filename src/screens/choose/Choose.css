@@ -1,0 +1,343 @@
+/* The choose screen (Check, M00-JustAsk, M03-Box and M04-Skeptic in the design's first pass). The
+   choice-* parts and .mark are the option, its feedback and its right-or-wrong mark, which match
+   and order use too. */
+
+.choose {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+
+.choose-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Read by a screen reader, not shown. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.choice-set {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice-prompt {
+  margin-bottom: 12px;
+  padding: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* An option: its control and label on a row at least 44px high, its feedback under once checked. */
+.choice {
+  border: 2px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+
+.choice:hover:not([data-state]) {
+  border-color: var(--line-strong);
+}
+
+.choice[data-state='on'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.choice[data-state='right'] {
+  border-color: var(--right);
+  background: var(--right-soft);
+}
+
+.choice[data-state='wrong'] {
+  border-color: var(--wrong);
+  background: var(--wrong-soft);
+}
+
+.choice[data-state='dim'] {
+  opacity: 0.6;
+}
+
+.choice-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: var(--target);
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.choice-row:has(.choice-input:disabled) {
+  cursor: default;
+}
+
+/* The native control stays in the page for the keyboard and the screen reader; the box draws it,
+   and the whole row shows the focus. */
+.choice-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.choice-row:has(.choice-input:focus-visible) {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.choice-box {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border: 2px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: #fff;
+}
+
+.choice-box-radio {
+  border-radius: 50%;
+}
+
+.choice-input:checked + .choice-box {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+/* Once checked, what was picked stays plain to see beside the mark. */
+.choice-input:checked:disabled + .choice-box {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.choice-label {
+  min-width: 0;
+  font-weight: 700;
+}
+
+.choice-feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0 14px 12px 48px;
+  font-size: 15px;
+}
+
+.choice-feedback .mark {
+  margin-left: -34px;
+}
+
+.choice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.choice-actions .btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.choice-actions .btn-primary[aria-disabled='true']:hover {
+  background: var(--accent);
+}
+
+/* Right or wrong: a tick or a cross on green or red. */
+.mark {
+  flex-shrink: 0;
+}
+
+.mark circle {
+  fill: var(--wrong);
+}
+
+.mark path {
+  stroke: #fff;
+}
+
+.mark[data-right='true'] circle {
+  fill: var(--right);
+}
+
+/* The box panel beside the options (module 03). */
+.choose-with-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 28px;
+}
+
+.choose-with-box > .choose-card {
+  flex: 999 1 420px;
+  min-width: 0;
+}
+
+.choose-box {
+  display: flex;
+  flex: 1 1 260px;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+}
+
+.choose-box-drawing {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+}
+
+.choose-box-builder {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.choose-box-drawing text {
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.choose-box-title {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.choose-box-subtitle {
+  fill: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.choose-box-wall line {
+  stroke-linecap: round;
+}
+
+.choose-box-wall[data-state='down'] line {
+  stroke: var(--line-strong);
+  stroke-width: 3;
+  stroke-dasharray: 8 7;
+}
+
+.choose-box-wall[data-state='up'] line {
+  stroke: var(--accent);
+  stroke-width: 10;
+}
+
+.choose-box-wall circle {
+  stroke-width: 2;
+}
+
+.choose-box-wall[data-state='down'] circle {
+  fill: var(--ground);
+  stroke: var(--line-strong);
+}
+
+.choose-box-wall[data-state='up'] circle {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.choose-box-wall text {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.choose-box-wall[data-state='down'] text {
+  fill: var(--muted);
+}
+
+.choose-box-wall[data-state='up'] text {
+  fill: #fff;
+}
+
+.choose-box-key {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  list-style: none;
+}
+
+.choose-box-key li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.choose-box-key li[data-state='up'] {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.choose-box-key-number {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.choose-box-key li[data-state='up'] .choose-box-key-number {
+  border: 1.5px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.choose-box-caption {
+  max-width: 300px;
+  text-align: center;
+}
+
+.choose-reveal {
+  padding: 18px 22px;
+  border: 2px solid var(--right-line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
