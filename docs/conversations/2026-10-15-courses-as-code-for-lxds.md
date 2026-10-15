@@ -276,3 +276,43 @@ builds software. Nothing here changes the round-one epic.
   the injected driver exposed over MCP, the agent clicking through a sample
   course and reading console and statements; the media form from a
   manifest with drop-to-upload. If those three work, the rest is plumbing.
+
+## Ross: what about Claude Code mods?
+
+- It's also possible we could use Claude Code mods for this. I haven't
+  looked at them yet to see how they work, but I'd like to at some point,
+  and this might be a good place to start.
+
+## Agent: mods change the recommendation
+
+- I had not considered them; I loaded the mod-authoring skill and read the
+  API. A mod is a plugin folder with a manifest and one hooks module. The
+  module hooks events (tool calls, prompt submit, system-prompt compose,
+  drawing, slash commands, session start) and reaches the engine through
+  one interface: panes, bands, status line and toasts drawn with Box, Text,
+  Button, Input, Select, Link, Markdown and Image on the terminal, desktop,
+  VS Code and mobile surfaces; slash commands; tools the model calls;
+  subagent types; files, processes, timers; state within and across
+  sessions. It runs with no DOM and no Node of its own. It validates, tests
+  and hot-reloads from the CLI, and installs from a GitHub marketplace with
+  one command.
+- What a course mod would be: a course pane (module tree, media status,
+  gate status, the statements), slash commands for new course, media,
+  preview and publish, the guardrails as hooks (deny writes outside the
+  content folder, a command whitelist, the LXD role appended to the system
+  prompt), gate results on the status line, and tools the model calls for
+  the preview. Preview in Chrome, driven by the Chrome DevTools MCP server
+  that already exists (snapshot, click, console, network, audits, run a
+  script), with the player's review mode writing click-to-flag notes to the
+  local preview server.
+- Why it changes the recommendation: the mod plus the Claude Code desktop
+  app is the installable app, with the LXD's own login, no spawning
+  protocol, no embedding terms, no sidecar, and the skills, guardrails and
+  UI in one install from GitHub. What it cannot do: embed the course in a
+  webview, drag-and-drop files, a branded product. The media form is a
+  small local page served by the preview server, or Input and Select in
+  the pane. Everything written for the mod (tools, guardrails, commands)
+  carries into the Rust app's MCP server if that is still wanted later.
+- A first mod to learn on: the guardrail hook, a status line for the gate,
+  and a preview command that starts the server and opens Chrome. Small,
+  useful, and the seed of the course pane. I can write it when asked.
