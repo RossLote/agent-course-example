@@ -37,4 +37,8 @@ describe('fridgeWords', () => {
     expect(fridgeWords(oneShot, after({ kind: 'time-up' }))).toBe("Time's up! Better luck next time.");
     expect(fridgeWords(oneShot, after({ kind: 'no-timer' }))).toBe('Timer off.');
   });
+
+  it('says the item held when time ran out went back to the tray, after the message', () => {
+    expect(fridgeWords(oneShot, after({ kind: 'time-up', item: 'cheese' }))).toBe("Time's up! Better luck next time. Cheese put back in the tray.");
+  });
 });

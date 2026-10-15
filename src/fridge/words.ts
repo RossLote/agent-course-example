@@ -26,15 +26,19 @@ function shelfHeard(shelf: Shelf): string {
  * What the last action did, in words: "Lettuce picked up. Top shelf, ready to eat.", "Lettuce
  * placed in the salad drawer. Correct.", "Raw chicken returned to the tray. <its reason>" (on
  * a flash fridge, only that it returned), and the timer's "Time's up!" with its markup taken
- * off. Empty before anything has happened.
+ * off, and the item that was held then put back. Empty before anything has happened.
  */
 export function fridgeWords(fridge: Fridge, play: FridgePlay): string {
   const last = play.last;
   if (last === null) return '';
   if (last.kind === 'reset') return 'Every item is back in the tray.';
   if (last.kind === 'no-timer') return 'Timer off.';
-  if (last.kind === 'time-up') return fridge.timer === 'none' ? '' : plainText(fridge.timer.message);
-  const item = fridge.items.find((candidate) => candidate.id === last.item);
+  const item = fridge.items.find((candidate) => 'item' in last && candidate.id === last.item);
+  if (last.kind === 'time-up') {
+    if (fridge.timer === 'none') return '';
+    const message = plainText(fridge.timer.message);
+    return item === undefined ? message : `${message} ${item.name} put back in the tray.`;
+  }
   if (item === undefined) return '';
   const shelf = 'shelf' in last ? fridge.shelves.find((candidate) => candidate.id === last.shelf) : undefined;
   switch (last.kind) {
