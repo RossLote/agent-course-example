@@ -53,8 +53,8 @@ screens:
     heading: The fridge brief
     intro: >-
       Same agent as module 00. This time it asks before it builds. Each question comes with its
-      recommended answer (dashed); pick it or pick differently. Every answer becomes a decision on
-      the right.
+      recommended answer (dashed); pick it or pick differently, then send your answers. Every
+      answer becomes a decision on the right.
     nav: the fridge brief
     opening: >-
       A fridge activity for a client's food-hygiene course. Learners drag food onto the right
