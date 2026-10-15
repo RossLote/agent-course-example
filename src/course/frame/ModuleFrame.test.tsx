@@ -159,9 +159,10 @@ describe('ModuleFrame', () => {
   it('passes a screen event on with the module and the screen it came from', () => {
     const onEvent = vi.fn();
     renderFrame({ screen: 2, onEvent });
-    fireEvent.click(screen.getByRole('button', { name: 'Answer (placeholder)' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Right' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check my answer' }));
     expect(onEvent).toHaveBeenCalledWith(
-      { type: 'answered', slug: 'check-one', right: true, score: { raw: 1, max: 1 }, response: 'placeholder', answer: 'placeholder' },
+      { type: 'answered', slug: 'check-one', right: true, score: { raw: 1, max: 1 }, response: 'Right', answer: { picked: [0] } },
       { module, screen: screens[1] },
     );
   });
@@ -190,7 +191,8 @@ describe('the answers held for the session', () => {
   it('turns Next on once a scored screen sends answered, and keeps every answer across screens and modules', () => {
     const { rerender } = render(<Session slug="01" at={2} />);
     expect(next().getAttribute('aria-disabled')).toBe('true');
-    fireEvent.click(screen.getByRole('button', { name: 'Answer (placeholder)' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Right' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check my answer' }));
     expect(next().hasAttribute('aria-disabled')).toBe(false);
 
     rerender(<Session slug="01" at={3} />);

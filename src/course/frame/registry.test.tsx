@@ -7,10 +7,6 @@ import { NO_ANSWERS } from './progress.ts';
 import { ScreenView } from './ScreenView.tsx';
 
 const course = fixtureCourse();
-const options = [
-  { label: 'Right', right: true, feedback: 'Yes.' },
-  { label: 'Wrong', right: false, feedback: 'No.' },
-];
 const match = {
   targets: [
     { id: 'x', label: 'X' },
@@ -35,14 +31,12 @@ const placeholders: Screen[] = [
     closing: 'Done.',
     panel: { heading: 'The record', note: '{filled} of {total}' },
   },
-  { type: 'choose', slug: 'tick', scored: false, mode: 'multi', heading: 'Tick', options },
   { type: 'match', slug: 'sorting', scored: false, heading: 'Sort', ...match },
   { type: 'fridge', heading: 'Fridge', fridge: 'one-shot' },
   { type: 'compare', heading: 'Compare', left: 'one-shot', right: 'accepted', table: { rows: [{ aspect: 'A', left: 'L', right: 'R', wall: 'W' }] } },
 ];
 
 const scored: { screen: Screen; max: number }[] = [
-  { screen: { type: 'choose', slug: 'check', scored: true, mode: 'single', heading: 'Check', options }, max: 1 },
   { screen: { type: 'match', slug: 'walls', scored: true, heading: 'Walls', ...match }, max: 3 },
   {
     screen: {
