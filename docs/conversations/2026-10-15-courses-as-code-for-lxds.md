@@ -316,3 +316,39 @@ builds software. Nothing here changes the round-one epic.
 - A first mod to learn on: the guardrail hook, a status line for the gate,
   and a preview command that starts the server and opens Chrome. Small,
   useful, and the seed of the course pane. I can write it when asked.
+
+## Ross: dictation must not be an afterthought
+
+- Can we tap into the OS's dictation, or do the LXDs have to set that up
+  themselves? I like the dictation in VS Code. I don't want to use the OS
+  one; the Mac's is a pain. Or the app bundles its own: I use Whispering
+  locally, which needs a model installed, and that's fine depending on how
+  much they use it. I don't want dictation to be an afterthought.
+
+## Agent: Claude Code has its own, and the Rust route can bundle one
+
+- Neither route uses the OS dictation. Claude Code has its own: `/voice`,
+  hold or tap, in the CLI and in the VS Code extension, which is likely the
+  one you like. The speech appears live in the prompt, mixes with typing,
+  can auto-submit, persists in settings, and costs no tokens. Caveats from
+  the docs: audio streams to Anthropic's servers, not local; it needs a
+  claude.ai sign-in, not an API key or a cloud provider; an organisation
+  policy can turn it off; twenty languages, English by default; vocabulary
+  hints are only the project and branch names, nothing custom; the docs
+  page names the CLI and the VS Code extension and not the desktop app,
+  which I have not verified. The mod API has play and speak and no
+  microphone, so a mod cannot add dictation, and with the built-in one it
+  need not. The kit ships voice on in settings and an onboarding command
+  runs the microphone check, so the LXD configures nothing.
+- The Rust route bundles its own, and it is a solved subproblem: Whispering
+  is Tauri, Svelte and Rust under MIT (archived in February 2026, now part
+  of Epicenter), with local engines and cloud ones; Handy and its fork
+  AudioBud are Tauri plus whisper.cpp and Parakeet with a global shortcut,
+  also open. Their capture and transcription pipelines lift straight into a
+  Tauri app. Cost: a model download on first run, from about 150 MB to
+  600 MB depending on quality; gain: local, offline, and a custom
+  vocabulary, since whisper takes an initial prompt that biases it towards
+  client names, product names and LMS terms, which the built-in one cannot.
+- Either way, not an afterthought means: on by default, one key, a visible
+  listening state, the language set per user, and in the Rust route the
+  client's vocabulary.
