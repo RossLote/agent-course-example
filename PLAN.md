@@ -120,3 +120,8 @@ durable record here.
 - 2026-10-15, later: Ross asked the agent to decide the content rather than answer rounds
   of questions, since he is not a learning designer. Storyboard draft in `docs/course/`: README
   with decisions C1–C15, eight modules, glossary. Next: Ross reviews, Claude Design, the brief.
+- 2026-10-15, later still: design first pass in Claude Design (docs/design/2026-10-15-first-pass/),
+  corrected twice from Ross's reactions (the scenario entry, C16; both fridges playable, C17). The
+  brief ran in one round on bead `agent-course-r4n` (docs/conversations/2026-10-15-brief.md): D18–D24,
+  the SparkLMS TinCan launch, 1.0.2, statements, @xapi/xapi, YAML authoring, State resume. Next:
+  `/epic agent-course-r4n`.
