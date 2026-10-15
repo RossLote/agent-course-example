@@ -97,6 +97,11 @@ The learner is asked: *Tick everything that went wrong here.* (multi-select)
 
 After submitting, the three right options light up with their lines.
 
+Beside the chat, optional and a minute long: **Try what it built.** The one-shot fridge
+activity, real and playable (module 05, screen 5, has the full description): the timer
+starts, the shelves are the agent's, a wrong drop snaps back with no reason. The learner
+feels it before they are asked what went wrong with it.
+
 ## Screen 5 · What just happened
 
 Three short cards:

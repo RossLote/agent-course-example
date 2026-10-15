@@ -1,6 +1,6 @@
 # 05 · Judging what comes back
 
-**Wall:** evidence. **Time:** about 6 minutes.
+**Wall:** evidence. **Time:** about 8 minutes.
 
 **Objective.** The learner can read a pull request's first three lines (the door, what to do
 before merging, the undo), find the evidence for each acceptance step, and decide from that
@@ -82,7 +82,40 @@ the shelf is implied by focus, so it is not read out.*
 Line after: *You did not read a line of code. You read six chapters against six steps and a
 list of choices against eight decisions.*
 
-## Screen 5 · Check
+## Screen 5 · The two fridges
+
+Added after Ross's look at the design (2026-10-15): the job's payoff. Both versions of the
+fridge activity, real and playable, side by side.
+
+> On the left, what the agent handed you in module 00 from a one-line ask. On the right,
+> what you just accepted. Both work. Try them.
+
+**Left, "Build me a fridge activity":** five shelves including "the door", fourteen items,
+rules the agent guessed (raw chicken is accepted on the lower middle shelf), a wrong drop
+flashes red and snaps back with no reason, a sixty-second timer that ends in "Time's up", a
+leaderboard against people who do not exist, points, confetti at the end.
+
+**Right, what you accepted:** four shelves, eight items, the client's rules; a wrong drop
+returns the item with its one-line reason; right-first-time out of eight, the wrong ones
+listed with their reasons, Try again; no timer; keyboard route and screen-reader
+announcements of item, shelf and result (the shelf is there because the pull request was
+sent back once).
+
+Both are the same engine component with different data: shelves, items, rules, feedback
+mode, timer, leaderboard, confetti are all authored content. Drag and drop with mouse and
+touch, and the keyboard route (Enter picks up, arrows move between shelves, Enter places),
+on both; the one-shot version is keyboard-operable too, and says so, because the course
+itself must be, even where a real one-shot build would not have been.
+
+Under the two, a table: what is different, row by row (shelves and items; the rules; a
+wrong drop; the score; time; keyboard and screen reader), and which wall made the difference
+(the record and its decision numbers, done and the step of the demo script, the gate,
+evidence).
+
+The one-shot version also appears in module 00, screen 3, as "Try what it built" (optional,
+a minute), so the learner has felt it before they are asked what went wrong with it.
+
+## Screen 6 · Check
 
 **Q1.** A pull request's door line says "Two-way door" but the change deletes a column of
 learner data. What is wrong?
@@ -102,7 +135,7 @@ tell you?
   the chapter, or for the fix the chapter would have shown.*
 - (c) The video was cut for length. *Then the proof was cut for length.*
 
-## Screen 6 · Takeaway
+## Screen 7 · Takeaway
 
 > **You still sign off. You just do not start from the code.** Door, undo, evidence against
 > the acceptance, the choices made for you. A gap in the evidence is a gap in the work.
@@ -111,5 +144,5 @@ The box gains its fifth wall: **evidence**.
 
 ## Statements
 
-Module launched; the merge-or-not choice and the chapters opened as interactions; two
-answers; module completed.
+Module launched; the merge-or-not choice and the chapters opened as interactions; each
+fridge tried, with the items placed and the score reached; two answers; module completed.

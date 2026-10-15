@@ -230,3 +230,34 @@ set it up; it comes before the brief.
 - The frame carries through: every module's first screen is the next
   scene of the job, in character. Recorded as C16, in module 00's
   storyboard, and in the design README; canvas source refreshed.
+
+## Ross: could we see both fridges, for real?
+
+- Would it be too much to have a preview of the two versions of the output?
+  In module 00 we ask the agent to do something without much guidance and
+  decide what's wrong with it; then we ask it to do it properly and go
+  through the whole design thing. Could we see the fridge activity we've
+  built at the end, both of them next to each other, so you see the
+  differences? Literally build the drag and drop.
+
+## Agent: not too much, and it is the payoff
+
+- Not too much: one drag-and-drop component driven by data (shelves,
+  items, rules, feedback, timer, leaderboard, confetti), shown twice with
+  different content. A bead or two in the epic. It also makes the course
+  carry its own proof: a bespoke interaction, built in code by the
+  workflow, inside the course that says that is possible.
+- One catch: a real one-shot build would have no keyboard route, and the
+  course must be accessible, so the one-shot version is keyboard-operable
+  too and the comparison says so.
+- Added to the canvas as a playable board after merge-or-not: both fridges
+  side by side, click to pick and click to place standing in for drag.
+  The one-shot runs its sixty-second timer, flashes red on a wrong drop
+  with no reason, accepts raw chicken on the lower middle shelf, keeps a
+  leaderboard against people who do not exist, and ends in confetti. The
+  accepted one returns a wrong drop with its reason, scores right first
+  time out of eight, lists the wrong ones, and announces item, shelf and
+  result. Under them, a table of what is different and which wall made
+  the difference.
+- Recorded as C17; module 05 gains the screen and module 00 gains "try
+  what it built"; canvas source refreshed; committed.

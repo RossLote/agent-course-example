@@ -163,6 +163,16 @@ Nothing else leaves the course.
   2026-10-15: the home page had too much on it, and explaining "two things at once"
   confused; a role-playing frame lets the learner enter a frame of mind and see every
   screen from inside it.
+- **C17 The fridge activity is real.** The course contains a working drag-and-drop fridge
+  activity, one engine component driven by data, shown twice: the one-shot version (five
+  shelves, guessed rules, no reasons, a timer, a leaderboard, confetti) in module 00 as
+  "try what it built" and again in module 05 beside the version the learner accepted (four
+  shelves, the client's rules, reasons, right-first-time score, keyboard and screen reader),
+  with a table of the differences and the wall that made each. Both keyboard-operable,
+  because the course must be, and the one-shot says so. It is built by the workflow as part
+  of the course, so the course carries its own proof that a bespoke interaction comes out of
+  it. Reason: Ross, 2026-10-15: seeing the two next to each other is the payoff, and it is
+  what the LXDs are meant to see is possible.
 
 ## 10. Open for the brief
 
@@ -183,7 +193,7 @@ Nothing else leaves the course.
 | 02 | [Define done before you start](modules/02-define-done-first.md) | done | 7 |
 | 03 | [The box](modules/03-the-box.md) | the gate | 6 |
 | 04 | [Agents checking agents](modules/04-agents-checking-agents.md) | other agents | 9 |
-| 05 | [Judging what comes back](modules/05-judging-what-comes-back.md) | evidence | 6 |
+| 05 | [Judging what comes back](modules/05-judging-what-comes-back.md) | evidence | 8 |
 | 06 | [Round again](modules/06-round-again.md) | the arrow round the box | 6 |
 | 07 | [Put it together](modules/07-put-it-together.md) | all of them | 6 |
 

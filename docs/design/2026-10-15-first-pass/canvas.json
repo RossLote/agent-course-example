@@ -13,9 +13,10 @@
     "M03-Box.dc.html": {"x": 1520, "y": 1200, "w": 1440, "h": 1080, "title": "03 · Build the box", "expand": "fill", "is_interactive": true},
     "M04-Skeptic.dc.html": {"x": 3040, "y": 1200, "w": 1440, "h": 1080, "title": "04 · You are the skeptic", "expand": "fill", "is_interactive": true},
     "M05-PR.dc.html": {"x": 4560, "y": 1200, "w": 1440, "h": 1080, "title": "05 · Merge or not", "expand": "fill", "is_interactive": true},
-    "M06-Retro.dc.html": {"x": 0, "y": 2400, "w": 1440, "h": 1080, "title": "06 · The check that missed", "expand": "fill", "is_interactive": true},
-    "M07-Capstone.dc.html": {"x": 1520, "y": 2400, "w": 1440, "h": 1080, "title": "07 · Name the wall", "expand": "fill", "is_interactive": true},
-    "Check.dc.html": {"x": 3040, "y": 2400, "w": 1440, "h": 1000, "title": "Check and takeaway (every module)", "expand": "fill", "is_interactive": true}
+    "M05-TwoFridges.dc.html": {"x": 0, "y": 2400, "w": 1440, "h": 1200, "title": "05 · The two fridges (playable)", "expand": "fill", "is_interactive": true},
+    "M06-Retro.dc.html": {"x": 1520, "y": 2400, "w": 1440, "h": 1080, "title": "06 · The check that missed", "expand": "fill", "is_interactive": true},
+    "M07-Capstone.dc.html": {"x": 3040, "y": 2400, "w": 1440, "h": 1080, "title": "07 · Name the wall", "expand": "fill", "is_interactive": true},
+    "Check.dc.html": {"x": 4560, "y": 2400, "w": 1440, "h": 1000, "title": "Check and takeaway (every module)", "expand": "fill", "is_interactive": true}
   },
   "order": [
     "Main.dc.html",
@@ -26,6 +27,7 @@
     "M03-Box.dc.html",
     "M04-Skeptic.dc.html",
     "M05-PR.dc.html",
+    "M05-TwoFridges.dc.html",
     "M06-Retro.dc.html",
     "M07-Capstone.dc.html",
     "Check.dc.html"

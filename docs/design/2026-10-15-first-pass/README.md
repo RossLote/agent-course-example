@@ -9,7 +9,7 @@ leaves a real artefact in the repo. The live link is the thing to look at; these
 what it is made of.
 
 The pass shows the storyboard in `docs/course/` as a designed course, so Ross can judge the
-content in context. Eleven artboards at 1440 wide, laid out as pages (they fill the window and
+content in context. Twelve artboards at 1440 wide, laid out as pages (they fill the window and
 scroll), every one with working controls (Play): `Main` (the scenario, added after Ross's first look:
 your role, the client's message asking for the fridge activity, what your job is, and
 "Take the job"), `Home` (the course home: the thesis, the open box, the eight modules), then the key screen of each module: `M00`
@@ -18,7 +18,10 @@ questions as chips, the decisions filling in on the right, "your defaults"), `M0
 beads, the demo script, and "pick the acceptance a reviewer can check"), `M03` ("build the
 box", which draws the walls as they are ticked, and the loose-against-boxed replay), `M04`
 (one finding's journey, with the learner as the skeptic), `M05` (the pull request condensed,
-merge or not), `M06` (the check that missed, and "what would you change"), `M07` (name the
+merge or not), `M05-TwoFridges` (both fridge activities playable side by side, click to
+pick and click to place standing in for drag and drop, with the sixty-second timer running
+on the one-shot and the reasons and score on the accepted one, and a table of the
+differences and the wall that made each), `M06` (the check that missed, and "what would you change"), `M07` (name the
 wall, scored, with the box complete and the retro ring), and `Check` (the check-question and
 takeaway shape every module ends on, with the box gaining its wall). Prototype links join
 them in course order.
