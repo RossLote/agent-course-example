@@ -57,13 +57,13 @@ export function moduleCompleted(course: StatementCourse, launch: Launch | null, 
  * whether it was right, and the score (1 of 1 for a check, n of the cards or rows otherwise).
  */
 export function answered(course: StatementCourse, launch: Launch | null, module: Module, screen: Screen, event: AnsweredEvent): Statement {
-  const result: Result = { response: event.response, success: event.right, score: resultScore(event.score) };
+  const result: Result = { response: plainText(event.response), success: event.right, score: resultScore(event.score) };
   return statement(course, launch, VERBS.answered, screenActivity(course, module, screen), childContext(course, launch), result);
 }
 
 /** `interacted` on an unscored interaction, one per option picked: the option in words. */
 export function interacted(course: StatementCourse, launch: Launch | null, module: Module, screen: Screen, event: InteractedEvent): Statement {
-  return statement(course, launch, VERBS.interacted, screenActivity(course, module, screen), childContext(course, launch), { response: event.response });
+  return statement(course, launch, VERBS.interacted, screenActivity(course, module, screen), childContext(course, launch), { response: plainText(event.response) });
 }
 
 /** `completed` on a fridge, one per play when it ends, with the play's score. */
@@ -127,7 +127,7 @@ function statement(course: StatementCourse, launch: Launch | null, verb: Stateme
 }
 
 function activity(id: string, name: string, type: string): Activity {
-  return { objectType: 'Activity', id, definition: { type, name: { 'en-US': name } } };
+  return { objectType: 'Activity', id, definition: { type, name: { 'en-US': plainText(name) } } };
 }
 
 /** A screen's own activity: its D24 id, its heading, and the interaction type its screen type is. */
@@ -139,10 +139,21 @@ function screenActivity(course: StatementCourse, module: Module, screen: Screen)
     id: activityId(course, path),
     definition: {
       type: ACTIVITY_TYPES.interaction,
-      name: { 'en-US': screen.heading },
+      name: { 'en-US': plainText(screen.heading) },
       interactionType: screen.type === 'match' ? 'matching' : screen.type === 'order' ? 'sequencing' : 'choice',
     },
   };
+}
+
+// `**bold**` or `*italic*`: the only markup copy has, matched as the screens' Copy matches it.
+const EMPHASIS = /\*\*(.+?)\*\*|\*(.+?)\*/g;
+
+/**
+ * Copy as plain text, for a response or an activity's name: the words of `**bold**` and
+ * `*italic*` without their markers; a lone asterisk stays.
+ */
+export function plainText(text: string): string {
+  return text.replace(EMPHASIS, (_, bold: string | undefined, italic: string | undefined) => plainText(bold ?? italic ?? ''));
 }
 
 /**

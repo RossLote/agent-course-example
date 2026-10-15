@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { course, type Module, type Screen } from '../content/index.ts';
+import { course, type Module, type Screen, type ScreenOf } from '../content/index.ts';
 import { ACTOR_JSON, LAUNCH_ACTIVITY_ID, REGISTRATION, sparkLaunch } from './fixtures.ts';
 import {
   ACTIVITY_TYPES,
@@ -9,6 +9,7 @@ import {
   initialized,
   interacted,
   moduleCompleted,
+  plainText,
   previewActor,
   resultScore,
   screenStatement,
@@ -192,5 +193,29 @@ describe('resultScore', () => {
   it('stretches min and max to hold a points score outside 0 to max, and keeps scaled within -1 to 1', () => {
     expect(resultScore({ raw: -150, max: 100 })).toEqual({ raw: -150, min: -150, max: 100, scaled: -1 });
     expect(resultScore({ raw: 0, max: 0 })).toEqual({ raw: 0, min: 0, max: 0, scaled: 0 });
+  });
+});
+
+describe('plain text', () => {
+  it('drops the emphasis markers and keeps the words; a lone asterisk stays', () => {
+    expect(plainText('**Two-way door.** Reverting is *safe*.')).toBe('Two-way door. Reverting is safe.');
+    expect(plainText('**bold with *italic* inside**')).toBe('bold with italic inside');
+    expect(plainText('5 * 3 is 15')).toBe('5 * 3 is 15');
+    expect(plainText('No markup.')).toBe('No markup.');
+  });
+
+  it('in every response and every activity name', () => {
+    const screen: ScreenOf<'choose'> = { type: 'choose', slug: 'check-1', scored: true, mode: 'single', heading: 'A **bold** heading', options: [] };
+    const event = { type: 'answered', slug: 'check-1', right: true, score: { raw: 1, max: 1 }, response: 'two drops *of the same item*', answer: 1 } as const;
+    const said = answered(course, null, check1.module, screen, event);
+    expect(said.result?.response).toBe('two drops of the same item');
+    expect(said.object).toMatchObject({ definition: { name: { 'en-US': 'A bold heading' } } });
+    const picked = interacted(course, null, chat.module, chat.screen, { type: 'interacted', slug: 'just-ask', response: '**Yes**', answer: 0 });
+    expect(picked.result).toEqual({ response: 'Yes' });
+    expect(moduleCompleted(course, null, { slug: '00', title: '*The* request' }).object).toMatchObject({ definition: { name: { 'en-US': 'The request' } } });
+    const fridges = { ...course.fridges, 'one-shot': { ...course.fridges['one-shot'], title: '**Build** me a fridge' } };
+    expect(fridgeCompleted({ ...course, fridges }, null, 'one-shot', { raw: 0, max: 1 }).object).toMatchObject({
+      definition: { name: { 'en-US': 'Build me a fridge' } },
+    });
   });
 });
