@@ -6,32 +6,44 @@
 (guesses the gaps, builds more than asked, marks its own homework) and say in a sentence why
 checking matters more than the prompt.
 
-## Screen 1 · Welcome: what you are doing here
+## Screen 1 · The scenario
 
-Less on the screen than anywhere else in the course. Added after Ross's first look at the
-design (2026-10-15): two things are on screen at once throughout, working with an agent and
-the thing the agent builds, and the learner has to be told which is which before anything
-else.
+Less on the screen than anywhere else in the course. Added after Ross's first two looks at
+the design (2026-10-15): the learner has to know what they are doing before anything else,
+and an explanation of "two things at once" confused rather than helped. So the course opens
+as a role-playing scenario, and the learner enters it as a character.
 
-Heading: *This course is about working with an AI agent. To show it, we follow one job from
-start to finish.* Under it: *Two things are on screen at once, so here they are, apart.*
+Role chip: *Your role: learning designer.*
 
-Three roles in a row, drawn apart, with an arrow between each:
+Heading: *A client wants something the authoring tool can't do. You have an AI agent. You've
+never used one for this.*
 
-- **You.** You answer the agent's questions, decide what done means, set up the checks, and
-  judge what comes back. That is the work this course teaches.
-- **The agent**, drawn inside a dashed box. A scripted one, nothing real. It does the
-  building, inside a box you put round it. It will also, at times, guess, over-build and mark
-  its own homework, so you can see it happen.
-- **The fridge activity.** The job we follow: a drag-and-drop activity for a client's
-  food-hygiene course, built in code because the authoring tool can't do it. It is only the
-  example. You never build it yourself.
+The client's message, as a memo card (From: the client · Monday, 9:05 · Subject: One more
+thing for the food-hygiene course):
 
-Three lines under them: the subject is the agent; the fridge is the example, picked up by
-every module where the last one left it; you do your part at each step, then a check, then
-one takeaway. Eight modules, about 50 minutes, leave after any and come back.
+> Loved the draft. One more thing before sign-off: can we have a fridge activity? Learners
+> drag food onto the right shelf of a fridge (raw meat at the bottom, that sort of thing)
+> and get told why when they get it wrong. Our kitchen staff do this on induction, usually
+> on the tablet in the staff room. Does the tool do that? If not, what would it take?
 
-One button: **Continue**. Nothing else on the page.
+Three numbered lines:
+
+1. **The tool doesn't do it.** Its drag-and-drop can't do shelves with rules and feedback.
+   The bespoke team would build it in code, and they're booked for a month.
+2. **You have an agent that writes code.** Your job is not to build the activity. It is to
+   get something out of the agent that you would put in front of this client: answer its
+   questions, decide what done means, put checks round it, judge what comes back.
+3. **The agent in this course is scripted, nothing real.** It behaves as real ones do: fast,
+   confident, helpful, and happy to fill a gap with a guess. You will see it go wrong, and
+   you will learn the walls that stop it.
+
+One button: **Take the job.** Under it: eight short modules, about 50 minutes; leave after
+any one and come back, the job waits.
+
+The frame carries through the course: every module's first screen is the next scene of the
+job (the agent's first reply, the brief, the epic on the table, the builder about to start,
+the build gone green, the pull request waiting at two in the morning, the client trying it,
+the client's next request), written to the learner in character.
 
 ## Screen 2 · Opening
 

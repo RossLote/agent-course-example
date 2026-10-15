@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Welcome: what you are doing here</title>
+<title>The scenario</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -14,7 +14,7 @@ body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegibl
 a{color:#2F4BD6}a:hover{color:#1F37A8}
 h1,h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
 p{margin:0}
-.wrap{width:100%;max-width:960px;margin:0 auto;padding:48px 24px;box-sizing:border-box}
+.wrap{width:100%;max-width:880px;margin:0 auto;padding:48px 24px;box-sizing:border-box}
 .topbar{display:flex;align-items:center;gap:20px;padding:14px 24px;background:#fff;border-bottom:1px solid #D9DEE3;flex-wrap:wrap}
 .brand{font-family:Manrope,system-ui,sans-serif;font-weight:800;font-size:15px;text-decoration:none;color:#172029;letter-spacing:0.02em;text-transform:uppercase}
 .muted{color:#5B6672}
@@ -22,59 +22,46 @@ p{margin:0}
 .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#2F4BD6}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 24px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box}
 .btn.primary{background:#2F4BD6;color:#fff;font-size:18px}.btn.primary:hover{background:#1F37A8;color:#fff}
-.role{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
-.rolebox{width:100%;min-height:96px;border-radius:12px;background:#fff;border:2px solid #D9DEE3;display:flex;align-items:center;justify-content:center;padding:14px;box-sizing:border-box;font-family:Manrope,sans-serif;font-weight:700;font-size:18px}
-.rolebox.you{border-color:#B45309;color:#B45309}
-.rolebox.agent{border-color:#0E7C86;color:#0E7C86}
-.rolebox.thing{border-color:#172029}
-.arrow{display:flex;align-items:center;color:#AEB6BF;padding-top:30px;flex-shrink:0}
-.part{display:flex;gap:18px;align-items:flex-start}
-.part .n{font-family:'JetBrains Mono',monospace;font-size:13px;color:#2F4BD6;font-weight:600;padding-top:5px;width:24px;flex-shrink:0}
+.role{display:inline-flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;border-radius:999px;background:#fff;border:1px solid #D9DEE3;font-weight:700;font-size:15px}
+.role .dot{width:28px;height:28px;border-radius:50%;background:#B45309;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-size:13px;font-weight:800}
+.memo{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:0;overflow:hidden}
+.memo .head{display:flex;gap:16px;flex-wrap:wrap;padding:14px 22px;border-bottom:1px solid #D9DEE3;background:#F8F9FB;font-size:14px;color:#5B6672}
+.memo .head strong{color:#172029}
+.memo .body{padding:22px;display:flex;flex-direction:column;gap:12px;font-size:18px;line-height:1.55}
+.job{display:flex;gap:16px;align-items:flex-start}
+.job .n{font-family:'JetBrains Mono',monospace;font-size:13px;color:#2F4BD6;font-weight:600;padding-top:5px;width:24px;flex-shrink:0}
 </style>
 </helmet>
 <div style="min-height:1080px;display:flex;flex-direction:column;background:#F3F5F7">
   <header class="topbar">
     <a class="brand" href="Home.dc.html">Getting the most out of agents</a>
     <span style="flex-grow:1"></span>
-    <span class="muted small">Before you start</span>
+    <span class="muted small">The scenario</span>
   </header>
 
-  <main class="wrap" style="display:flex;flex-direction:column;gap:40px;flex-grow:1;justify-content:center">
+  <main class="wrap" style="display:flex;flex-direction:column;gap:32px;flex-grow:1;justify-content:center">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <span class="role"><span class="dot" aria-hidden="true">You</span>Your role: learning designer</span>
+      <h1 style="font-size:40px;font-weight:800">A client wants something the authoring tool can't do. You have an AI agent. You've never used one for this.</h1>
+    </div>
+
+    <div class="memo">
+      <div class="head"><span>From: <strong>the client</strong></span><span>Monday, 9:05</span><span>Subject: <strong>One more thing for the food-hygiene course</strong></span></div>
+      <div class="body">
+        <p>Loved the draft. One more thing before sign-off: can we have a fridge activity? Learners drag food onto the right shelf of a fridge (raw meat at the bottom, that sort of thing) and get told why when they get it wrong. Our kitchen staff do this on induction, usually on the tablet in the staff room.</p>
+        <p>Does the tool do that? If not, what would it take?</p>
+      </div>
+    </div>
+
     <div style="display:flex;flex-direction:column;gap:14px">
-      <p class="eyebrow">What you are doing here</p>
-      <h1 style="font-size:40px;font-weight:800">This course is about working with an AI agent. To show it, we follow one job from start to finish.</h1>
-      <p style="font-size:19px;color:#5B6672;max-width:720px">Two things are on screen at once, so here they are, apart.</p>
-    </div>
-
-    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
-      <div class="role">
-        <div class="rolebox you">You</div>
-        <p class="small">You answer the agent's questions, decide what done means, set up the checks, and judge what comes back. That is the work this course teaches.</p>
-      </div>
-      <div class="arrow" aria-hidden="true"><svg width="36" height="24" viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 12h30M24 4l8 8-8 8"></path></svg></div>
-      <div class="role">
-        <div style="position:relative;width:100%">
-          <div class="rolebox agent">The agent</div>
-          <div style="position:absolute;left:-10px;top:-10px;right:-10px;bottom:-10px;border:2px dashed #AEB6BF;border-radius:16px;pointer-events:none"></div>
-        </div>
-        <p class="small">A scripted one, nothing real. It does the building, inside a box you put round it. It will also, at times, guess, over-build and mark its own homework, so you can see it happen.</p>
-      </div>
-      <div class="arrow" aria-hidden="true"><svg width="36" height="24" viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 12h30M24 4l8 8-8 8"></path></svg></div>
-      <div class="role">
-        <div class="rolebox thing">The fridge activity</div>
-        <p class="small">The job we follow: a drag-and-drop activity for a client's food-hygiene course, built in code because the authoring tool can't do it. It is only the example. You never build it yourself.</p>
-      </div>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:14px;max-width:760px">
-      <div class="part"><span class="n">01</span><p><strong>The subject is the agent.</strong> What works and what doesn't when you ask one to build something, and the walls that keep it honest: things written down, done defined, tests that must pass, other agents checking its work, evidence you can judge.</p></div>
-      <div class="part"><span class="n">02</span><p><strong>The fridge is the example.</strong> Every module picks the job up where the last one left it, from a vague ask in module 00 to a finished piece you decide whether to accept in module 05.</p></div>
-      <div class="part"><span class="n">03</span><p><strong>You do your part at each step.</strong> Short interactions with the agent, then a check with feedback, then one takeaway. Eight modules, about 50 minutes. Leave after any module and come back.</p></div>
+      <div class="job"><span class="n">01</span><p><strong>The tool doesn't do it.</strong> Its drag-and-drop can't do shelves with rules and feedback. The bespoke team would build it in code, and they're booked for a month.</p></div>
+      <div class="job"><span class="n">02</span><p><strong>You have an agent that writes code.</strong> Your job is not to build the activity. It is to get something out of the agent that you would put in front of this client: answer its questions, decide what done means, put checks round it, judge what comes back.</p></div>
+      <div class="job"><span class="n">03</span><p><strong>The agent in this course is scripted, nothing real.</strong> It behaves as real ones do: fast, confident, helpful, and happy to fill a gap with a guess. You will see it go wrong, and you will learn the walls that stop it.</p></div>
     </div>
 
     <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-      <a class="btn primary" href="Home.dc.html">Continue</a>
-      <span class="muted small">Next: the one thing to remember, and the eight modules.</span>
+      <a class="btn primary" href="Home.dc.html">Take the job</a>
+      <span class="muted small">Eight short modules, about 50 minutes. Leave after any one and come back; the job waits.</span>
     </div>
   </main>
 </div>

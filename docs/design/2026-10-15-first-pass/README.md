@@ -10,9 +10,9 @@ what it is made of.
 
 The pass shows the storyboard in `docs/course/` as a designed course, so Ross can judge the
 content in context. Eleven artboards at 1440 wide, laid out as pages (they fill the window and
-scroll), every one with working controls (Play): `Main` (the welcome page, added after Ross's first
-look: what the course is about, the fridge as the example, what the learner does, and a
-Continue), `Home` (the course home: the thesis, the open box, the eight modules), then the key screen of each module: `M00`
+scroll), every one with working controls (Play): `Main` (the scenario, added after Ross's first look:
+your role, the client's message asking for the fridge activity, what your job is, and
+"Take the job"), `Home` (the course home: the thesis, the open box, the eight modules), then the key screen of each module: `M00`
 (the vague ask to the fake agent and "tick what went wrong"), `M01` (the fridge brief: ranked
 questions as chips, the decisions filling in on the right, "your defaults"), `M02` (the five
 beads, the demo script, and "pick the acceptance a reviewer can check"), `M03` ("build the
@@ -34,6 +34,8 @@ retro as a dashed ring round the whole thing.
 
 Corrected the same day after Ross's first reaction: the home page opened on too much at
 once, and the fact that two things are going on (working with an agent, and the thing the
-agent builds) was explained only at the bottom. A welcome page now comes first, with the
-three roles drawn apart (you, the agent in its box, the fridge activity) and nothing else,
-and the home page lost the example card. The live canvas and these files both carry it.
+agent builds) was explained only at the bottom. A first version of the welcome page explained the two
+things apart (you, the agent in its box, the fridge activity); Ross found that explanation
+confusing too, and asked for a role-playing frame instead, so the page is now the scenario:
+you are a learning designer, here is the client's message, here is your job, take it. The
+home page lost the example card. The live canvas and these files both carry it.

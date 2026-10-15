@@ -81,7 +81,7 @@ teaches:
 The box diagram is the course's through-line: an open box in module 00, a wall added in each
 of 01 to 05 (the record, done, the gate, other agents, evidence), and the retro drawn as the
 arrow that goes round it in 06. Module 07 shows the whole thing and asks the learner to
-build it for a new request. Module 00 opens with the welcome screen (C16) before any of this.
+build it for a new request. Module 00 opens with the scenario (C16) before any of this.
 
 ## 6. The fake agent
 
@@ -155,10 +155,14 @@ Nothing else leaves the course.
   WCAG 2.2 AA. Reason: the course teaches it, and the LMS audience expects it.
 - **C15 Statements.** §8. Reason: the smallest set that lets a designer see completion,
   score and where learners wandered.
-- **C16 A welcome screen first.** Before the course home, one calm screen that separates the
-  subject (working with an agent) from the example (the fridge activity) and says what the
-  learner does, with a single Continue. Reason: Ross's first look at the design, 2026-10-15:
-  the home page had too much on it and the two things on screen at once collided.
+- **C16 The course opens as a scenario.** Before the course home, one calm screen puts the
+  learner in a role: you are a learning designer, here is the client's message asking for
+  the fridge activity, the tool can't do it, you have an agent, your job is to get something
+  you would put in front of the client. One button, "Take the job". Every module's first
+  screen is then the next scene of that job. Reason: Ross's first two looks at the design,
+  2026-10-15: the home page had too much on it, and explaining "two things at once"
+  confused; a role-playing frame lets the learner enter a frame of mind and see every
+  screen from inside it.
 
 ## 10. Open for the brief
 

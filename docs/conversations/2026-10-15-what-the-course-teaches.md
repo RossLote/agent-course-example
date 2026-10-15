@@ -208,3 +208,25 @@ set it up; it comes before the brief.
 - Recorded as C16 in the course README; module 00's storyboard gains the
   welcome as its first screen; the design README notes the correction;
   the canvas source in the repo is refreshed.
+
+## Ross: frame it as a role-playing game
+
+- Rather than saying two things are on screen at once, which is confusing
+  again, frame the whole thing like a role-playing game: you are an LXD,
+  you're using AI to build a module from scratch, here is the scenario.
+  They can then enter a frame of mind and view it from that perspective.
+
+## Agent: the scenario page
+
+- The entry is now the scenario. A role chip, "Your role: learning
+  designer"; the heading "A client wants something the authoring tool
+  can't do. You have an AI agent. You've never used one for this"; the
+  client's message as a memo card asking for the fridge activity for
+  kitchen staff on induction; three lines (the tool doesn't do it and the
+  bespoke team is booked for a month; you have an agent that writes code
+  and your job is to get something you'd put in front of the client; the
+  agent here is scripted and behaves as real ones do); and one button,
+  "Take the job". The "two things at once" explanation is gone.
+- The frame carries through: every module's first screen is the next
+  scene of the job, in character. Recorded as C16, in module 00's
+  storyboard, and in the design README; canvas source refreshed.
