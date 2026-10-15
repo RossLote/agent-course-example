@@ -390,7 +390,8 @@ bead, except where a rule here replaces one.
 - **The brief, one round at a time.** The learner's opening message stays; the current round
   shows alone under it with a "Send answers" button, off until every question in the round
   has an answer, with the hint "Answer every question, then send." beside it; the last round
-  keeps Your defaults beside Send answers. Send answers or Your defaults fades the round out
+  keeps Your defaults beside Send answers until every question in it is answered (as round
+  one hid it). Send answers or Your defaults fades the round out
   and puts one learner line in its place ("My answers to 1 to 5.", "My answers to 6 to 8.",
   or the defaults reply from the YAML); then the agent shows a spinner and "Thinking…" for
   about 1.5 seconds, and the next round's message and questions arrive in the same place,
@@ -401,11 +402,12 @@ bead, except where a rule here replaces one.
   it is Ross's real workflow (answer a batch, press Enter, the agent thinks and comes back),
   and he did not see round two appear below round one.
 - **The brief's statements and resume.** The brief's statements are unchanged (interacted per
-  chip pick, three for Your defaults); Send answers sends nothing. Its saved answer also
-  records which rounds were sent: a resumed brief opens on the first unsent round with its
-  picks and no Thinking; a fully sent brief opens closed; a saved answer from round one,
-  which has no record of sending, counts a round as sent when every question in it is
-  answered. Module 01's brief intro reads "…pick it or pick differently, then send your
+  chip pick, three for Your defaults); Send answers sends nothing. Its saved answer stays
+  round one's (the picks and whether Your defaults was pressed), and a resumed brief counts
+  a round as sent once every question in it is answered: it opens on the first round with a
+  question unanswered, with its picks and no Thinking, or closed once every question is
+  answered (chosen on 2026-10-15 over recording each Send, because the frame saves an answer
+  only with a statement and Send answers sends none). Module 01's brief intro reads "…pick it or pick differently, then send your
   answers. Every answer becomes a decision on the right." *Reason:* sending is the learner's
   Enter, not a choice a designer reads, and a learner who comes back finds the brief where
   they left it.

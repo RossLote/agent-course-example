@@ -31,12 +31,87 @@
   border-top: 1px solid var(--agent-line);
 }
 
-.brief-defaults {
+/* A turn that arrives is scrolled to with room above it, so its top is in view. */
+.brief-chat .chat-msg {
+  scroll-margin-top: 24px;
+}
+
+/* Under the round's questions: Send answers (off until every question is answered), Your
+   defaults on the last round, and the hint. */
+.brief-send {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 14px;
-  margin-top: 14px;
+  gap: 8px 12px;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--agent-line);
+}
+
+/* Off: still focusable, so its hint is read out, but plainly off. */
+.brief-send .btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.brief-send .btn-primary[aria-disabled='true']:hover {
+  background: var(--accent);
+}
+
+/* The agent thinking over the answers: a spinner and the word. */
+.brief-thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--agent);
+  font-weight: 700;
+}
+
+.brief-spinner {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--agent-line);
+  border-top-color: var(--agent);
+  border-radius: 50%;
+  animation: brief-spin 2.4s linear infinite;
+}
+
+@keyframes brief-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes brief-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* A sent round fades out; each new turn after the opening, and the comparison card, comes in.
+   No fade under reduced motion, and the spinner turns slowly. */
+@media (prefers-reduced-motion: no-preference) {
+  .brief-spinner {
+    animation-duration: 0.8s;
+  }
+
+  .brief-chat .chat-msg:not(:first-child) {
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease;
+    animation: brief-arrive 0.45s ease backwards;
+  }
+
+  .brief-comparison {
+    animation: brief-arrive 0.45s ease backwards;
+  }
+
+  .brief-chat[data-phase='leaving'] .chat-msg[data-who='agent'] {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
 
 .brief-panel {
