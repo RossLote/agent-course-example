@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The one-shot timer's three states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+p{margin:0}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.when{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:#5B6672}
+.card{background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border-radius:999px;background:#172029;color:#fff;font-family:'JetBrains Mono',monospace;font-size:15px}
+.chip.timer{font-size:17px;font-weight:600;min-width:84px;justify-content:center}
+.chip.urgent{background:#B42318;box-shadow:0 0 0 6px rgba(180,35,24,0.18)}
+.mini{border:3px solid #AEB6BF;border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:6px;background:#F3F5F7}
+.mini.urgent{border-color:#B42318}
+.mini span{display:block;height:26px;border-radius:7px;background:#fff}
+.over{border-radius:10px;padding:12px 14px;background:#FBEDEB;border:2px solid #B42318}
+.beeps{display:flex;gap:6px;align-items:flex-end;height:28px}
+.beeps i{display:block;width:10px;border-radius:3px;background:#B42318}
+</style>
+</helmet>
+<div style="width:100%;min-height:560px;box-sizing:border-box;padding:40px 80px;display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:24px;align-content:start;background:#F3F5F7">
+  <div class="card">
+    <p class="when">0:15 to 0:06</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="chip">3 of 14 placed</span>
+      <span class="chip">score 250</span>
+      <span class="chip timer" role="timer" aria-label="12 seconds left">0:12</span>
+    </div>
+    <div class="mini" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+    <p class="small muted">Starts at the first pick-up. No way to turn it off.</p>
+  </div>
+
+  <div class="card">
+    <p class="when">0:05 to 0:01</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="chip">4 of 14 placed</span>
+      <span class="chip">score 300</span>
+      <span class="chip timer urgent" role="timer" aria-label="4 seconds left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 6a8.5 8.5 0 0 1 0 12"></path></svg>0:04</span>
+    </div>
+    <div class="mini urgent" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="beeps" aria-hidden="true"><i style="height:12px"></i><i style="height:12px"></i><i style="height:12px"></i><i style="height:12px"></i><i style="height:28px"></i></div>
+      <p class="small muted">A short high beep each second, a long low one at zero. The chip pulses; the fridge goes red.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="when">0:00</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="chip">4 of 14 placed</span>
+      <span class="chip">score 300</span>
+      <span class="chip timer" style="background:#B42318" role="timer" aria-label="No time left">0:00</span>
+    </div>
+    <div class="over">
+      <p><strong>Time's up!</strong> Better luck next time. You placed 4 of 14.</p>
+    </div>
+    <p class="small muted">The tray goes; Reset starts a new play. Next is open, so the learner moves on.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":560}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

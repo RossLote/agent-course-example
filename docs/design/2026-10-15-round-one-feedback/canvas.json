@@ -1,0 +1,38 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-15T17:20:00Z"},
+  "title": "Agent course: round one feedback",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 1080, "title": "1a · Home: a Done badge and a green border (recommended)", "expand": "fill"},
+    "Home-Fill.dc.html": {"x": 1520, "y": 0, "w": 1440, "h": 600, "title": "1b · Home: the done card filled green"},
+    "Home-Corner.dc.html": {"x": 3040, "y": 0, "w": 1440, "h": 600, "title": "1c · Home: a tick in the corner"},
+    "Tick-AllRight.dc.html": {"x": 0, "y": 1500, "w": 1440, "h": 1000, "title": "2a · Tick everything: all five right", "expand": "fill", "is_interactive": true},
+    "Tick-Mixed.dc.html": {"x": 1520, "y": 1500, "w": 1440, "h": 1000, "title": "2b · Tick everything: one wrong tick, one missed", "expand": "fill", "is_interactive": true},
+    "Fridge-15s.dc.html": {"x": 0, "y": 2920, "w": 1440, "h": 1000, "title": "3a · The one-shot, playable: fifteen seconds", "expand": "fill", "is_interactive": true},
+    "Fridge-Timer.dc.html": {"x": 1520, "y": 2920, "w": 1440, "h": 560, "title": "3b · The timer: running, the last five seconds, time's up"},
+    "BriefSteps.dc.html": {"x": 0, "y": 4340, "w": 1440, "h": 820, "title": "4 · How a brief goes: three, then two centred", "expand": "fill"},
+    "Brief-Rounds.dc.html": {"x": 0, "y": 5580, "w": 1440, "h": 1080, "title": "5a · The brief, playable: one round at a time", "expand": "fill", "is_interactive": true},
+    "Brief-Storyboard.dc.html": {"x": 1520, "y": 5580, "w": 1440, "h": 900, "title": "5b · The brief in four beats"}
+  },
+  "order": [
+    "Main.dc.html",
+    "Home-Fill.dc.html",
+    "Home-Corner.dc.html",
+    "Tick-AllRight.dc.html",
+    "Tick-Mixed.dc.html",
+    "Fridge-15s.dc.html",
+    "Fridge-Timer.dc.html",
+    "BriefSteps.dc.html",
+    "Brief-Rounds.dc.html",
+    "Brief-Storyboard.dc.html"
+  ],
+  "notes": {
+    "t1": {"x": 0, "y": -300, "text": "1 · Done at a glance on the home page", "kind": "title1", "maxW": 4480},
+    "t2": {"x": 0, "y": 1200, "text": "2 · Feedback on what you chose, not on the option", "kind": "title1", "maxW": 2960},
+    "t3": {"x": 0, "y": 2620, "text": "3 · The one-shot: fifteen seconds, no way out", "kind": "title1", "maxW": 2960},
+    "t5": {"x": 0, "y": 5280, "text": "5 · The brief, one round at a time", "kind": "title1", "maxW": 2960}
+  },
+  "designSystems": []
+}

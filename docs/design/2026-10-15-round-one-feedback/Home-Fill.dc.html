@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Module cards: the done card filled</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;background:#F3F5F7;color:#172029;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:17px;line-height:1.5}
+a{color:#2F4BD6}a:hover{color:#1F37A8}
+h2,h3{font-family:Manrope,system-ui,sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+.muted{color:#5B6672}
+.small{font-size:14px}
+.mod{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#172029;background:#fff;border:1px solid #D9DEE3;border-radius:12px;padding:18px 20px;min-height:170px;box-sizing:border-box}
+.mod:hover{border-color:#2F4BD6;color:#172029}
+.mod.done{background:#EAF6EE;border:2px solid #1B7F4B;padding:17px 19px}
+.mod.done .muted{color:#3D5247}
+.mod .num{font-family:'JetBrains Mono',monospace;font-size:13px;color:#5B6672}
+.mod .wall{font-size:14px;color:#2F4BD6;font-weight:700}
+.status{margin-top:auto;padding-top:4px;font-size:15px;font-weight:700;color:#5B6672;display:flex;align-items:center;gap:6px}
+.status.done{color:#145F38}
+.status.going{color:#1F37A8}
+</style>
+</helmet>
+<div style="width:100%;min-height:600px;box-sizing:border-box;padding:40px 160px;display:flex;flex-direction:column;gap:16px;background:#F3F5F7">
+  <h2 style="font-size:24px">The modules</h2>
+  <div style="display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:16px">
+    <a class="mod done" href="#m00"><span class="num">00 · 5 min</span><h3 style="font-size:18px">What works and what doesn't</h3><span class="wall">the open box</span><span class="muted small">A vague ask, and what an agent does with it.</span><span class="status done"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Done</span></a>
+    <a class="mod done" href="#m01"><span class="num">01 · 7 min</span><h3 style="font-size:18px">Write it down</h3><span class="wall">wall 1: the record</span><span class="muted small">The agent asks, you decide, the decisions are on the record.</span><span class="status done"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Done</span></a>
+    <a class="mod" href="#m02"><span class="num">02 · 7 min</span><h3 style="font-size:18px">Define done before you start</h3><span class="wall">wall 2: done</span><span class="muted small">Pieces with acceptance a reviewer can see.</span><span class="status going">In progress</span></a>
+    <a class="mod" href="#m03"><span class="num">03 · 6 min</span><h3 style="font-size:18px">The box</h3><span class="wall">wall 3: the gate</span><span class="muted small">Tests and checks that must be green before done.</span><span class="status">Not started</span></a>
+    <a class="mod" href="#m04"><span class="num">04 · 9 min</span><h3 style="font-size:18px">Agents checking agents</h3><span class="wall">wall 4: other agents</span><span class="muted small">Simplify, review, adversarial review. You play the skeptic.</span><span class="status">Not started</span></a>
+    <a class="mod" href="#m05"><span class="num">05 · 6 min</span><h3 style="font-size:18px">Judging what comes back</h3><span class="wall">wall 5: evidence</span><span class="muted small">Door, undo, walkthrough. Merge or not.</span><span class="status">Not started</span></a>
+    <a class="mod" href="#m06"><span class="num">06 · 6 min</span><h3 style="font-size:18px">Round again</h3><span class="wall">the arrow round the box</span><span class="muted small">A second round, and the check that missed.</span><span class="status">Not started</span></a>
+    <a class="mod" href="#m07"><span class="num">07 · 6 min</span><h3 style="font-size:18px">Put it together</h3><span class="wall">all of them</span><span class="muted small">A new request. Name the wall for each thing that goes wrong.</span><span class="status">Not started</span></a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":600}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
