@@ -194,3 +194,85 @@ builds software. Nothing here changes the round-one epic.
 - Questions back: the first LXD and a real first course; the LMS formats
   clients need in year one; one repo per team or per client; a new repo and
   idea bead now or after Tuesday.
+
+## Ross: entertain phase two, the installable app, in Rust
+
+- Let's entertain phase two: an application an LXD can install. I was
+  thinking of building it in Rust, because I want it small, installable on
+  any system, fast, with a low memory footprint.
+- It is basically a chat window where you can also open files and manage
+  config and media. Creating a course would also create a manifest of the
+  images, video and audio it needs. That manifest drives a UI built per
+  course: a form with a field per asset, "here is the video referenced
+  here, here is the audio", rendered dynamically.
+- A preview button opens a new window, probably a WebView, because then the
+  agent can drive the browser, collect the analytics and errors from it, and
+  run scripts inside it to analyse things.
+- I know we're getting ahead of ourselves; this is one step past the basic
+  thing. I just want to see whether it is feasible.
+
+## Agent: feasible, in Tauri, with three honest caveats
+
+- I checked the Claude Code docs (headless mode, the Agent SDK, setup,
+  authentication, permissions, hooks, MCP, legal) and the Tauri 2 docs
+  (process model, sidecars, WebDriver, the window and webview APIs), and
+  looked for a Rust client for the Chrome DevTools Protocol.
+- Verdict: feasible, and Rust is the right call for the shell. Tauri 2 is
+  the frame: a Rust core process, the OS webview for the UI (WKWebView,
+  WebView2, WebKitGTK), and installers in single-digit megabytes with idle
+  memory in the tens of megabytes, against Electron's hundred-plus. The
+  figures are blog benchmarks, directional only.
+- How each piece would work. Chat: the app spawns the native `claude`
+  binary as a child process in headless mode with streaming JSON in and
+  out, resumes sessions by id, and ends a turn with SIGINT. Dictation is the
+  OS's own, into the chat box, for free. Guardrails come from the CLI
+  itself: an allowed-tools list, a permission-prompt tool so prompts render
+  in the app, PreToolUse hooks with path rules, an appended system prompt
+  for the LXD role, and the restricted mode if needed. Preview: a second
+  Tauri window serving the built course from a tiny local HTTP server that
+  is also the fake record store. An initialization script injected into
+  that window gives the agent a driver (snapshot, click, fill, wait), wraps
+  console and errors, runs an accessibility audit, and in review mode turns
+  a click on an element into a note carrying the component and config path
+  the player tags it with. The app exposes all of that to the agent as an
+  MCP server over HTTP, which the CLI connects to by config. Media: course
+  creation writes a media manifest (id, kind, where used, requirements,
+  status, source, hash); the app renders a form from it, a field per asset
+  with a drop zone; a drop hashes, uploads to the bucket and writes the
+  reference back. Git and GitHub: the app does the git work itself with
+  the git2 crate and a GitHub App device-flow login, and the agent asks for
+  commits and pull requests through the same MCP server; the LXD sees Save
+  and Send for review. Publish: validate, copy the prebuilt player and the
+  config and assets, write the manifest XML, zip, all in Rust.
+- A design choice that keeps it small: no Node on the LXD's machine. Kit
+  releases ship a prebuilt player, schemas and component docs from GitHub
+  Releases; component development and the heavy gate (Chromium
+  play-through, unit tests) run in the kit repo's CI on the pull request;
+  the local gate is in the app: schema validation, the accessibility audit
+  in the preview, the statement check, a scripted play.
+- Caveat one: Claude Code is the heavy part. Its minimum is 4 GB of RAM and
+  about 1 GB per session is the documented starting point, whichever shell
+  wraps it. Each LXD authenticates with their own subscription or key; the
+  terms forbid an app collecting or proxying Claude.ai credentials or
+  offering its login inside the app, and shipping Claude Code in a product
+  means agreeing to the Commercial Terms, binary unmodified, auth intact,
+  no resale. So the app detects the binary, offers to run the official
+  installer, and hands login to `claude auth login` in the browser.
+  Commercial decisions before technical ones.
+- Caveat two: there is no Rust SDK and no local HTTP surface. The documented
+  path for other languages is spawning the binary with the streaming JSON
+  flags; multi-turn over stdin is implied by the docs but the envelope is
+  not fully documented. The fallback is a small Node sidecar running the
+  TypeScript SDK, which costs a bundled runtime of tens of megabytes.
+- Caveat three: the preview is the OS webview, not Chromium, and WebDriver
+  for Tauri on macOS is a dead end because WKWebView has no driver. The
+  injected-script route needs no driver and covers driving, console,
+  statements, audits and click-to-flag; screenshots come from OS window
+  capture since Tauri has no capture API; Chromium conformance lives in CI.
+  For deep debugging the agent can attach to the user's installed Chrome
+  over the DevTools Protocol with the chromiumoxide crate, nothing bundled.
+- The spike to de-risk it: three things in one small repo. A Tauri shell
+  that spawns the CLI and renders a resumable chat; a preview window with
+  the injected driver exposed over MCP, the agent clicking through a sample
+  course and reading console and statements; the media form from a
+  manifest with drop-to-upload. If those three work, the rest is plumbing.
