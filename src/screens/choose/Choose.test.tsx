@@ -1,14 +1,108 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { course } from '../../content/index.ts';
-import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
+import { plainText } from '../../content/copy.ts';
+import { course as realCourse, type Course, type Module, type ScreenOf } from '../../content/index.ts';
+import { fixtureCourse, fixtureModule, fixtureTakeaway, NO_PROGRESS } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { BoxPanel } from './BoxPanel.tsx';
 import { ChooseScreen } from './index.tsx';
 
-// The real modules, as authored.
-function renderChoose(slug: string, choose: string, saved?: SavedAnswer) {
-  const { module, screen: shown } = realScreen(slug, 'choose', choose);
+// Inline chooses, one of each kind the screen draws: tick everything (multi, with cards after),
+// a check (scored), build the box (multi, with the box panel) and a verdict (single, with a body,
+// a fix revealed on the right option and its own button labels).
+const tick: ScreenOf<'choose'> = {
+  type: 'choose',
+  slug: 'what-went-wrong',
+  scored: false,
+  mode: 'multi',
+  heading: 'Tick everything that went wrong here.',
+  options: [
+    { label: 'It built things nobody asked for: the timer, the leaderboard, the confetti.', right: true, feedback: 'Yes. Every gap was filled with a guess.' },
+    { label: 'It invented the rules.', right: true, feedback: 'Yes. It decided what the course teaches.' },
+    { label: 'It checked its own work.', right: true, feedback: 'Yes. The builder marked its own homework.' },
+    { label: 'It should have said no.', right: false, feedback: 'No. The ask left it nothing to build to.' },
+    { label: 'It was too slow.', right: false, feedback: 'No. It was fast.' },
+  ],
+  after: [
+    {
+      type: 'cards',
+      heading: 'What just happened',
+      numbered: true,
+      items: [{ body: 'It filled every gap with a guess.' }, { body: 'It built more than you asked.' }, { body: 'It marked its own homework.' }, { body: 'Here is the part that works.' }],
+    },
+  ],
+};
+
+const check: ScreenOf<'choose'> = {
+  type: 'choose',
+  slug: 'check-1',
+  scored: true,
+  mode: 'single',
+  heading: 'Your agent built a feature you never mentioned. What most likely happened?',
+  options: [
+    { label: 'It misread your message.', right: false, feedback: 'Not usually. It read what you wrote; the feature came from what you did not write.' },
+    { label: 'It filled a gap in your ask with a guess.', right: true, feedback: 'Yes. Gaps get filled, confidently.' },
+    { label: 'It was showing off.', right: false, feedback: 'Agents do not show off; they complete.' },
+  ],
+};
+
+const buildBox: ScreenOf<'choose'> = {
+  type: 'choose',
+  slug: 'build-the-box',
+  scored: false,
+  mode: 'multi',
+  heading: 'Build the box',
+  checkLabel: 'Check my box',
+  options: [
+    { label: 'A unit test that every item has exactly one right shelf and a reason.', right: true, wall: 'gate', feedback: 'Wall.' },
+    { label: 'A line asking it to please be careful and not change anything else.', right: false, feedback: 'Not a wall.' },
+    { label: 'A run through the demo script in a browser, which must pass.', right: true, wall: 'gate', feedback: 'Wall. The touch drag breaking would be caught here.' },
+    { label: 'Its own working area, with the feedback and score files as the only ones it may touch.', right: true, wall: 'area', feedback: 'Wall.' },
+    { label: 'A much longer prompt explaining the whole project so it understands.', right: false, feedback: 'Not a wall.' },
+    { label: '"Done means" in its instructions: the acceptance, the gate green, nothing outside its files.', right: true, wall: 'done', feedback: 'Wall. The finish line.' },
+    { label: "The gate's own output pasted into its report, and anything unconfirmed named.", right: true, wall: 'word', feedback: 'Wall.' },
+  ],
+  box: {
+    builder: { title: 'the builder', subtitle: 'bead .4' },
+    walls: [
+      { id: 'area', label: 'own area, its files only' },
+      { id: 'gate', label: 'the gate: lint, types, tests, a browser run' },
+      { id: 'done', label: 'done, in its instructions' },
+      { id: 'word', label: 'its word not taken' },
+    ],
+    caption: '{up} of {total} walls up. Hope, context and a promise to report are not walls.',
+  },
+};
+
+const verdict: ScreenOf<'choose'> = {
+  type: 'choose',
+  slug: 'verdict',
+  scored: false,
+  mode: 'single',
+  heading: 'You are the skeptic',
+  body: [
+    { type: 'paragraph', heading: 'The finding', text: 'A drop while a message is showing is ignored.' },
+    { type: 'mono', heading: 'A · drop handler, line 41', text: 'if (message.visible) return;' },
+  ],
+  prompt: 'Your verdict?',
+  options: [
+    {
+      label: 'Confirmed, citing A.',
+      right: true,
+      feedback: 'Yes. Line 41 returns before anything happens when a message is showing.',
+      reveal: [{ type: 'paragraph', heading: 'The fix', text: 'The second skeptic also confirmed, citing line 41.' }],
+    },
+    { label: 'Refuted: there is a test for wrong drops (C).', right: false, feedback: 'Not a refutation. The test drops one item; it never exercises this scenario.' },
+    { label: 'Refuted: nobody drops two items within 2.5 seconds.', right: false, feedback: 'Not a refutation.' },
+    { label: 'Uncertain.', right: false, feedback: 'Allowed, and never wrong to say.' },
+  ],
+  checkLabel: 'Check my verdict',
+  tryAgainLabel: 'Try another verdict',
+};
+
+/** Renders a choose: an inline one in a module of its own, or a real one in its module. */
+function renderChoose(shown: ScreenOf<'choose'>, saved?: SavedAnswer, where?: { module: Module; course: Course }) {
+  const { module, course } = where ?? { module: fixtureModule('01', [shown, fixtureTakeaway()]), course: fixtureCourse() };
   const onEvent = vi.fn();
   const { container, unmount } = render(
     <ChooseScreen screen={shown} module={module} course={course} saved={saved} progress={NO_PROGRESS} onEvent={onEvent} />,
@@ -35,9 +129,9 @@ const RIGHT_LEAVE = 'right: Right to leave it';
 const WRONG_TICK = "wrong: Shouldn't be ticked";
 const MISSED = 'wrong: Missed: should be ticked';
 
-describe('ChooseScreen, tick everything (module 00)', () => {
+describe('ChooseScreen, tick everything', () => {
   it('shows the five options unticked, with Check waiting for a tick', () => {
-    const { container, onEvent } = renderChoose('00', 'what-went-wrong');
+    const { container, onEvent } = renderChoose(tick);
     expect(screen.getAllByRole('checkbox').map((c) => (c as HTMLInputElement).checked)).toEqual([false, false, false, false, false]);
     expect(screen.getByRole('group', { name: 'Tick everything that went wrong here.' })).toBeTruthy();
     const check = screen.getByRole('button', { name: 'Check my answer' });
@@ -48,7 +142,7 @@ describe('ChooseScreen, tick everything (module 00)', () => {
   });
 
   it('judges every option right with the three right ones ticked: five green pills, each with its feedback, and the four cards after', () => {
-    const { container, shown } = renderChoose('00', 'what-went-wrong');
+    const { container, shown } = renderChoose(tick);
     fireEvent.click(option(/^It built things nobody asked for/));
     fireEvent.click(option('It invented the rules.'));
     fireEvent.click(option('It checked its own work.'));
@@ -78,7 +172,7 @@ describe('ChooseScreen, tick everything (module 00)', () => {
   });
 
   it('judges what was done with each option: a wrong tick and a missed one go red, and the summary counts both', () => {
-    const { container } = renderChoose('00', 'what-went-wrong');
+    const { container } = renderChoose(tick);
     fireEvent.click(option(/^It built things nobody asked for/));
     fireEvent.click(option('It invented the rules.'));
     fireEvent.click(option('It should have said no.'));
@@ -91,7 +185,7 @@ describe('ChooseScreen, tick everything (module 00)', () => {
   });
 
   it('says the summary in the one live region, there from the start, once per Check', () => {
-    const { container } = renderChoose('00', 'what-went-wrong');
+    const { container } = renderChoose(tick);
     const region = screen.getByRole('status');
     expect(region.textContent).toBe('');
     fireEvent.click(option('It was too slow.'));
@@ -106,7 +200,7 @@ describe('ChooseScreen, tick everything (module 00)', () => {
   });
 
   it('sends one interacted per ticked option on Check, each with the whole pick, and again after Try again', () => {
-    const { shown, onEvent } = renderChoose('00', 'what-went-wrong');
+    const { shown, onEvent } = renderChoose(tick);
     for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box);
     expect(onEvent).not.toHaveBeenCalled();
     press('Check my answer');
@@ -121,7 +215,7 @@ describe('ChooseScreen, tick everything (module 00)', () => {
   });
 
   it('clears the ticks, the verdicts, the feedback, the summary and the cards on Try again', () => {
-    const { container } = renderChoose('00', 'what-went-wrong');
+    const { container } = renderChoose(tick);
     for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box);
     press('Check my answer');
     press('Try again');
@@ -135,40 +229,45 @@ describe('ChooseScreen, tick everything (module 00)', () => {
   });
 });
 
-describe('ChooseScreen, every multi choose judges the same way (modules 00, 02, 03, 06)', () => {
-  const multis: [string, string][] = [
-    ['00', 'what-went-wrong'],
-    ['02', 'write-the-acceptance'],
-    ['03', 'build-the-box'],
-    ['06', 'what-would-you-change'],
+describe('ChooseScreen, every multi choose judges the same way', () => {
+  // The inline ones, and every multi choose the course has, whatever its modules hold.
+  const multis: { name: string; shown: ScreenOf<'choose'>; where?: { module: Module; course: Course } }[] = [
+    { name: 'tick everything', shown: tick },
+    { name: 'build the box', shown: buildBox },
+    ...realCourse.modules.flatMap((module) =>
+      module.screens.flatMap((s) => (s.type === 'choose' && s.mode === 'multi' ? [{ name: `module ${module.slug} ${s.slug}`, shown: s, where: { module, course: realCourse } }] : [])),
+    ),
   ];
+  const tickBox = (label: string) => fireEvent.click(option(plainText(label)));
 
-  it.each(multis)('module %s %s: the right ones ticked is all right, everything ticked marks the wrong ones', (slug, choose) => {
-    const first = renderChoose(slug, choose);
-    const { options } = first.shown;
-    const total = options.length;
-    options.forEach((o) => o.right && fireEvent.click(option(o.label)));
-    press(first.shown.checkLabel ?? 'Check my answer');
-    expect(verdicts(first.container)).toEqual(options.map((o) => (o.right ? RIGHT_TICK : RIGHT_LEAVE)));
-    expect(screen.getByRole('status').textContent).toBe(`${total} of ${total} right.`);
-    expect(marks(first.container)).toEqual([]);
-    first.unmount();
+  it('the right ones ticked is all right, everything ticked marks the wrong ones', () => {
+    for (const { name, shown, where } of multis) {
+      const { options } = shown;
+      const total = options.length;
+      const checkLabel = plainText(shown.checkLabel ?? 'Check my answer');
+      const first = renderChoose(shown, undefined, where);
+      options.forEach((o) => o.right && tickBox(o.label));
+      press(checkLabel);
+      expect(verdicts(first.container), name).toEqual(options.map((o) => (o.right ? RIGHT_TICK : RIGHT_LEAVE)));
+      expect(screen.getByRole('status').textContent, name).toBe(`${total} of ${total} right.`);
+      expect(marks(first.container), name).toEqual([]);
+      first.unmount();
 
-    const all = renderChoose(slug, choose);
-    for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box);
-    press(all.shown.checkLabel ?? 'Check my answer');
-    expect(verdicts(all.container)).toEqual(options.map((o) => (o.right ? RIGHT_TICK : WRONG_TICK)));
-    const wrong = options.filter((o) => !o.right).length;
-    expect(screen.getByRole('status').textContent).toBe(
-      `${total - wrong} of ${total} right: ${wrong === 1 ? 'one tick' : `${wrong} ticks`} shouldn't be there.`,
-    );
-    all.unmount();
+      const all = renderChoose(shown, undefined, where);
+      for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box);
+      press(checkLabel);
+      expect(verdicts(all.container), name).toEqual(options.map((o) => (o.right ? RIGHT_TICK : WRONG_TICK)));
+      const wrong = options.filter((o) => !o.right).length;
+      const summary = wrong === 0 ? `${total} of ${total} right.` : `${total - wrong} of ${total} right: ${wrong === 1 ? 'one tick' : `${wrong} ticks`} shouldn't be there.`;
+      expect(screen.getByRole('status').textContent, name).toBe(summary);
+      all.unmount();
+    }
   });
 });
 
-describe('ChooseScreen, a check (module 00, check 1)', () => {
+describe('ChooseScreen, a check', () => {
   it('shows one question with three options, one pick at a time', () => {
-    renderChoose('00', 'check-1');
+    renderChoose(check);
     expect(screen.getAllByRole('radio')).toHaveLength(3);
     pick('It misread your message.');
     pick('It was showing off.');
@@ -176,7 +275,7 @@ describe('ChooseScreen, a check (module 00, check 1)', () => {
   });
 
   it('marks a wrong pick red with its feedback, dims the rest, and reports answered wrong', () => {
-    const { container, onEvent } = renderChoose('00', 'check-1');
+    const { container, onEvent } = renderChoose(check);
     pick('It misread your message.');
     press('Check my answer');
     expect(states(container)).toEqual(['wrong', 'dim', 'dim']);
@@ -196,7 +295,7 @@ describe('ChooseScreen, a check (module 00, check 1)', () => {
   });
 
   it('takes a new pick after Try again and reports every Check press', () => {
-    const { container, onEvent } = renderChoose('00', 'check-1');
+    const { container, onEvent } = renderChoose(check);
     pick('It misread your message.');
     press('Check my answer');
     press('Try again');
@@ -218,13 +317,13 @@ describe('ChooseScreen, a check (module 00, check 1)', () => {
   });
 });
 
-describe('ChooseScreen, build the box (module 03)', () => {
+describe('ChooseScreen, build the box', () => {
   const box = () => screen.getByRole('img', { name: /^The box round the builder/ });
   const drawn = (container: HTMLElement) =>
     Object.fromEntries([...container.querySelectorAll('[data-wall]')].map((g) => [g.getAttribute('data-wall'), g.getAttribute('data-state')]));
 
   it('draws each wall as an option naming it is ticked, counting a wall once', () => {
-    const { container } = renderChoose('03', 'build-the-box');
+    const { container } = renderChoose(buildBox);
     expect(caption()).toBe('0 of 4 walls up. Hope, context and a promise to report are not walls.');
     expect(drawn(container)).toEqual({ area: 'down', gate: 'down', done: 'down', word: 'down' });
 
@@ -254,7 +353,7 @@ describe('ChooseScreen, build the box (module 03)', () => {
   });
 
   it('keeps the walls drawn once checked, with its own Check label, and takes them down on Try again', () => {
-    const { container } = renderChoose('03', 'build-the-box');
+    const { container } = renderChoose(buildBox);
     fireEvent.click(option(/^Its own working area/));
     press('Check my box');
     expect(drawn(container).area).toBe('up');
@@ -266,15 +365,15 @@ describe('ChooseScreen, build the box (module 03)', () => {
   });
 });
 
-describe('ChooseScreen, the verdict (module 04)', () => {
+describe('ChooseScreen, the verdict', () => {
   it('shows the body excerpts and the prompt', () => {
-    renderChoose('04', 'verdict');
+    renderChoose(verdict);
     expect(screen.getByText('if (message.visible) return;')).toBeTruthy();
     expect(screen.getByRole('group', { name: 'Your verdict?' })).toBeTruthy();
   });
 
   it('shows a wrong verdict its feedback and "Try another verdict", with no fix', () => {
-    const { container, onEvent } = renderChoose('04', 'verdict');
+    const { container, onEvent } = renderChoose(verdict);
     pick('Refuted: there is a test for wrong drops (C).');
     press('Check my verdict');
     expect(states(container)).toEqual(['dim', 'wrong', 'dim', 'dim']);
@@ -290,7 +389,7 @@ describe('ChooseScreen, the verdict (module 04)', () => {
   });
 
   it('reveals the fix on the right verdict', () => {
-    const { container } = renderChoose('04', 'verdict');
+    const { container } = renderChoose(verdict);
     pick('Refuted: there is a test for wrong drops (C).');
     press('Check my verdict');
     press('Try another verdict');
@@ -315,7 +414,7 @@ describe('BoxPanel', () => {
 
 describe('ChooseScreen, from a saved answer', () => {
   it('renders the verdict checked, with its feedback and its fix', () => {
-    const { container, onEvent } = renderChoose('04', 'verdict', { picked: [0] });
+    const { container, onEvent } = renderChoose(verdict, { picked: [0] });
     expect((screen.getByRole('radio', { name: 'Confirmed, citing A.' }) as HTMLInputElement).checked).toBe(true);
     expect(states(container)).toEqual(['right', 'dim', 'dim', 'dim']);
     expect(screen.getByText(/^Yes\. Line 41 returns/)).toBeTruthy();
@@ -325,31 +424,31 @@ describe('ChooseScreen, from a saved answer', () => {
   });
 
   it('renders a tick-everything checked, with the after cards, and the box from its ticks', () => {
-    const tick = renderChoose('00', 'what-went-wrong', { picked: [0, 3] });
+    const ticked = renderChoose(tick, { picked: [0, 3] });
     expect(screen.getAllByRole('checkbox').map((c) => (c as HTMLInputElement).checked)).toEqual([true, false, false, true, false]);
-    expect(states(tick.container)).toEqual(['right-tick', 'missed', 'missed', 'wrong-tick', 'right-leave']);
-    expect(verdicts(tick.container)).toEqual([RIGHT_TICK, MISSED, MISSED, WRONG_TICK, RIGHT_LEAVE]);
+    expect(states(ticked.container)).toEqual(['right-tick', 'missed', 'missed', 'wrong-tick', 'right-leave']);
+    expect(verdicts(ticked.container)).toEqual([RIGHT_TICK, MISSED, MISSED, WRONG_TICK, RIGHT_LEAVE]);
     expect(screen.getByRole('status').textContent).toBe("2 of 5 right: one tick shouldn't be there, and 2 missed.");
     expect(screen.getByRole('heading', { name: 'What just happened' })).toBeTruthy();
-    tick.unmount();
+    ticked.unmount();
 
-    renderChoose('03', 'build-the-box', { picked: [3, 5] });
+    renderChoose(buildBox, { picked: [3, 5] });
     expect(caption()).toMatch(/^2 of 4/);
   });
 
   it('renders unanswered from a saved answer that does not fit: the wrong shape, a position that is not an option, the wrong count', () => {
-    const misfits: [string, SavedAnswer][] = [
-      ['check-1', 'placeholder'],
-      ['check-1', { picked: 2 }],
-      ['check-1', { picked: [7, 2] }],
-      ['check-1', { picked: [5] }],
-      ['check-1', { picked: [0, 2] }],
-      ['check-1', { picked: [] }],
-      ['what-went-wrong', { picked: [] }],
-      ['what-went-wrong', { picked: [1, 1] }],
+    const misfits: [ScreenOf<'choose'>, SavedAnswer][] = [
+      [check, 'placeholder'],
+      [check, { picked: 2 }],
+      [check, { picked: [7, 2] }],
+      [check, { picked: [5] }],
+      [check, { picked: [0, 2] }],
+      [check, { picked: [] }],
+      [tick, { picked: [] }],
+      [tick, { picked: [1, 1] }],
     ];
-    for (const [slug, saved] of misfits) {
-      const { container, unmount } = renderChoose('00', slug, saved);
+    for (const [shown, saved] of misfits) {
+      const { container, unmount } = renderChoose(shown, saved);
       expect(states(container), JSON.stringify(saved)).toEqual(states(container).map(() => 'none'));
       expect(screen.getByRole('button', { name: 'Check my answer' }).getAttribute('aria-disabled')).toBe('true');
       expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();

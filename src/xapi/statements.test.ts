@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { course, type ScreenOf } from '../content/index.ts';
-import { realScreen } from '../course/frame/fixture.ts';
+import { course, type Screen, type ScreenOf } from '../content/index.ts';
+import { fixtureModule, fixtureMatch, fixtureOrder, fixtureTakeaway } from '../course/frame/fixture.ts';
 import { ACTOR_JSON, LAUNCH_ACTIVITY_ID, REGISTRATION, sparkLaunch } from './fixtures.ts';
 import {
   answered,
@@ -15,14 +15,31 @@ import {
 } from './statements.ts';
 import { ACTIVITY_TYPES, VERBS } from './vocabulary.ts';
 
-// The builders run on course.yaml and the modules as authored: the ids are the D24 ids.
+// The builders run on course.yaml, so the ids are the D24 ids, and on an inline module 00 that
+// has a screen of every kind that sends a statement.
 const COURSE_ID = 'https://rosslote.github.io/agent-course/';
 const launch = sparkLaunch();
 
-const check1 = realScreen('00', 'choose', 'check-1');
-const chat = realScreen('00', 'chat');
-const order = realScreen('07', 'order');
-const match = realScreen('07', 'match');
+const checkScreen: ScreenOf<'choose'> = {
+  type: 'choose',
+  slug: 'check-1',
+  scored: true,
+  mode: 'single',
+  heading: 'The first check',
+  options: [
+    { label: 'Wrong', right: false, feedback: 'No.' },
+    { label: 'Right', right: true, feedback: 'Yes.' },
+  ],
+};
+const chatScreen: ScreenOf<'chat'> = { type: 'chat', slug: 'just-ask', heading: 'Just ask', opening: 'Build it.', messages: ['Done!'] };
+const sceneScreen: Screen = { type: 'scene', heading: 'A scene', blocks: [{ type: 'paragraph', text: 'Text.' }] };
+const module00 = fixtureModule('00', [sceneScreen, chatScreen, checkScreen, fixtureOrder, fixtureMatch, fixtureTakeaway()]);
+const at = <T extends Screen>(screen: T) => ({ module: module00, screen });
+
+const check1 = at(checkScreen);
+const chat = at(chatScreen);
+const order = at(fixtureOrder);
+const match = at(fixtureMatch);
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
@@ -70,11 +87,11 @@ describe('course-level statements', () => {
     expect(statement.context).toEqual({ registration: REGISTRATION });
   });
 
-  it('completed on the course: completion and the score out of 28, scaled', () => {
-    const statement = courseCompleted(course, launch, { raw: 21, max: 28 });
+  it("completed on the course: completion and the score out of the course's points, scaled", () => {
+    const statement = courseCompleted(course, launch, { raw: 15, max: 20 });
     expect(statement.verb.id).toBe('http://adlnet.gov/expapi/verbs/completed');
     expect(statement.object).toMatchObject({ id: LAUNCH_ACTIVITY_ID });
-    expect(statement.result).toEqual({ completion: true, score: { raw: 21, min: 0, max: 28, scaled: 0.75 } });
+    expect(statement.result).toEqual({ completion: true, score: { raw: 15, min: 0, max: 20, scaled: 0.75 } });
   });
 });
 
@@ -120,7 +137,7 @@ describe('module, check, interaction and fridge statements', () => {
     expect(statement.context?.contextActivities).toEqual(parentAndGrouping);
   });
 
-  it('answered on the order and the walls: n of 8 and n of 6, as sequencing and matching', () => {
+  it('answered on an order and a match: n of its cards and n of its rows, as sequencing and matching', () => {
     const ordered = answered(course, launch, order.module, order.screen, {
       type: 'answered',
       slug: 'x',
@@ -163,7 +180,7 @@ describe('module, check, interaction and fridge statements', () => {
   });
 
   it('a screen with no activity of its own sends nothing', () => {
-    const scene = realScreen('00', 'scene');
+    const scene = at(sceneScreen);
     expect(() => interacted(course, launch, scene.module, scene.screen, { type: 'interacted', slug: 'x', response: 'x', answer: 0 })).toThrow();
   });
 });

@@ -1,21 +1,22 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { course } from '../../content/index.ts';
-import { NO_PROGRESS } from '../../course/frame/fixture.ts';
+import { fixtureModule, fixtureTakeaway, NO_PROGRESS } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { FridgeScreen } from './index.tsx';
 
+// The course's fridges (content/fridge/), each on an inline fridge screen.
 function renderScreen(fridge: string, saved?: SavedAnswer) {
-  const module = course.modules.find((m) => m.screens.some((s) => s.type === 'fridge' && s.fridge === fridge)) ?? course.modules[0];
+  const shown = { type: 'fridge', heading: 'A fridge', fridge } as const;
   const onEvent = vi.fn();
   const view = render(
-    <FridgeScreen screen={{ type: 'fridge', heading: 'A fridge', fridge }} module={module} course={course} saved={saved} progress={NO_PROGRESS} onEvent={onEvent} />,
+    <FridgeScreen screen={shown} module={fixtureModule('00', [shown, fixtureTakeaway()])} course={course} saved={saved} progress={NO_PROGRESS} onEvent={onEvent} />,
   );
   return { ...view, onEvent };
 }
 
 describe('FridgeScreen', () => {
-  it("plays the fridge its screen names: module 00's one-shot, 5 shelves and 14 items", () => {
+  it("plays the fridge its screen names: the one-shot, 5 shelves and 14 items", () => {
     const { container } = renderScreen('one-shot');
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Module 00: "Build me a fridge activity"');
     expect(container.querySelectorAll('[data-drop-target]')).toHaveLength(5);

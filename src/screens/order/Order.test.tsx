@@ -1,12 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { course } from '../../content/index.ts';
-import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
+import { fixtureCourse, fixtureModule, fixtureOrder, fixtureTakeaway, NO_PROGRESS } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { OrderScreen } from './index.tsx';
 
-// Module 07's order the loop, as authored.
-const { module, screen: shown } = realScreen('07', 'order', 'order-the-loop');
+// An inline order of eight cards, retro fifth.
+const shown = fixtureOrder;
+const course = fixtureCourse();
+const module = fixtureModule('01', [shown, fixtureTakeaway()]);
 const correct = shown.cards.map((c) => c.id);
 const label = (id: string) => shown.cards.find((c) => c.id === id)!.label;
 
@@ -28,7 +29,7 @@ const status = (container: HTMLElement) => container.querySelector('.order-statu
 const live = (container: HTMLElement) => container.querySelector('[aria-live="polite"]')!.textContent!.trim();
 const result = () => screen.getByRole('status').textContent;
 
-describe('OrderScreen, order the loop (module 07)', () => {
+describe('OrderScreen, order the loop', () => {
   it('lists the eight cards in the start order, retro fifth, each a button', () => {
     const { container } = renderOrder();
     expect(order(container)).toEqual(shown.start);

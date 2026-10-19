@@ -52,6 +52,18 @@ const play = (causes: ProgressCause[], doc: ProgressDoc = EMPTY_PROGRESS) => cau
 /** Module 00's two checks answered, so its takeaway completes it. */
 const checked = play([from(m00, answered('check-1', true)), from(m00, answered('check-2', false))]);
 
+/** What the real course's scored screens are worth together, from the content. */
+const realPoints = realCourse.modules.reduce((sum, m) => sum + m.screens.reduce((points, s) => points + (scoredItem(s)?.max ?? 0), 0), 0);
+const realLast = realCourse.modules[realCourse.modules.length - 1];
+const realAllButLast = { modules: realCourse.modules.slice(0, -1) };
+/** The real course's first scored screen, its module and what it is worth, whatever the modules hold. */
+const [realScored] = realCourse.modules.flatMap((module) =>
+  module.screens.flatMap((screen) => {
+    const item = scoredItem(screen);
+    return item ? [{ module, ...item }] : [];
+  }),
+);
+
 /** Every scored screen of these modules answered with full marks, then (unless told not to) each takeaway reached. */
 function playAll(of: ProgressCourse, doc: ProgressDoc = EMPTY_PROGRESS, { complete = true } = {}): ProgressDoc {
   const causes = of.modules.flatMap((module) => [
@@ -124,19 +136,20 @@ describe('the views', () => {
     expect(courseScore(course, stored(Number.POSITIVE_INFINITY))).toEqual({ raw: 1, max: 2 });
   });
 
-  it('completes the real course at 28 of 28, scaled 1, once all eight modules are done', () => {
-    expect(courseScore(realCourse, EMPTY_PROGRESS)).toEqual({ raw: 0, max: 28 });
+  it("completes the real course at full marks, scaled 1, once all its modules are done, out of its content's points", () => {
+    expect(realPoints).toBeGreaterThan(0);
+    expect(courseScore(realCourse, EMPTY_PROGRESS)).toEqual({ raw: 0, max: realPoints });
     const doc = playAll(realCourse);
-    expect(modulesDone(realCourse, doc)).toBe(8);
+    expect(modulesDone(realCourse, doc)).toBe(realCourse.modules.length);
     expect(courseComplete(realCourse, doc)).toBe(true);
-    expect(courseScore(realCourse, doc)).toEqual({ raw: 28, max: 28 });
+    expect(courseScore(realCourse, doc)).toEqual({ raw: realPoints, max: realPoints });
     expect(resultScore(courseScore(realCourse, doc)).scaled).toBe(1);
   });
 
-  it('is not complete with seven of eight done', () => {
-    const seven = playAll({ modules: realCourse.modules.slice(0, 7) });
-    expect(modulesDone(realCourse, seven)).toBe(7);
-    expect(courseComplete(realCourse, seven)).toBe(false);
+  it('is not complete with every module done but the last', () => {
+    const allButLast = playAll(realAllButLast);
+    expect(modulesDone(realCourse, allButLast)).toBe(realCourse.modules.length - 1);
+    expect(courseComplete(realCourse, allButLast)).toBe(false);
     expect(resultScore({ raw: 0, max: 0 }).scaled).toBe(0);
   });
 });
@@ -173,26 +186,24 @@ describe('step: the changes surfaced for the statements', () => {
   });
 
   it('surfaces the course completed with its score when the last module completes, after that module', () => {
-    const allButLast = playAll({ modules: realCourse.modules.slice(0, 7) });
-    const last = realCourse.modules[7];
-    const answeredAll = playAll({ modules: [last] }, allButLast, { complete: false });
-    const { doc, effects } = step(realCourse, answeredAll, from(last, takeaway));
+    const answeredAll = playAll({ modules: [realLast] }, playAll(realAllButLast), { complete: false });
+    const { doc, effects } = step(realCourse, answeredAll, from(realLast, takeaway));
     expect(effects).toEqual([
-      { type: 'module-completed', module: last },
-      { type: 'course-completed', score: { raw: 28, max: 28 } },
+      { type: 'module-completed', module: realLast },
+      { type: 'course-completed', score: { raw: realPoints, max: realPoints } },
     ]);
     expect(courseComplete(realCourse, doc)).toBe(true);
   });
 
   it('surfaces the new score when a scored item changes after the course is complete, and nothing when it stays the same', () => {
+    const { module, slug, max } = realScored;
     const done = playAll(realCourse);
-    const m00real = realCourse.modules[0];
-    const wrong = step(realCourse, done, from(m00real, answered('check-1', false)));
-    expect(wrong.effects).toEqual([{ type: 'course-score-changed', score: { raw: 27, max: 28 } }]);
-    const again = step(realCourse, wrong.doc, from(m00real, answered('check-1', false)));
+    const wrong = step(realCourse, done, from(module, answered(slug, false, 0, max)));
+    expect(wrong.effects).toEqual([{ type: 'course-score-changed', score: { raw: realPoints - max, max: realPoints } }]);
+    const again = step(realCourse, wrong.doc, from(module, answered(slug, false, 0, max)));
     expect(again.effects).toEqual([]);
-    expect(step(realCourse, again.doc, from(m00real, answered('check-1', true))).effects).toEqual([
-      { type: 'course-score-changed', score: { raw: 28, max: 28 } },
+    expect(step(realCourse, again.doc, from(module, answered(slug, true, max, max))).effects).toEqual([
+      { type: 'course-score-changed', score: { raw: realPoints, max: realPoints } },
     ]);
   });
 });

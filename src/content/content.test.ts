@@ -24,19 +24,26 @@ function problems(files: Record<string, unknown>): string[] {
 
 const screensOf = (data: Record<string, unknown>) => data.screens as Record<string, unknown>[];
 
+// The tests that change a file take whichever module files course.yaml lists, so they hold
+// whatever the modules say and however many there are.
+const entries = (contentFiles['course.yaml'] as { modules: { slug: string; file: string }[] }).modules;
+const moduleFile = (i: number) => entries[i].file;
+
 describe('content/', () => {
-  it('validates every file: course.yaml, the eight modules and the fridges', () => {
+  it('validates every file: course.yaml, every module file it lists and the fridges', () => {
     const files = Object.keys(contentFiles).sort();
     expect(files).toEqual(expect.arrayContaining(['course.yaml', 'fridge/accepted.yaml', 'fridge/one-shot.yaml']));
-    expect(files.filter((f) => f.startsWith('modules/'))).toHaveLength(8);
+    expect(files.filter((f) => f.startsWith('modules/'))).toEqual(entries.map((e) => e.file).sort());
     expect(problems(contentFiles)).toEqual([]);
   });
 
-  it('gives the app a course with its 8 modules in order and the fridges by name', () => {
+  it("gives the app a course with course.yaml's modules in order, numbered from 00, and the fridges by name", () => {
     expect(course.id).toBe('https://rosslote.github.io/agent-course/');
-    expect(course.modules.map((m) => m.slug)).toEqual(['00', '01', '02', '03', '04', '05', '06', '07']);
+    expect(course.modules.map((m) => m.slug)).toEqual(entries.map((e) => e.slug));
+    expect(course.modules.map((m) => m.slug)).toEqual(course.modules.map((_, i) => String(i).padStart(2, '0')));
     for (const m of course.modules) expect(m.screens.at(-1)?.type).toBe('takeaway');
-    expect(Object.keys(course.fridges).sort()).toEqual(['accepted', 'one-shot']);
+    const fridges = Object.keys(contentFiles).flatMap((f) => (f.startsWith('fridge/') ? [f.replace(/^fridge\/(.*)\.yaml$/, '$1')] : []));
+    expect(Object.keys(course.fridges).sort()).toEqual(fridges.sort());
   });
 
   it('ends every module the same way: the takeaway says "Takeaway", and Check 1 of 2 says what a check is', () => {
@@ -49,46 +56,46 @@ describe('content/', () => {
   });
 
   it('fails on a misspelt field, naming the file and the path to it', () => {
-    const bad = withFile('modules/00.yaml', (m) => {
+    const file = moduleFile(0);
+    const bad = withFile(file, (m) => {
       screensOf(m)[0].headnig = 'A typo';
     });
-    expect(problems(bad)).toEqual(['content/modules/00.yaml screens[0].headnig: unknown field "headnig"']);
-    expect(() => validateContent(bad)).toThrow('content/modules/00.yaml screens[0].headnig: unknown field "headnig"');
+    expect(problems(bad)).toEqual([`content/${file} screens[0].headnig: unknown field "headnig"`]);
+    expect(() => validateContent(bad)).toThrow(`content/${file} screens[0].headnig: unknown field "headnig"`);
   });
 
   it('fails on an unknown screen type and on a missing field', () => {
-    const bad = withFile('modules/01.yaml', (m) => {
-      screensOf(m)[0] = { type: 'quiz' };
-      delete screensOf(m)[1].heading;
+    const file = moduleFile(entries.length > 1 ? 1 : 0);
+    const bad = withFile(file, (m) => {
+      screensOf(m).splice(0, 0, { type: 'quiz' }, { type: 'scene', blocks: [{ type: 'paragraph', text: 'Text.' }] });
     });
-    expect(problems(bad)).toEqual([
-      expect.stringMatching(/^content\/modules\/01\.yaml screens\[0\]\.type: /),
-      expect.stringMatching(/^content\/modules\/01\.yaml screens\[1\]\.heading: /),
-    ]);
+    expect(problems(bad).map((p) => p.slice(0, p.indexOf(': ')))).toEqual([`content/${file} screens[0].type`, `content/${file} screens[1].heading`]);
   });
 
   it('fails when a screen names a fridge that has no file', () => {
-    const bad = withFile('modules/02.yaml', (m) => {
+    const file = moduleFile(entries.length - 1);
+    const bad = withFile(file, (m) => {
       screensOf(m).splice(0, 0, { type: 'fridge', heading: 'A fridge', fridge: 'freezer' });
     });
-    expect(problems(bad)).toEqual(['content/modules/02.yaml screens[0].fridge: there is no fridge "freezer" (content/fridge/freezer.yaml)']);
+    expect(problems(bad)).toEqual([`content/${file} screens[0].fridge: there is no fridge "freezer" (content/fridge/freezer.yaml)`]);
   });
 
   it('fails when two interactions in a module share a slug', () => {
-    const bad = withFile('modules/03.yaml', (m) => {
-      const first = screensOf(m).find((s) => typeof s.slug === 'string');
-      screensOf(m).splice(0, 0, { ...first });
+    const file = moduleFile(entries.length - 1);
+    const bad = withFile(file, (m) => {
+      screensOf(m).splice(0, 0, { type: 'chat', slug: 'twice', heading: 'One', opening: 'Hi.', messages: ['Hello.'] }, { type: 'chat', slug: 'twice', heading: 'Two', opening: 'Hi.', messages: ['Hello.'] });
     });
-    expect(problems(bad)).toEqual([expect.stringMatching(/^content\/modules\/03\.yaml screens\[\d+\]\.slug: slug ".+" is used twice$/)]);
+    expect(problems(bad)).toEqual([`content/${file} screens[1].slug: slug "twice" is used twice`]);
   });
 
   it('fails when course.yaml lists a module file that does not exist', () => {
+    const last = entries.length - 1;
     const bad = withFile('course.yaml', (c) => {
-      (c.modules as Record<string, unknown>[])[7].file = 'modules/99.yaml';
+      (c.modules as Record<string, unknown>[])[last].file = 'modules/99.yaml';
     });
     expect(problems(bad)).toEqual([
-      'content/course.yaml modules[7].file: content/modules/99.yaml does not exist',
-      'content/modules/07.yaml: is not listed in course.yaml modules',
+      `content/course.yaml modules[${last}].file: content/modules/99.yaml does not exist`,
+      `content/${moduleFile(last)}: is not listed in course.yaml modules`,
     ]);
   });
 });

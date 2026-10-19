@@ -1,8 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { plainText } from '../../content/copy.ts';
-import { course } from '../../content/index.ts';
-import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
+import { fixtureCourse, fixtureMatch, fixtureModule, fixtureOrder, fixtureTakeaway, NO_PROGRESS } from '../../course/frame/fixture.ts';
 import { MatchScreen } from '../match/index.tsx';
 import { OrderScreen } from '../order/index.tsx';
 import { CheckButton } from './CheckButton.tsx';
@@ -46,8 +45,11 @@ describe('CheckButton', () => {
 // Whether a stylesheet hides the region is for a browser to say (Vitest applies no CSS, and
 // CheckButton.css keeps no rule that hides it); these hold the region's place in the page.
 describe('the Check result beside the button (match and order)', () => {
+  const course = fixtureCourse();
+
   it('is one live region from the start, empty until Check fills it, kept through Try again', () => {
-    const { module, screen: match } = realScreen('04', 'match', 'who-catches-it');
+    const match = fixtureMatch;
+    const module = fixtureModule('01', [match, fixtureTakeaway()]);
     render(<MatchScreen screen={match} module={module} course={course} progress={NO_PROGRESS} onEvent={() => {}} />);
     const status = screen.getByRole('status');
     expect(status.textContent).toBe('');
@@ -63,7 +65,8 @@ describe('the Check result beside the button (match and order)', () => {
   });
 
   it('is in the tree before the first Check on the order screen too', () => {
-    const { module, screen: order } = realScreen('07', 'order', 'order-the-loop');
+    const order = fixtureOrder;
+    const module = fixtureModule('01', [order, fixtureTakeaway()]);
     render(<OrderScreen screen={order} module={module} course={course} progress={NO_PROGRESS} onEvent={() => {}} />);
     const status = screen.getByRole('status');
     expect(status.textContent).toBe('');

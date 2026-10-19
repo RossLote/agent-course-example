@@ -1,17 +1,35 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { course, type Screen } from '../../content/index.ts';
-import { NO_PROGRESS } from '../../course/frame/fixture.ts';
+import { course, type ScreenOf } from '../../content/index.ts';
+import { fixtureModule, fixtureTakeaway, NO_PROGRESS } from '../../course/frame/fixture.ts';
 import { NO_ANSWERS } from '../../course/frame/progress.ts';
 import type { ModuleAnswers } from '../types.ts';
 import { CompareScreen } from './index.tsx';
 
-const module05 = course.modules.find((m) => m.screens.some((s) => s.type === 'compare'))!;
-const compare = module05.screens.find((s): s is Extract<Screen, { type: 'compare' }> => s.type === 'compare')!;
+// An inline compare screen of the course's two fridges (content/fridge/), with a table of six rows.
+const row = (aspect: string, left = `${aspect}: left.`, right = `${aspect}: right.`, wall = 'a wall') => ({ aspect, left, right, wall });
+const compare: ScreenOf<'compare'> = {
+  type: 'compare',
+  heading: 'The two fridges',
+  left: 'one-shot',
+  right: 'accepted',
+  table: {
+    heading: 'What is different, and which wall made the difference',
+    rows: [
+      row('Shelves and items', 'Five shelves including "the door", fourteen items.', "Four shelves, eight items, the ones in the client's guide.", '01 the record (D2)'),
+      row('The rules'),
+      row('A wrong drop'),
+      row('The score'),
+      row('Time'),
+      row('Keyboard and screen reader'),
+    ],
+  },
+};
+const compareModule = fixtureModule('03', [compare, fixtureTakeaway()]);
 
 function renderCompare(items: ModuleAnswers = NO_ANSWERS) {
   const onEvent = vi.fn();
-  const view = render(<CompareScreen screen={compare} module={module05} course={course} progress={{ ...NO_PROGRESS, items }} onEvent={onEvent} />);
+  const view = render(<CompareScreen screen={compare} module={compareModule} course={course} progress={{ ...NO_PROGRESS, items }} onEvent={onEvent} />);
   const [left, right] = screen.getAllByRole('region').filter((region) => region.classList.contains('fridge'));
   return { ...view, onEvent, left, right };
 }
@@ -60,7 +78,7 @@ describe('CompareScreen', () => {
 
   it("renders each fridge's title in the table's header as copy", () => {
     const oneShot = { ...course.fridges['one-shot'], title: 'Module 00: **one-shot**' };
-    render(<CompareScreen screen={compare} module={module05} course={{ ...course, fridges: { ...course.fridges, 'one-shot': oneShot } }} progress={NO_PROGRESS} onEvent={vi.fn()} />);
+    render(<CompareScreen screen={compare} module={compareModule} course={{ ...course, fridges: { ...course.fridges, 'one-shot': oneShot } }} progress={NO_PROGRESS} onEvent={vi.fn()} />);
     const header = within(screen.getByRole('table')).getAllByRole('columnheader')[1];
     expect(header.innerHTML).toBe('Module 00: <strong>one-shot</strong>');
   });

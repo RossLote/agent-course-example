@@ -1,8 +1,9 @@
 // An inline course for the frame's and the screens' tests (PLAN.md §6, "Test fixtures"):
 // never the files under content/, so the tests hold whatever the content says. Beside it, the
-// empty progress a screen is rendered with, and `realScreen` for the tests that play a screen
-// as authored.
-import { course, type Course, type Module, type Screen, type ScreenOf, type ScreenType } from '../../content/index.ts';
+// empty progress a screen is rendered with, a fridge, and the screens more than one test plays.
+// A test that needs the real course reads it from content/index.ts and builds what it expects
+// from what it reads (its counts, slugs and points), never from a module's copy or screen list.
+import type { Course, Fridge, Module, Screen, ScreenOf } from '../../content/index.ts';
 import { moduleWall } from '../../content/schema.ts';
 import type { ModuleProgress } from '../../screens/types.ts';
 import { NO_ANSWERS } from './progress.ts';
@@ -11,14 +12,6 @@ const WALLS = moduleWall.options;
 
 /** The progress of a module nothing has been answered in: what a screen's test renders it with. */
 export const NO_PROGRESS: ModuleProgress = { items: NO_ANSWERS, score: { raw: 0, max: 0 } };
-
-/** A screen of the real course, as authored, and its module: the first of `type` in the module, or the one with `slug`. */
-export function realScreen<T extends ScreenType>(moduleSlug: string, type: T, slug?: string): { module: Module; screen: ScreenOf<T> } {
-  const module = course.modules.find((m) => m.slug === moduleSlug);
-  const screen = module?.screens.find((s): s is ScreenOf<T> => s.type === type && (slug === undefined || ('slug' in s && s.slug === slug)));
-  if (!module || !screen) throw new Error(`module ${moduleSlug} has no ${type} ${slug ?? ''}`);
-  return { module, screen };
-}
 
 /** A module with these screens; its title is "Module <nn> title" and its wall the course's order. */
 export function fixtureModule(slug: string, screens: Screen[]): Module {
@@ -85,3 +78,64 @@ export function fixtureCourse(modules: Readonly<Record<string, Screen[]>> = {}):
     fridges: {},
   };
 }
+
+/** A fridge for the tests that need one by name: two shelves, one item, no timer or leaderboard. */
+export function fixtureFridge(title = 'A fridge'): Fridge {
+  return {
+    title,
+    caption: 'The caption.',
+    shelves: [
+      { id: 'top', name: 'Top shelf' },
+      { id: 'bottom', name: 'Bottom shelf' },
+    ],
+    items: [{ id: 'raw-chicken', name: 'Raw chicken', shelf: 'bottom', reason: 'Raw meat goes at the bottom.' }],
+    feedback: 'reason',
+    score: { mode: 'right-first-time' },
+    timer: 'none',
+    leaderboard: 'none',
+    confetti: false,
+    finish: '{right} out of {total} right first time',
+    resetLabel: 'Try again',
+  };
+}
+
+/** An order of eight cards, retro fifth in the start order, so four start in the right place. */
+export const fixtureOrder: ScreenOf<'order'> = {
+  type: 'order',
+  slug: 'order-the-loop',
+  heading: 'Order the loop',
+  cards: [
+    { id: 'brief', label: 'Brief: the agent asks, you decide.', feedback: 'The brief comes first.' },
+    { id: 'epic', label: 'Epic: the pieces and the demo script.', feedback: 'The epic comes after the brief.' },
+    { id: 'epic-review', label: 'Epic review: gaps found early.', feedback: 'The epic review comes before the build.' },
+    { id: 'build', label: 'Build: workers in their boxes.', feedback: 'The build comes after the epic review.' },
+    { id: 'reviews', label: 'Simplify, review, adversarial review.', feedback: 'The reviews come once the build is green.' },
+    { id: 'pull-request', label: 'Walkthrough and pull request.', feedback: 'The pull request comes after the reviews.' },
+    { id: 'judge', label: 'You judge it: evidence against the acceptance.', feedback: 'You judge once the pull request is written.' },
+    { id: 'retro', label: 'Retro, over several runs.', feedback: 'The retro comes last.' },
+  ],
+  start: ['brief', 'epic', 'epic-review', 'build', 'retro', 'reviews', 'pull-request', 'judge'],
+  checkLabel: 'Check the order',
+};
+
+/** An unscored match: four rows, each picking one of four targets. */
+export const fixtureMatch: ScreenOf<'match'> = {
+  type: 'match',
+  slug: 'who-catches-it',
+  scored: false,
+  heading: 'Who catches it?',
+  prompt: 'Match each to the layer that catches it.',
+  targets: [
+    { id: 'simplify', label: 'Simplify' },
+    { id: 'review', label: 'Review' },
+    { id: 'adversarial', label: 'Adversarial review' },
+    { id: 'epic', label: 'None of the reviews: the epic' },
+  ],
+  rows: [
+    { text: 'Three copies of the same code, one per shelf.', key: 'simplify', feedback: 'Simplify (reuse).' },
+    { text: 'A message names the wrong shelf.', key: 'review', feedback: 'Review (obvious).' },
+    { text: 'A drop during a message is silently lost.', key: 'adversarial', feedback: 'Adversarial review (a scenario, verified).' },
+    { text: 'A timer was built that the record said no to.', key: 'epic', feedback: 'None of the reviews: the epic.' },
+  ],
+  checkLabel: 'Check my matches',
+};
