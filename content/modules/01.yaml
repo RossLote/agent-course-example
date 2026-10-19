@@ -7,8 +7,10 @@ screens:
         text: >-
           The timer came from a gap. So did the fifth shelf, the leaderboard and "the standard
           fridge rules". The agent did not know what the client's course needs, and you did not
-          tell it, so it guessed. The fix is not a longer prompt. It is a conversation where the
-          agent asks and you answer, until nothing is left that would change what gets built.
+          tell it, so it guessed. The fix is not a longer prompt: the page-long ask got exactly
+          what it said, mistakes and all. Nor is it a shorter one. It is a conversation: you
+          describe what you want loosely, the agent reads, asks and brings its own ideas, and you
+          decide, until nothing is left that would change what gets built.
       - type: aside
         term: brief
         text: >-
@@ -41,10 +43,18 @@ screens:
             body: >-
               Then you get the decisions: D1, D2, D3…, one sentence each with its reason, on one
               record the builder reads.
+      - type: paragraph
+        heading: The forum
+        text: >-
+          The brief is also where the agent's own ideas arrive. You described it loosely, so it had
+          room to explore, and it comes back with suggestions you would not have thought of. Each
+          one comes as a question like the rest, for you to accept, decline or talk through. By
+          the end, anything it would have done on its own has come up, and the surprises that
+          matter are gone before anything is built.
       - type: quote
         text: >-
-          You may not know what you want until you see the first round. The brief is where you
-          find out what you do know.
+          You are working with your agent. It is not working for you, and you are not working for
+          it. It is an extension of your creativity.
         attribution: Ross
 
   - type: brief
@@ -122,7 +132,7 @@ screens:
                 decision: Mouse and touch; keyboard and screen reader in a later round.
               - label: Keyboard only; no tablets in the kitchens
                 decision: Keyboard and mouse; no touch support.
-      - message: Took your answers as D1 to D5 on the right. Three more; the rest I can leave to the builder.
+      - message: Took your answers as D1 to D5 on the right.
         questions:
           - text: A timer?
             recommendation: "Recommended: no. Induction, not a game; a timer punishes the people the course is for."
@@ -140,14 +150,18 @@ screens:
                 recommended: true
               - label: One attempt only
                 decision: One attempt only; the LMS gets that attempt.
-          - text: What does the client see afterwards?
-            recommendation: "Recommended: completion and the score per learner, nothing else."
+          - text: Label each shelf with what goes there?
+            recommendation: >-
+              Recommended: yes. This one is my own idea, not a gap in yours: a short label under
+              each shelf, like "raw meat and fish", so staff see the rule while they practise it.
             chips:
-              - label: Completion and the score per learner
-                decision: The client sees completion and score per learner.
+              - label: Yes, a short label on each shelf
+                decision: >-
+                  Each shelf carries a short label of what goes there, so the fridge teaches the
+                  rule as well as testing it.
                 recommended: true
-              - label: Every learner's drops, item by item
-                decision: The client sees every learner's drops, item by item.
+              - label: No labels; the reasons are enough
+                decision: No shelf labels; the reason on a wrong drop teaches the rule.
     defaults:
       label: Your defaults
       hint: One line is a complete reply.
@@ -167,38 +181,42 @@ screens:
     heading: What the record is for
     nav: what the record is for
     blocks:
-      - type: paragraph
-        text: >-
-          The builder will not remember this conversation. It will not even be the same agent.
-          What it gets is the eight decisions, each with its reason, and it builds to them. That is
-          why the output of a brief is a list, not a feeling that you have been understood.
       - type: cards
         items:
-          - title: Decisions bind the builder.
-            body: '"No timer" on the record means no timer. A guess has nowhere to live.'
-          - title: Reasons let the builder choose well.
+          - title: What gets built is yours, and it binds the builder. How is the builder's.
             body: >-
-              "Induction, not a game" tells the builder what kind of thing it is making when it
-              hits a case nobody wrote down.
+              The builder will not remember this conversation; it will not even be the same agent.
+              It gets the eight decisions, each with its reason, and builds to them. "No timer" on
+              the record means no timer, and a guess has nowhere to live. How the shelves are drawn
+              and what the drag feels like are its calls, and a reason like "induction, not a game"
+              lets it choose well when it hits a case nobody wrote down.
 
   - type: choose
     slug: check-1
     scored: true
     mode: single
     eyebrow: Check · 1 of 2
-    heading: The agent asks five questions. You have time to answer two. What do you do?
+    heading: >-
+      You have written two pages: every shelf, every item, every message, every file. What do you
+      get?
     intro: Every module ends with two of these. Each option tells you why, right or wrong.
     nav: check
     options:
-      - label: Answer two and let it guess the rest.
+      - label: "Exactly what you need: the more detail, the better the build."
         right: false
-        feedback: Guessing is what module 00 showed. The three gaps will be filled.
-      - label: Say "your defaults, except..." for the ones you disagree with.
+        feedback: >-
+          Detail you got wrong is built wrong, like the cooked chicken beside the raw in module 00.
+          More detail is not the same as the right detail.
+      - label: "Exactly that: your blind spots built in, and nothing you did not think of."
         right: true
-        feedback: Yes. The recommended answers are there so that this is a complete reply in one line.
-      - label: Ask it to stop asking and start building.
+        feedback: >-
+          Yes. Two pages leave the agent no room. A brief would have asked the five questions that
+          matter and brought its own ideas, like the shelf labels.
+      - label: A better version, because the agent fixes what is wrong on your pages.
         right: false
-        feedback: It will, and it will fill the gaps.
+        feedback: >-
+          Only if you leave it room. Two pages of instructions leave none: it builds what they
+          say, and suggests nothing.
 
   - type: choose
     slug: check-2
@@ -227,4 +245,4 @@ screens:
     text: >-
       **The agent asks, you decide, the decisions are written down.** The builder works from the
       record, not from your memory of a conversation.
-    caption: The box gains its first wall. Four to go, then the arrow.
+    caption: The box gains its first wall. Three to go, then the arrow.

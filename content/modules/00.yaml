@@ -31,6 +31,60 @@ screens:
           Read the agent's reply twice. Count the things you did not ask for. Count the things it
           decided. Notice who tested it.
 
+  - type: scene
+    heading: Hold its hand
+    nav: hold its hand
+    blocks:
+      - type: paragraph
+        text: >-
+          Some people go the other way. They hold the agent's hand: a page that says exactly what
+          to build, down to every shelf, every item, every message and every file, so there is
+          nothing left to guess. Here is that page, and what came back.
+      - type: list
+        heading: Your page
+        style: bullets
+        items:
+          - "Four shelves, top to bottom: top shelf, middle shelf, bottom shelf, salad drawer."
+          - >-
+            Eight items in the tray: cheese, yoghurt, cooked chicken, leftover lasagne, raw
+            chicken, raw salmon, lettuce, tomatoes.
+          - >-
+            Cheese and yoghurt go on the top shelf. Lasagne goes on the middle shelf. Raw chicken,
+            raw salmon and cooked chicken go on the bottom shelf. Lettuce and tomatoes go in the
+            salad drawer.
+          - >-
+            A right drop shows "Correct!" in green. A wrong drop shows "Wrong, try again" in red,
+            and the item goes back to the tray.
+          - When all eight are placed, show "Well done!" and the score out of eight.
+          - >-
+            Four files: one for the shelves, one for the items, one for the messages, one for the
+            score. Use the colours in the client's style guide.
+          - Build exactly this. Nothing else.
+      - type: quote
+        text: >-
+          Done. Four shelves, eight items and four files, exactly as you set out. A right drop
+          shows "Correct!" in green; a wrong drop shows "Wrong, try again" in red and the item goes
+          back to the tray. Cooked chicken goes on the bottom shelf with the raw chicken and the
+          raw salmon, as listed. When all eight are placed it shows "Well done!" and the score out
+          of eight.
+        attribution: The agent
+      - type: paragraph
+        text: >-
+          Everything on the page is there, and nothing else. A wrong drop says "Wrong, try again"
+          and never why, because the page never thought of reasons, and telling staff why is what
+          the client's course is for. The cooked chicken sits on the bottom shelf beside the raw,
+          where raw juices can drip onto food nobody will cook again, because the page got it
+          wrong. And the agent suggests nothing, because the page left it no room to.
+      - type: paragraph
+        text: "*Two ways to ask, two ways to lose. Back to the one line first.*"
+    side:
+      - type: paragraph
+        heading: What to watch for
+        text: >-
+          The one-line ask left every gap open, and the agent filled them with guesses. This page
+          leaves no gap at all, so your own mistakes are built in, and nothing you did not think
+          of gets in.
+
   - type: choose
     slug: what-went-wrong
     scored: false
@@ -80,6 +134,12 @@ screens:
               Given room, an agent builds into it. More is not better; more is more to check.
           - title: It marked its own homework.
             body: The agent that built it is the worst judge of it. It believes its own plan.
+          - title: Too tight gets your own blind spots.
+            body: >-
+              The page-long ask got exactly what it said: no reasons, and the cooked chicken beside
+              the raw. Hold its hand and your mistakes are built in, and it has no room to suggest
+              anything better. The middle way is the next module: describe it loosely, then let it
+              ask.
           - title: Here is the part that works.
             body: >-
               The same agent, pointed at someone else's work with a clear question, is sharp. That
