@@ -7,8 +7,8 @@ import type { ScreenProps } from '../types.ts';
 import './Takeaway.css';
 
 /**
- * A module's last screen: the takeaway card and the box with this module's wall and every
- * earlier one solid (the ring from 06; everything on 07), then any end copy. Showing it
+ * A module's last screen: the takeaway card and the box with the walls this module adds and
+ * every earlier module's solid (and the ring once a module has added it), then any end copy. Showing it
  * completes the module, so it reports `takeaway-reached` each time it is shown. It has no
  * heading of its own, so the card is the page's h1.
  */

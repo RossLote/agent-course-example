@@ -3,12 +3,12 @@
 // empty progress a screen is rendered with, a fridge, and the screens more than one test plays.
 // A test that needs the real course reads it from content/index.ts and builds what it expects
 // from what it reads (its counts, slugs and points), never from a module's copy or screen list.
-import type { Course, Fridge, Module, Screen, ScreenOf } from '../../content/index.ts';
-import { moduleWall } from '../../content/schema.ts';
+import type { Course, Fridge, Module, ModuleWall, Screen, ScreenOf } from '../../content/index.ts';
 import type { ModuleProgress } from '../../screens/types.ts';
 import { NO_ANSWERS } from './progress.ts';
 
-const WALLS = moduleWall.options;
+/** What each fixture module adds to the box, by its number: as the real course is walled (C20). */
+const WALLS: readonly ModuleWall[] = ['none', 'record', ['gate', 'agents'], 'evidence', 'ring'];
 
 /** The progress of a module nothing has been answered in: what a screen's test renders it with. */
 export const NO_PROGRESS: ModuleProgress = { items: NO_ANSWERS, score: { raw: 0, max: 0 } };
@@ -33,8 +33,9 @@ export function fixtureTakeaway(text = 'The takeaway card.'): Screen {
 }
 
 /**
- * The course: eight modules 00 to 07 walled as the real one is (none, the five walls, the ring,
- * all), each a scene and its takeaway unless `modules` gives some of them by slug.
+ * The course: five modules 00 to 04 walled as the real one is (none, the record, the gate and
+ * the reviews together, evidence, the ring), each a scene and its takeaway unless `modules`
+ * gives some of them by slug.
  */
 export function fixtureCourse(modules: Readonly<Record<string, Screen[]>> = {}): Course {
   return {
@@ -43,7 +44,7 @@ export function fixtureCourse(modules: Readonly<Record<string, Screen[]>> = {}):
     description: 'The description.',
     box: {
       centre: 'the builder',
-      walls: { record: 'R wall', done: 'D wall', gate: 'G wall', agents: 'A wall', evidence: 'E wall' },
+      walls: { record: 'R wall', gate: 'G wall', agents: 'A wall', evidence: 'E wall' },
       ring: 'the ring',
     },
     scenario: {
@@ -60,7 +61,7 @@ export function fixtureCourse(modules: Readonly<Record<string, Screen[]>> = {}):
       note: 'A note.',
     },
     home: {
-      meta: 'Eight modules',
+      meta: 'Five modules',
       leave: 'Leave any time',
       eyebrow: 'Remember',
       heading: 'The home heading.',

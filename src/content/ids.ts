@@ -1,6 +1,6 @@
 // What the content alone decides about ids and the box, derived in one place so the record
 // store (.8), the statements (.9, .18) and the takeaway never derive it again.
-import { BOX_WALLS, type BoxWall, type ModuleWall, type Screen } from './schema.ts';
+import { BOX_WALLS, wallsAdded, type BoxWall, type ModuleWall, type Screen } from './schema.ts';
 
 /**
  * A screen's activity path under the course id (D24, PLAN.md §6a), or null for a screen that
@@ -50,23 +50,22 @@ export function activityId(course: { id: string }, path: string): string {
 
 /** The box as a module's takeaway draws it. */
 export interface BoxState {
-  /** The walls drawn solid; the rest are dashed. */
+  /** The walls drawn solid, in BOX_WALLS order; the rest are dashed. */
   walls: BoxWall[];
-  /** The retro's ring round the box (06 and after). */
+  /** The retro's ring round the box, from the module that adds it on. */
   ring: boolean;
 }
 
 /**
- * The box once the module `slug` is complete: its own wall and every earlier module's. A
- * module whose wall is `ring` adds the ring; `all` draws every wall and the ring.
+ * The box once the module `slug` is complete: the walls it adds (none, one or two) and every
+ * earlier module's, and the ring once a module up to it has added the ring.
  */
 export function boxAfter(modules: readonly { slug: string; wall: ModuleWall }[], slug: string): BoxState {
   const upTo = modules.findIndex((m) => m.slug === slug);
   if (upTo === -1) throw new Error(`no module "${slug}"`);
-  const added = new Set(modules.slice(0, upTo + 1).map((m) => m.wall));
-  const all = added.has('all');
+  const added = new Set(modules.slice(0, upTo + 1).flatMap((m) => wallsAdded(m.wall)));
   return {
-    walls: BOX_WALLS.filter((w) => all || added.has(w)),
-    ring: all || added.has('ring'),
+    walls: BOX_WALLS.filter((w) => added.has(w)),
+    ring: added.has('ring'),
   };
 }

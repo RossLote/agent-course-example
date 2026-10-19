@@ -6,14 +6,17 @@ a text file and needs no code (D13, D21). The engine in `src/` renders it.
 ```
 content/
   course.yaml            the course: id, title, description, the scenario and home pages,
-                         the box's labels, and the eight modules in order
-  modules/00.yaml … 07.yaml   each module's screens, in order
-  fridge/one-shot.yaml   the fridge the agent built from a one-line ask (modules 00 and 05)
-  fridge/accepted.yaml   the fridge the learner accepted (module 05)
+                         the box's labels, and the five modules in order
+  modules/00.yaml … 04.yaml   each module's screens, in order: five module files
+  fridge/one-shot.yaml   the fridge the agent built from a one-line ask (modules 00 and 03)
+  fridge/accepted.yaml   the fridge the learner accepted (module 03)
 ```
 
-The storyboard in `docs/course/modules/` is the source of the copy and the YAML carries it
-word for word; where the design boards in `docs/design/` differ in copy, the design wins.
+`content/` is the source of the copy (C24): what is written here is what the learner reads,
+and Ross reviews it by playing the course. The storyboard in `docs/course/modules/` is round
+one's draft for eight modules, kept for the record and not updated. Copy no decision fixes is
+written in the course's register: second person, plain words, the existing YAML as the
+pattern, and no code, file paths or line numbers on any screen (C22).
 
 ## Checking an edit
 
@@ -32,7 +35,8 @@ marked optional. Run `npm run test` after an edit; the app checks the files agai
 starts, and a bad one stops it with the same message.
 
 **The schema has one owner.** It lives in `src/content/schema.ts` and belongs to bead
-agent-course-wqw.2. A bead that needs a field the schema lacks files a bead for it (the
+agent-course-bsg.3 (round one's agent-course-wqw.2 wrote it; round three changed it for the
+four walls). A bead that needs a field the schema lacks files a bead for it (the
 epic's CHANGE PROTOCOL); it never edits the schema itself. This README and the schema change
 together.
 
@@ -64,7 +68,7 @@ Every statement names an activity under the course id in course.yaml,
 | --- | --- |
 | a module | `modules/<nn>`, `<nn>` its slug in course.yaml (`modules/04`) |
 | a check: a `choose` with `scored: true` | `modules/<nn>/checks/<n>`, `<n>` counting the module's scored chooses from 1 in screen order |
-| any other interaction: chat, brief, unscored choose, match, order (module 07's scored order and match too) | `modules/<nn>/interactions/<slug>` |
+| any other interaction: chat, brief, unscored choose, match, order (a scored order or match too) | `modules/<nn>/interactions/<slug>` |
 | a fridge, wherever it is played | `fridge/<name>`, `<name>` its file name (`fridge/one-shot`) |
 
 So every chat, brief, choose, match and order has a `slug`, unique within its module; scene,
@@ -82,7 +86,7 @@ description: A course on working with AI agents, …   # written into tincan.xml
 
 box:                         # the labels the box is drawn with
   centre: the builder
-  walls: { record: 01 the record, done: 02 done, gate: 03 the gate, agents: 04 other agents, evidence: 05 evidence }
+  walls: { record: 01 the record, gate: 02 the gate, agents: 02 the reviews, evidence: 03 evidence }
   ring: "the retro: round again, change the check"
 
 scenario:                    # the first page (D16)
@@ -93,35 +97,40 @@ scenario:                    # the first page (D16)
   lines:                     # exactly three, numbered 01 to 03
     - { title: The tool doesn't do it., text: Its drag-and-drop can't … }
   button: Take the job
-  note: Eight short modules, about 50 minutes. …
+  note: Five short modules, about 30 minutes. …
 
 home:
-  meta: Eight modules · about 50 minutes      # top bar
+  meta: Five modules · about 30 minutes       # top bar
   leave: Leave after any module and come back # top bar
-  eyebrow: The one thing to remember
-  heading: Agents are better at reviewing than building.
+  eyebrow: Two things to remember
+  heading: Talk it through before it builds. Then never let the builder judge its own work.
   quote: { text: "So whenever you have agents do anything, …", attribution: Ross Lote }
-  line: Every module adds one wall to the box on the right. …
+  line: The box on the right is open. Over the course its four walls go up, …
   start: Start module 00
   scenarioLink: The scenario again
   box: { centre: the agent, caption: An open box. … }
   modulesHeading: The modules
 
 modules:                     # in order
-  - slug: "04"               # two digits, quoted: its number in ids and routes
-    title: Agents checking agents
-    minutes: 9
-    wall: agents             # what this module adds to the box (below)
-    wallLabel: "wall 4: other agents"   # the home page card's wall line
-    blurb: Simplify, review, adversarial review. You play the skeptic.
-    file: modules/04.yaml
+  - slug: "02"               # two digits, quoted: its number in ids and routes
+    title: While you're away
+    minutes: 8
+    wall: [gate, agents]     # what this module adds to the box (below)
+    wallLabel: the gate and the reviews   # the home page card's wall line
+    blurb: Read the plan and say go, then see what keeps the work honest while you are gone.
+    file: modules/02.yaml
 ```
 
-**Walls.** A module's `wall` is one of `none` (module 00: the open box), `record`, `done`,
-`gate`, `agents`, `evidence` (modules 01 to 05, one each), `ring` (module 06: the retro's
-arrow round the box) or `all` (module 07: the whole box with the ring). Each wall is used
-once. A module's takeaway draws its own wall and every earlier module's solid, the rest
-dashed; `boxAfter(modules, slug)` in `src/content/` works it out.
+**Walls.** The box has four walls, in this order: the record (`record`), the gate (`gate`),
+the reviews (`agents`) and evidence (`evidence`), each labelled in `box.walls`, and the
+retro's ring round them (`box.ring`). The diagram draws them as the four sides of a box, top
+first and clockwise. A module's `wall` is what it adds: `none` (module 00: the open box), one
+wall (`record` in module 01, `evidence` in module 03), two walls as a list (`[gate, agents]`
+in module 02: a module may add two), or `ring` (module 04: the retro's arrow round the box).
+Each wall and the ring is added once, and no module adds the whole box at once; any other
+value fails the content test, naming the field. A module's takeaway draws the walls it adds
+and every earlier module's solid, the rest dashed; `boxAfter(modules, slug)` in
+`src/content/` works it out.
 
 ## A module file
 
@@ -134,9 +143,9 @@ screens:
     …
 ```
 
-One screen is one type. A storyboard screen that does two things becomes two screens in a
-row (module 00's "Just ask" is a chat, then a choose, then a fridge; every Check is two
-choose screens, "Check · 1 of 2" and "Check · 2 of 2").
+One screen is one type. A step that does two things becomes two screens in a row (a chat
+the learner replies to, then a choose about what it did; every Check is two choose screens,
+"Check · 1 of 2" and "Check · 2 of 2").
 
 Every screen except the takeaway has these, besides its own fields:
 
@@ -278,13 +287,15 @@ missed." The verdicts and the summary are fixed words in the screen's code, not 
 Optional extras:
 
 - `body`: blocks above the prompt (excerpts, a pull request).
-- `reveal` on an option: blocks shown only when that option is chosen (module 04's fix).
+- `reveal` on an option: blocks shown only when that option is chosen (a fix shown on the
+  right verdict).
 - `after`: blocks shown once the answer is checked (module 00's "what just happened").
-- `box`: the box panel beside the options (module 03). Each option may name the `wall` it
-  draws while ticked; `caption` is a template with `{up}` and `{total}`.
+- `box`: the box panel beside the options. Each option may name the `wall` it draws while
+  ticked; `caption` is a template with `{up}` and `{total}`. Its walls are the screen's own,
+  not the course's four.
 - `checkLabel`: the Check button's text, "Check my answer" if absent.
-- `tryAgainLabel`: the same button's text once checked, "Try again" if absent (module 04's
-  verdict: "Try another verdict"). Match and order take both labels too.
+- `tryAgainLabel`: the same button's text once checked, "Try again" if absent (a verdict
+  might say "Try another verdict"). Match and order take both labels too.
 
 A check:
 
@@ -352,18 +363,18 @@ the id of its right target; its `feedback` shows once checked. Scored: a point p
 - type: match
   slug: name-the-wall
   scored: true
-  eyebrow: Capstone
+  eyebrow: Try it
   heading: Name the wall
   targets:
     - { id: record, label: the record }
-    - { id: done, label: done }
+    - { id: evidence, label: evidence }
   rows:
     - text: The builder added a "hint streak" counter nobody asked for.
       key: record
       feedback: The record. A gap in the brief was filled with a guess.
-    - text: The builder says the hint is done, and you cannot say whether it is.
-      key: done
-      feedback: Done. No acceptance a reviewer can see.
+    - text: The builder says the hint works, and shows you nothing.
+      key: evidence
+      feedback: Evidence. There is nothing to judge it from.
   checkLabel: Check my answers
 ```
 
@@ -378,7 +389,7 @@ correct. A card's `feedback` shows when it is out of place.
 # screen
 - type: order
   slug: order-the-loop
-  eyebrow: Capstone
+  eyebrow: Try it
   heading: Order the loop
   cards:
     - id: brief
@@ -440,7 +451,7 @@ difference.
 The module's last screen, and the only one without a heading: the card, and the box with
 this module's wall gained (from course.yaml's `wall`). Reaching it completes the module.
 Of the fields every other screen has, it takes `eyebrow` (every module's reads "Takeaway")
-and `nav`. `end` holds blocks shown after the card (module 07's end copy).
+and `nav`. `end` holds blocks shown after the card (module 04's end copy).
 
 ```yaml
 # screen
@@ -523,7 +534,7 @@ activity id (`fridge/<name>`). One fridge component plays every file (D17).
 
 ```yaml
 # fridge
-title: "Module 05: what you accepted"   # the panel's heading
+title: What you accepted        # the panel's heading
 caption: Four shelves, eight items, the client's rules. …   # the line under it
 shelves:                       # top to bottom; the keyboard's arrows move through them in this order
   - id: top

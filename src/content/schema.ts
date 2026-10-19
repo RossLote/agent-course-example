@@ -37,13 +37,27 @@ function idsOf<T>(items: readonly T[], list: string, key: (item: T) => string) {
 // ---------------------------------------------------------------------------------------------
 // The box and its walls.
 
-/** The five walls of the box, in the order the modules add them. */
-export const BOX_WALLS = ['record', 'done', 'gate', 'agents', 'evidence'] as const;
+/** The four walls of the box, in the order the modules add them and the diagram draws them (C20). */
+export const BOX_WALLS = ['record', 'gate', 'agents', 'evidence'] as const;
 export type BoxWall = (typeof BOX_WALLS)[number];
 
-/** What a module adds to the box: nothing (00), one wall (01-05), the ring (06), everything (07). */
-export const moduleWall = z.enum(['none', ...BOX_WALLS, 'ring', 'all']);
+/**
+ * What a module adds to the box: nothing (`none`), one wall, two walls as a list
+ * (`[gate, agents]`), or the retro's ring round it (`ring`). No module adds the whole box.
+ */
+export const moduleWall = z.union(
+  [
+    z.enum(['none', ...BOX_WALLS, 'ring']),
+    z.tuple([z.enum(BOX_WALLS), z.enum(BOX_WALLS)], { error: (issue) => (issue.code === 'too_big' || issue.code === 'too_small' ? 'must list exactly two walls' : undefined) }),
+  ],
+  `must be none, one of ${BOX_WALLS.join(', ')}, a list of two of them, or ring`,
+);
 export type ModuleWall = z.infer<typeof moduleWall>;
+
+/** The walls and the ring a module adds, as a list: `none` adds nothing. */
+export function wallsAdded(wall: ModuleWall): (BoxWall | 'ring')[] {
+  return wall === 'none' ? [] : [wall].flat();
+}
 
 // ---------------------------------------------------------------------------------------------
 // Scene blocks (PLAN.md §6a). Columns hold any block but another columns block.
@@ -165,7 +179,7 @@ const takeawayScreen = z.strictObject({
   text,
   /** The line under the box ("The box gains its first wall. Four to go, then the arrow."). */
   caption: text,
-  /** Shown after the card; module 07's end copy. */
+  /** Shown after the card; the last module's end copy. */
   end: blocks.optional(),
 });
 
@@ -398,7 +412,7 @@ export type ModuleFile = z.infer<typeof moduleFile>;
 
 export const fridgeFile = z
   .strictObject({
-    /** The panel's heading ("Module 05: what you accepted"). */
+    /** The panel's heading ("What you accepted"). */
     title: text,
     /** The line under the panel. */
     caption: text,
@@ -458,7 +472,7 @@ const moduleEntry = z.strictObject({
   title: text,
   minutes: z.number().int().positive(),
   wall: moduleWall,
-  /** The wall line on the home page card ("wall 1: the record"). */
+  /** The wall line on the home page card ("the record"). */
   wallLabel: text,
   /** The line on the home page card. */
   blurb: text,
@@ -477,7 +491,8 @@ export const courseFile = z
     /** The labels the box is drawn with, on the takeaways and the home page. */
     box: z.strictObject({
       centre: text,
-      walls: z.strictObject({ record: text, done: text, gate: text, agents: text, evidence: text }),
+      /** One label per wall of BOX_WALLS. */
+      walls: z.strictObject({ record: text, gate: text, agents: text, evidence: text }),
       ring: text,
     }),
     /** The scenario page (D16): the first page of the course. */
@@ -508,7 +523,7 @@ export const courseFile = z
   .superRefine((c, ctx) => {
     uniqueIds(idsOf(c.modules, 'modules', (m) => m.slug), ctx, 'module slug');
     uniqueIds(idsOf(c.modules, 'modules', (m) => m.file), ctx, 'module file');
-    const walls = c.modules.flatMap((m, i) => (m.wall === 'none' ? [] : [{ id: m.wall, path: ['modules', i, 'wall'] }]));
+    const walls = c.modules.flatMap((m, i) => wallsAdded(m.wall).map((id) => ({ id, path: ['modules', i, 'wall'] })));
     uniqueIds(walls, ctx, 'wall');
   });
 export type CourseFile = z.infer<typeof courseFile>;

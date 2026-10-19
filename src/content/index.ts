@@ -14,7 +14,7 @@ export const contentFiles: Readonly<Record<string, unknown>> = Object.fromEntrie
   Object.entries(globbed).map(([path, data]) => [path.replace('../../content/', ''), data]),
 );
 
-/** The validated course: course.yaml, its eight modules in order, and the fridges by name. */
+/** The validated course: course.yaml, its modules in order, and the fridges by name. */
 export const course = validateContent(contentFiles);
 
 export { ContentError, validateContent } from './validate.ts';

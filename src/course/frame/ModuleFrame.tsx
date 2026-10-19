@@ -45,7 +45,7 @@ function ModuleDots({ modules, current }: { modules: readonly Module[]; current:
 
 /**
  * The frame every module plays in (PLAN.md §6a, "The frame"): the top bar with the module, the
- * eight dots and "Screen n of m"; the screen's eyebrow, heading, intro and side around the
+ * one dot per module and "Screen n of m"; the screen's eyebrow, heading, intro and side around the
  * screen itself; Back and Next. Back always works, and goes home from the first screen; Next
  * goes home from the takeaway, and waits on a scored screen until it is answered. A route past
  * a scored screen still unanswered shows that screen instead, and the hash is replaced to say so.

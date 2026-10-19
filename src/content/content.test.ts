@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import readme from '../../content/README.md?raw';
 import { block, fridgeFile, screen } from './schema.ts';
-import { ContentError, activityId, activityPath, boxAfter, contentFiles, course, fridgeActivityPath, moduleActivityPath, validateContent, type Screen } from './index.ts';
+import { ContentError, activityId, activityPath, boxAfter, contentFiles, course, fridgeActivityPath, moduleActivityPath, validateContent, type ModuleWall, type Screen } from './index.ts';
 
 /** contentFiles with one file replaced by a changed copy of itself. */
 function withFile(file: string, change: (data: Record<string, unknown>) => void): Record<string, unknown> {
@@ -88,6 +88,31 @@ describe('content/', () => {
     expect(problems(bad)).toEqual([`content/${file} screens[1].slug: slug "twice" is used twice`]);
   });
 
+  it('fails on a wall course.yaml does not allow, naming the field', () => {
+    const withWall = (wall: unknown) =>
+      problems(
+        withFile('course.yaml', (c) => {
+          (c.modules as Record<string, unknown>[])[0].wall = wall;
+        }),
+      );
+    const allowed = 'must be none, one of record, gate, agents, evidence, a list of two of them, or ring';
+    expect(withWall('done')).toEqual([`content/course.yaml modules[0].wall: ${allowed}`]);
+    expect(withWall('all')).toEqual([`content/course.yaml modules[0].wall: ${allowed}`]);
+    expect(withWall(['record', 'gate', 'agents'])).toEqual(['content/course.yaml modules[0].wall: must list exactly two walls']);
+    expect(withWall(['gate', 'ring'])[0]).toMatch(/^content\/course\.yaml modules\[0\]\.wall\[1\]: /);
+  });
+
+  it('fails when two modules add the same wall, one of them in a list of two', () => {
+    const last = entries.length - 1;
+    const bad = withFile('course.yaml', (c) => {
+      const modules = c.modules as Record<string, unknown>[];
+      for (const m of modules) m.wall = 'none';
+      modules[0].wall = 'gate';
+      modules[last].wall = ['agents', 'gate'];
+    });
+    expect(problems(bad)).toEqual([`content/course.yaml modules[${last}].wall: wall "gate" is used twice`]);
+  });
+
   it('fails when course.yaml lists a module file that does not exist', () => {
     const last = entries.length - 1;
     const bad = withFile('course.yaml', (c) => {
@@ -156,13 +181,17 @@ describe('activityPath (D24)', () => {
 });
 
 describe('boxAfter', () => {
-  const walls = ['none', 'record', 'done', 'gate', 'agents', 'evidence', 'ring', 'all'] as const;
+  const walls: ModuleWall[] = ['none', 'record', ['agents', 'gate'], 'evidence', 'ring'];
   const modules = walls.map((wall, i) => ({ slug: `0${i}`, wall }));
 
-  it('draws a module wall and every earlier one, the ring from 06, everything at 07', () => {
+  it("draws a module's walls, none, one or two, and every earlier module's, in the order of the walls", () => {
     expect(boxAfter(modules, '00')).toEqual({ walls: [], ring: false });
-    expect(boxAfter(modules, '03')).toEqual({ walls: ['record', 'done', 'gate'], ring: false });
-    expect(boxAfter(modules, '06')).toEqual({ walls: ['record', 'done', 'gate', 'agents', 'evidence'], ring: true });
-    expect(boxAfter(modules, '07')).toEqual({ walls: ['record', 'done', 'gate', 'agents', 'evidence'], ring: true });
+    expect(boxAfter(modules, '01')).toEqual({ walls: ['record'], ring: false });
+    expect(boxAfter(modules, '02')).toEqual({ walls: ['record', 'gate', 'agents'], ring: false });
+    expect(boxAfter(modules, '03')).toEqual({ walls: ['record', 'gate', 'agents', 'evidence'], ring: false });
+  });
+
+  it('adds the ring from the module that adds it', () => {
+    expect(boxAfter(modules, '04')).toEqual({ walls: ['record', 'gate', 'agents', 'evidence'], ring: true });
   });
 });

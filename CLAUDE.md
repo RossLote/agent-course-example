@@ -98,9 +98,10 @@ run at once. Nothing is fetched from the network at run time, and every e2e spec
 The learning designers author the course as data and the engine renders it and sends the xAPI
 statements, so a wording change needs no run (PLAN.md §6 and §6a).
 
-- `content/`: the course as YAML (`course.yaml`, `modules/00..07.yaml`, `fridge/*.yaml`),
+- `content/`: the course as YAML (`course.yaml`, `modules/00..04.yaml`, `fridge/*.yaml`),
   parsed at build time and validated by the one schema in `src/content/`, which also derives
-  the activity ids and the box.
+  the activity ids and the box: four walls (the record, the gate, the reviews, evidence) and
+  the retro's ring, each module adding no wall, one wall, two, or the ring.
 - `src/course/`: the shell: hash routes, the top bar, the scenario and home pages, the box;
   `src/course/frame/` is the frame every module screen plays in, and `src/screens/` the screen
   registry with one folder per screen type.

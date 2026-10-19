@@ -1,5 +1,5 @@
 # The course: its id, its description, the copy of its two course-level pages (the scenario
-# and the home page), the labels the box is drawn with, and its eight modules in order.
+# and the home page), the labels the box is drawn with, and its five modules in order.
 # Every field is documented in content/README.md.
 
 # The course activity id (D24): the root of every module, check, interaction and fridge id.
@@ -14,10 +14,9 @@ box:
   centre: the builder
   walls:
     record: 01 the record
-    done: 02 done
-    gate: 03 the gate
-    agents: 04 other agents
-    evidence: 05 evidence
+    gate: 02 the gate
+    agents: 02 the reviews
+    evidence: 03 evidence
   ring: "the retro: round again, change the check"
 
 scenario:
@@ -43,91 +42,71 @@ scenario:
     - title: You have an agent that writes code.
       text: >-
         Your job is not to build the activity. It is to get something out of the agent that
-        you would put in front of this client: answer its questions, decide what done means,
-        put checks round it, judge what comes back.
+        you would put in front of this client: answer its questions, say go to its plan, judge
+        what comes back.
     - title: The agent in this course is scripted, nothing real.
       text: >-
         It behaves as real ones do: fast, confident, helpful, and happy to fill a gap with a
         guess. You will see it go wrong, and you will learn the walls that stop it.
   button: Take the job
-  note: Eight short modules, about 50 minutes. Leave after any one and come back; the job waits.
+  note: Five short modules, about 30 minutes. Leave after any one and come back; the job waits.
 
 home:
-  meta: Eight modules · about 50 minutes
+  meta: Five modules · about 30 minutes
   leave: Leave after any module and come back
-  eyebrow: The one thing to remember
-  heading: Agents are better at reviewing than building.
+  eyebrow: Two things to remember
+  heading: Talk it through before it builds. Then never let the builder judge its own work.
   quote:
     text: >-
       So whenever you have agents do anything, also have agents look at what the agents have
       done. Put the agent in a tight box it can't wander off from, and check, and check again.
     attribution: Ross Lote
   line: >-
-    Every module adds one wall to the box on the right. By the end you can set up a piece of
-    agent work so that you can trust what comes back.
+    The box on the right is open. Over the course its four walls go up, the record first, and
+    by the end you know how to set up a piece of agent work so that you can trust what comes
+    back.
   start: Start module 00
   scenarioLink: The scenario again
   box:
     centre: the agent
-    caption: An open box. The walls go up one module at a time; the retro is the arrow round the whole thing.
+    caption: An open box. Its four walls go up over the course, two of them at once; the retro is the arrow round the whole thing.
   modulesHeading: The modules
 
-# In order. `wall` is what the module adds to the box: none, record, done, gate, agents,
-# evidence, ring (the retro's arrow round the box) or all (the whole box, at the end).
+# In order. `wall` is what the module adds to the box: none, one wall (record, gate, agents
+# or evidence), two walls as a list ([gate, agents]), or ring (the retro's arrow round the box).
 modules:
   - slug: "00"
     title: What works and what doesn't
     minutes: 5
     wall: none
     wallLabel: the open box
-    blurb: A vague ask, and what an agent does with it.
+    blurb: Ask in one line, then in a page of detail, and see what each one gets you.
     file: modules/00.yaml
   - slug: "01"
-    title: Write it down
+    title: The brief
     minutes: 7
     wall: record
-    wallLabel: "wall 1: the record"
-    blurb: The agent asks, you decide, the decisions are on the record.
+    wallLabel: the record
+    blurb: Describe what you want loosely, answer its questions, and take or turn down its ideas.
     file: modules/01.yaml
   - slug: "02"
-    title: Define done before you start
-    minutes: 7
-    wall: done
-    wallLabel: "wall 2: done"
-    blurb: Pieces with acceptance a reviewer can see.
+    title: While you're away
+    minutes: 8
+    wall: [gate, agents]
+    wallLabel: the gate and the reviews
+    blurb: Read the plan and say go, then see what keeps the work honest while you are gone.
     file: modules/02.yaml
   - slug: "03"
-    title: The box
-    minutes: 6
-    wall: gate
-    wallLabel: "wall 3: the gate"
-    blurb: Tests and checks that must be green before done.
+    title: What comes back
+    minutes: 8
+    wall: evidence
+    wallLabel: evidence
+    blurb: Judge the finished work from its evidence, without reading the code, and merge it or send it back.
     file: modules/03.yaml
   - slug: "04"
-    title: Agents checking agents
-    minutes: 9
-    wall: agents
-    wallLabel: "wall 4: other agents"
-    blurb: Simplify, review, adversarial review. You play the skeptic.
-    file: modules/04.yaml
-  - slug: "05"
-    title: Judging what comes back
-    minutes: 6
-    wall: evidence
-    wallLabel: "wall 5: evidence"
-    blurb: Door, undo, walkthrough. Merge or not.
-    file: modules/05.yaml
-  - slug: "06"
-    title: Round again
-    minutes: 6
+    title: Round again, and make it yours
+    minutes: 7
     wall: ring
     wallLabel: the arrow round the box
-    blurb: A second round, and the check that missed.
-    file: modules/06.yaml
-  - slug: "07"
-    title: Put it together
-    minutes: 6
-    wall: all
-    wallLabel: all of them
-    blurb: A new request. Name the wall for each thing that goes wrong.
-    file: modules/07.yaml
+    blurb: Expect a second round, change the check that missed, and make the way you work a skill.
+    file: modules/04.yaml

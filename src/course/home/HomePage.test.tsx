@@ -41,7 +41,7 @@ describe('HomePage', () => {
   it('draws the open box: every wall dashed round the agent, with its caption', () => {
     const { container } = render(<HomePage course={course} />);
     expect(screen.getByRole('img').textContent).toContain('The box round the agent. No wall is up yet');
-    expect([...container.querySelectorAll('[data-wall]')].map((g) => g.getAttribute('data-state'))).toEqual(Array(5).fill('dashed'));
+    expect([...container.querySelectorAll('[data-wall]')].map((g) => g.getAttribute('data-state'))).toEqual(Object.keys(box.walls).map(() => 'dashed'));
     expect(screen.getByText('The caption.')).toBeTruthy();
   });
 

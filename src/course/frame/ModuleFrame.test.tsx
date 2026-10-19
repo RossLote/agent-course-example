@@ -87,14 +87,15 @@ const next = () => screen.getByRole('button', { name: /^Next/ });
 const back = () => screen.getByRole('button', { name: 'Back' });
 
 describe('ModuleFrame', () => {
-  it('shows the first screen with the module, eight dots with the current one marked, and "Screen 1 of n"', () => {
+  it('shows the first screen with the module, a dot per module with the current one marked, and "Screen 1 of n"', () => {
     const { container } = renderFrame();
     const bar = screen.getByRole('banner');
+    const total = course.modules.length;
     expect(within(bar).getByText('Module 01 · Module 01 title')).toBeTruthy();
-    expect(within(bar).getByRole('img', { name: 'Module 2 of 8' })).toBeTruthy();
+    expect(within(bar).getByRole('img', { name: `Module 2 of ${total}` })).toBeTruthy();
     const dots = [...container.querySelectorAll('.frame-dot')];
-    expect(dots).toHaveLength(8);
-    expect(dots.map((d) => d.hasAttribute('data-current'))).toEqual([false, true, false, false, false, false, false, false]);
+    expect(dots).toHaveLength(total);
+    expect(dots.map((d) => d.hasAttribute('data-current'))).toEqual(course.modules.map((_, i) => i === 1));
     expect(within(bar).getByText('Screen 1 of 6')).toBeTruthy();
   });
 

@@ -41,20 +41,24 @@ describe('TakeawayScreen', () => {
   });
 
   it('draws the open box on 00', () => {
-    expect(renderTakeaway('00')).toMatchObject({ walls: { record: 'dashed', done: 'dashed', gate: 'dashed', agents: 'dashed', evidence: 'dashed' }, ring: 'false' });
+    expect(renderTakeaway('00')).toMatchObject({ walls: { record: 'dashed', gate: 'dashed', agents: 'dashed', evidence: 'dashed' }, ring: 'false' });
   });
 
   it("draws the module's wall and every earlier one solid, the rest dashed", () => {
-    expect(renderTakeaway('03')).toMatchObject({ walls: { record: 'solid', done: 'solid', gate: 'solid', agents: 'dashed', evidence: 'dashed' }, ring: 'false' });
+    expect(renderTakeaway('01')).toMatchObject({ walls: { record: 'solid', gate: 'dashed', agents: 'dashed', evidence: 'dashed' }, ring: 'false' });
   });
 
-  it('adds the ring on 06', () => {
-    expect(renderTakeaway('06')).toMatchObject({ walls: { record: 'solid', done: 'solid', gate: 'solid', agents: 'solid', evidence: 'solid' }, ring: 'true' });
+  it('draws both walls gained on a module that adds two', () => {
+    expect(renderTakeaway('02')).toMatchObject({ walls: { record: 'solid', gate: 'solid', agents: 'solid', evidence: 'dashed' }, ring: 'false' });
   });
 
-  it('draws the complete box with the ring on 07, then the end copy', () => {
+  it('draws the whole box once every wall is added, still without the ring', () => {
+    expect(renderTakeaway('03')).toMatchObject({ walls: { record: 'solid', gate: 'solid', agents: 'solid', evidence: 'solid' }, ring: 'false' });
+  });
+
+  it('adds the ring round the whole box on the module that adds it, then the end copy', () => {
     const shown = takeaway({ end: [{ type: 'paragraph', text: 'This course was built *the way* it describes.' }] });
-    expect(renderTakeaway('07', shown)).toMatchObject({ walls: { record: 'solid', done: 'solid', gate: 'solid', agents: 'solid', evidence: 'solid' }, ring: 'true' });
+    expect(renderTakeaway('04', shown)).toMatchObject({ walls: { record: 'solid', gate: 'solid', agents: 'solid', evidence: 'solid' }, ring: 'true' });
     expect(screen.getByText(/This course was built/).innerHTML).toBe('This course was built <em>the way</em> it describes.');
   });
 });
