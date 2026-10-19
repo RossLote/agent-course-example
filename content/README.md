@@ -249,7 +249,7 @@ for each decision it fills; Send answers sends nothing.
               recommended: true
             - label: Managers at a desk, as a refresher
               decision: Managers at a desk, as a refresher; no time pressure.
-    - message: Took your answers as D1 to D5 on the right. Three more; the rest I can leave to the builder.
+    - message: Took your answers as D1 to D5 on the right.
       questions:
         - text: A timer?
           recommendation: "Recommended: no. Induction, not a game; a timer punishes the people the course is for."   # optional
@@ -287,8 +287,8 @@ missed." The verdicts and the summary are fixed words in the screen's code, not 
 Optional extras:
 
 - `body`: blocks above the prompt (excerpts, a pull request).
-- `reveal` on an option: blocks shown only when that option is chosen (a fix shown on the
-  right verdict).
+- `reveal` on an option: blocks shown only when that option is chosen (module 02's step 4,
+  shown when you choose to ask for it).
 - `after`: blocks shown once the answer is checked (module 00's "what just happened").
 - `box`: the box panel beside the options. Each option may name the `wall` it draws while
   ticked; `caption` is a template with `{up}` and `{total}`. Its walls are the screen's own,
@@ -324,33 +324,33 @@ Tick everything, with a reveal, after blocks and the box panel:
 ```yaml
 # screen
 - type: choose
-  slug: build-the-box
+  slug: what-holds
   scored: false
   mode: multi
   eyebrow: Try it
-  heading: Build the box
-  prompt: Tick everything that is a wall.
-  checkLabel: Check my box
+  heading: What holds while you are away?
+  prompt: Tick everything that would still hold with nobody watching.
+  checkLabel: Check my answers
   options:
-    - label: A run through the demo script in a browser, which must pass.
+    - label: Code style, types and the unit tests, which must pass before a builder hands its piece back.
       right: true
-      feedback: Wall. The touch drag breaking would be caught here.
+      feedback: It holds. It runs on every piece, whatever the builder thinks of its own work.
       wall: gate
       reveal:
-        - type: mono
-          text: "gate: lint ok · typecheck ok · unit 14/14 · e2e fridge 6/6"
+        - type: paragraph
+          text: The run through the whole thing in a browser comes once, at the end of the run.
     - label: A line asking it to please be careful and not change anything else.
       right: false
-      feedback: Not a wall. It will agree, and then it will tidy the shelves. Hope is not a check.
+      feedback: It does not hold. It will agree, and then it will tidy the shelves. Hope is not a check.
   box:
-    builder: { title: the builder, subtitle: bead .4 }
+    builder: { title: the builder, subtitle: one piece }
     walls:
-      - { id: gate, label: "the gate: lint, types, tests, a browser run" }
-      - { id: area, label: "own area, its files only" }
-    caption: "{up} of {total} walls up. Hope, context and a promise to report are not walls."
+      - { id: gate, label: "the gate: style, types, unit tests" }
+      - { id: piece, label: "what it hands back, read against its piece" }
+    caption: "{up} of {total} walls up. Hope is not a wall."
   after:
     - type: paragraph
-      text: "**Three you can check, three you can only hope.**"
+      text: "**What can be checked holds; what can only be hoped does not.**"
 ```
 
 ### match
@@ -487,7 +487,7 @@ of blocks. Most take an optional `heading`, the small line above them.
   attribution: Ross              # optional
 
 - type: list                     # style: numbered (if absent) or bullets
-  heading: The demo script (done means)
+  heading: The demo script
   items:
     - "Open the activity: four labelled shelves and eight items in a tray."
     - text: "Raw chicken to the top shelf: returns, message as specified."
@@ -507,12 +507,12 @@ of blocks. Most take an optional `heading`, the small line above them.
           items: [Changes the feedback files.]
     - heading: Boxed
       blocks:
-        - type: mono
-          text: "gate: lint ok · typecheck ok · unit 14/14"
+        - type: list
+          items: [Changes only its piece's files.]
 
-- type: mono                     # monospace: gate output, code excerpts
-  heading: A · drop handler, line 41
-  text: "if (message.visible) return;"
+- type: mono                     # monospace: words exactly as shown or heard, never code (C22)
+  heading: What the screen reader says
+  text: Lettuce placed in the salad drawer. Correct.
 
 - type: stats                    # numbers with captions
   heading: One real run of this workflow
