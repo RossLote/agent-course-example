@@ -246,9 +246,11 @@ both builds on 2026-10-19 (log `docs/conversations/2026-10-19-four-walls-not-fiv
 - **C22 No code on any screen.** No code, file paths, line numbers, gate output, bead
   cards, or read-first and touches lines anywhere; evidence is described in words ("the
   drop code, where it says to ignore a drop while a message is showing"). The copy says
-  "piece" for a bead and names "epic" once, as the plan's name; "orchestrator" is introduced once, in 02, as the
-  agent that runs the job and never writes code. Reason: the skeptic page and the gate
-  output were pages for programmers (Ross).
+  "piece" for a bead and names "epic" once, as the plan's name; "orchestrator" is
+  introduced once, in 02, as the agent that runs the job and never writes code. The
+  glossary keeps only the words the five modules use, at most sixteen, with door kept for
+  module 03's aside. Reason: the skeptic page and the gate output were pages for
+  programmers (Ross).
 - **C23 True to the skills.** Every claim the course makes about the workflow is what the
   skills do. A builder's gate is lint, types and the unit tests, and the browser run is the
   full gate at the end of the run. A builder that edits outside its files is sent back by
@@ -258,9 +260,9 @@ both builds on 2026-10-19 (log `docs/conversations/2026-10-19-four-walls-not-fiv
   skeptic must show what makes a failure impossible came from a refuted race, so 04's story
   does not list it. The one-shot runs fifteen seconds everywhere, 03's table included. The
   orchestrator, not the demo script, catches a thing built that nobody asked for. The
-  closing copy says "a recorded walkthrough someone judged", not a pull request. Reason:
-  the course claimed walls the workflow does not have (the log's review against the skills
-  and agents).
+  closing copy says "a recorded walkthrough someone judged", not a pull request. The brief
+  never says how many questions remain. Reason: the course claimed walls the workflow does
+  not have (the log's review against the skills and agents).
 - **C24 content/ is the source of the copy.** `docs/course/modules/*.md` are round one's
   draft, kept for the record and not updated; `content/README.md` and this file say so.
   Copy the decisions do not fix is the worker's, in the course's register (second person,

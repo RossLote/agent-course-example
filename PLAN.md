@@ -147,7 +147,8 @@ records the reversal. All of them bind every bead.
 - **D8 Examples invented, two real cards.** The fridge is invented; module 04 shows one real
   run's numbers from the presentation repo; module 06 tells the story of the check that
   missed without naming anyone. *Reason:* one real card makes the thesis credible, and the
-  story is the best reason for retros there is.
+  story is the best reason for retros there is. (Since C21 the numbers are in module 02 and
+  the story in module 04: "Module numbers after C21" in round three's rules.)
 - **D9 Vocabulary.** The workflow's own names, each introduced in plain words first, with a
   glossary. *Reason:* the bespoke team will meet these words.
 - **D10 Voice.** Second person; Ross named as the author, with his thesis in his words.
@@ -170,7 +171,8 @@ records the reversal. All of them bind every bead.
   gives the learner a frame of mind.
 - **D17 The fridge activity is real.** One data-driven component, shown as the one-shot in
   module 00 and beside the accepted version in module 05, both keyboard-operable.
-  *Reason:* seeing the two side by side is the payoff (Ross).
+  *Reason:* seeing the two side by side is the payoff (Ross). (Since C21 the two fridges are
+  in module 03: "Module numbers after C21" in round three's rules.)
 
 ### From the brief (D18–D24)
 
@@ -506,6 +508,19 @@ same numbers in `docs/course/README.md` §9.
 - **Activity ids reused.** The slugs 00 to 04 are reused with new content, so the module,
   check and interaction ids keep their shape (D24); the statement shapes are unchanged.
   *Reason:* the course has not launched, so nothing is recorded against them.
+- **Module numbers after C21.** The earlier rules that name a module read against the five
+  modules; the rest of each rule stands. D8: the real run's numbers are in module 02 and the
+  story of the check that missed in module 04. D17: the accepted fridge is beside the
+  one-shot in module 03. "Content in YAML": the module files are `modules/00.yaml` to
+  `04.yaml`. "One screen type per screen": module 00 runs the "Just ask" chat, the "Hold its
+  hand" scene, the tick-everything choose, then the one-shot fridge. "Scene blocks" and
+  "Choose extras": module 04's finding journey and its wrong verdict with Try again are gone,
+  because no screen has the learner play the skeptic (C18); the blocks and the extras stay
+  in the engine, with reveal blocks in module 02, after blocks in modules 00, 03 and 04, and
+  Try again on every choose once checked. Round two's "The multi choose's verdicts" holds
+  for every multi choose, which is now module 00's what-went-wrong alone. This replaces the
+  module numbers in those rules. *Reason:* C21 renumbered and cut the modules, and a rule
+  naming a module that moved sends a bead to the wrong file.
 - **Engine unchanged but for the walls.** The look, the engine's fixed words, the screen
   types and the blocks are unchanged; the schema changes only for the walls (four of them,
   and a module adding two). No new dependency. *Reason:* round three changes what the
