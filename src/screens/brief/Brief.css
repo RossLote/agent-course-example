@@ -1,0 +1,165 @@
+/* The fake brief (M01-Brief in the design's first pass): the conversation, and beside it the
+   record the decisions fill, with the comparison card under it once the brief is closed. */
+
+.brief {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 28px;
+  min-width: 0;
+}
+
+.brief-chat {
+  flex: 999 1 440px;
+  min-width: 0;
+}
+
+.brief-side {
+  display: flex;
+  flex: 1 1 260px;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.brief-question {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--agent-line);
+}
+
+/* A turn that arrives is scrolled to with room above it, so its top is in view. */
+.brief-chat .chat-msg {
+  scroll-margin-top: 24px;
+}
+
+/* Under the round's questions: Send answers (off until every question is answered), Your
+   defaults on the last round, and the hint. */
+.brief-send {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--agent-line);
+}
+
+/* The agent thinking over the answers: a spinner and the word. */
+.brief-thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--agent);
+  font-weight: 700;
+}
+
+.brief-spinner {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--agent-line);
+  border-top-color: var(--agent);
+  border-radius: 50%;
+  animation: brief-spin 2.4s linear infinite;
+}
+
+@keyframes brief-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes brief-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* A sent round fades out, over --brief-fade (labels.ts's FADE_MS, set on the chat); each new
+   turn after the opening, and the comparison card, comes in. No fade under reduced motion, and
+   the spinner turns slowly. */
+@media (prefers-reduced-motion: no-preference) {
+  .brief-spinner {
+    animation-duration: 0.8s;
+  }
+
+  .brief-chat .chat-msg:not(:first-child) {
+    transition:
+      opacity var(--brief-fade) ease,
+      transform var(--brief-fade) ease;
+    animation: brief-arrive 0.45s ease backwards;
+  }
+
+  .brief-comparison {
+    animation: brief-arrive 0.45s ease backwards;
+  }
+
+  .brief-chat[data-phase='leaving'] .chat-msg[data-who='agent'] {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.brief-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brief-panel-heading {
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.brief-panel .muted {
+  margin-bottom: 8px;
+}
+
+.brief-decisions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.brief-decision {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.brief-decision[data-filled] {
+  color: var(--ink);
+}
+
+.brief-decision-id {
+  flex-shrink: 0;
+  width: 32px;
+  padding-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.brief-decision[data-filled] .brief-decision-id {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.brief-decision:not([data-filled]) .brief-decision-text {
+  font-style: italic;
+}
+
+/* The closing card: the one dark card, so it reads as the brief's point. */
+.brief-comparison {
+  padding: 20px 22px;
+  border-radius: var(--radius-card);
+  background: var(--ink);
+  color: #fff;
+}

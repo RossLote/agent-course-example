@@ -1,12 +1,13 @@
 # Plan: a course on getting the most out of agents, built by the workflow it teaches
 
-Status: idea raised on 2026-10-15 in the presentation repo's session and captured here
-(`docs/conversations/2026-10-15-where-the-course-starts.md`); repo, beads and toolchain set
-up the same day. Idea bead: `agent-course-r4n`. Content draft written the same day at Ross's request, with the content
-decisions made by the agent (`docs/course/README.md` §9; log
-`docs/conversations/2026-10-15-what-the-course-teaches.md`). Next: Ross reviews the
-draft, Claude Design mocks it up, then `/brief agent-course-r4n` for what §10 there leaves
-open.
+Status: round one is epic `agent-course-wqw` ("Agent course, round one: engine, content,
+fridges, xAPI, package"), filed and reviewed on 2026-10-15, 18 beads in four groups. It runs
+on the decisions in §6 and the engine terms in §6a; §5 holds what is left to verify on the
+LMS and what later rounds take up. Before it, the same day: the idea (bead `agent-course-r4n`,
+log `docs/conversations/2026-10-15-where-the-course-starts.md`), the content draft
+(`docs/course/`, decisions C1–C17), the design's first pass (`docs/design/2026-10-15-first-pass/`)
+and the brief (D18–D24, log `docs/conversations/2026-10-15-brief.md`). Next:
+`/orchestrate agent-course-wqw`.
 
 ## 1. The occasion
 
@@ -83,34 +84,396 @@ with it, so it is a different piece of writing.
 - Persistent agent knowledge on this project goes in `bd remember`, not memory files.
 - Ross's employer and other projects are not named in this repo; the presentation repo is.
 
-## 5. Open questions for the brief
+## 5. Open: to verify on the LMS, and later rounds
 
-Settled on 2026-10-15 by the content draft (`docs/course/README.md` §9): who the learner
-is, the objectives and the modules, what is assessed, how designers review (the draft,
-then the walkthrough), and what carries over from the talk. Still open (§10 there): the
-package format and the LMS launch, the authoring format, look and feel, a pass mark.
+The questions this section held are settled: the learner, the objectives, the modules, the
+assessment and the designers' review by the content draft (D1–D17); the package, the launch,
+the statements, the library, the authoring format and resume by the brief (D18–D24); one
+package for the whole course (D18); the look by the design's first pass. The record is §6.
+What is left:
 
-- Which package format the company's LMS launches (cmi5, a plain xAPI package, SCORM), and
-  how the record store's endpoint and credentials reach the course at launch.
-- Who the learner is (developers, learning designers, everyone) and what they should do
-  differently afterwards.
-- The learning objectives and the modules; what is assessed; which statements the course
-  sends (verbs, activities, results, completion) and what the LMS does with them.
-- How the learning designers author content: the format in the repo, and how they review
-  (the PR's walkthrough, the running course, both).
-- Which review lenses a course needs, and who signs the content off.
-- Which of the talk's content carries over and which is new.
-- How the course is tested: statement tests, the e2e run against a fake record store,
-  conformance tooling for the package format.
-- One package or several, one per module.
-- Look and feel, and whether it gets a design pass.
+**To verify on Spark UAT after the first import.** Any gap becomes a bead under a round-two
+epic.
+
+- Completion shows without "passed" (D11, D19). If Spark needs "passed" to mark completion,
+  it is added then.
+- The State API is accepted, so resume works through it rather than the localStorage
+  fallback (D22).
+- The activity_id the LMS passes for a tincan.xml package, and whether it is course.yaml's
+  id or the LMS's own (D23; the statements cope with either through grouping).
+
+**Deferred by the brief to later rounds.**
+
+- The Spark postMessage bridge, keydown forwarding and a Close button on `close-message`
+  (D23). Direct calls do the job in round one.
+- Whether Ross's name stays on the home page quote (D10), or the course is the company's.
+- LMS module length limits. None are known.
+- Also outside round one: cmi5 or SCORM packaging, a pass mark (D11), narration and video
+  (D12), a developer track, translation.
 
 ## 6. Decisions
 
-Decisions are made in the brief and recorded on its bead. The epic's first bead writes the
-durable record here.
+Every decision the course runs on, each a rule and its reason. D1–D17 are the content
+decisions C1–C17 in `docs/course/README.md` §9, with the same numbers. D18–D24 are the
+brief's, recorded with their reasons on bead `agent-course-r4n` (log
+`docs/conversations/2026-10-15-brief.md`). The rules after them are epic
+`agent-course-wqw`'s, with the epic review's additions folded in; where an addition replaced
+an earlier rule, only the final rule is here. Round two's rules, epic `agent-course-7ec`'s,
+come last; where one replaces a round-one rule, that rule records the reversal. All of them
+bind every bead.
 
-(none yet)
+### From the content draft (D1–D17)
+
+- **D1 Audience.** Learning designers (LED and LXD name the same role) and anyone
+  interested; a light technical background; no code read or written. *Reason:* Ross's call
+  when the content was drafted.
+- **D2 One message.** Agents are better at reviewing than building, so box the builder and
+  have agents check agents. *Reason:* it is the thesis of the whole workflow.
+- **D3 Outcome.** The six walls of `docs/course/README.md` §3: written down, defined as
+  done, boxed, checked by other agents, judged from evidence, improved by rounds. *Reason:*
+  a course needs a behaviour to aim at.
+- **D4 Structure.** Eight modules following the loop, about fifty minutes, each standalone.
+  *Reason:* the order is the argument, and standalone modules suit a self-paced LMS.
+- **D5 Module shape.** Something goes wrong, the practice, try it, check, takeaway; the box
+  diagram gains a wall each module. *Reason:* every module shows what does not work first,
+  and one repeated shape is easier to build, review and learn from.
+- **D6 Worked example.** The fridge activity, a bespoke interaction the authoring tool
+  cannot do. *Reason:* it is the bespoke team's work, and its rules are checkable.
+- **D7 Fake agent.** Scripted choose-a-reply exchanges authored as data, with deliberate
+  wrong turns; nothing touches a real agent. *Reason:* deterministic, testable by the gates,
+  nothing fetched; a wrong turn the learner chooses teaches more than one described. (Round
+  one has no free-text box: see the chat rule below.)
+- **D8 Examples invented, two real cards.** The fridge is invented; module 04 shows one real
+  run's numbers from the presentation repo; module 06 tells the story of the check that
+  missed without naming anyone. *Reason:* one real card makes the thesis credible, and the
+  story is the best reason for retros there is.
+- **D9 Vocabulary.** The workflow's own names, each introduced in plain words first, with a
+  glossary. *Reason:* the bespoke team will meet these words.
+- **D10 Voice.** Second person; Ross named as the author, with his thesis in his words.
+  *Reason:* it is one colleague's workflow, and the attribution is honest. (Whether the name
+  stays is open: §5.)
+- **D11 Assessment.** Feedback on every option; a score reported; no pass mark in round
+  one. *Reason:* practice over grading, and a wrong answer still teaches.
+- **D12 Text and interaction only.** No narration, no video. *Reason:* the workflow does
+  not produce them.
+- **D13 Content as data.** The designer's content lives in the repo as data the engine
+  renders. *Reason:* a wording change needs no run.
+- **D14 Accessibility.** WCAG 2.2 AA: every interaction keyboard-operable and announced to a
+  screen reader. *Reason:* the course teaches it, and the LMS audience expects it.
+- **D15 Statements.** The smallest set: launch, module completion, choices, checks, course
+  completion with the score (made exact by D19). *Reason:* enough to see completion, score
+  and where learners wander.
+- **D16 The course opens as a scenario.** One calm screen puts the learner in the role
+  before the home page; each module's first screen is the next scene of the job.
+  *Reason:* Ross's first looks at the design: the home page had too much on it, and a role
+  gives the learner a frame of mind.
+- **D17 The fridge activity is real.** One data-driven component, shown as the one-shot in
+  module 00 and beside the accepted version in module 05, both keyboard-operable.
+  *Reason:* seeing the two side by side is the payoff (Ross).
+
+### From the brief (D18–D24)
+
+- **D18 Launch and package.** The TinCan launch; a zip with tincan.xml at the root naming
+  the course activity id and index.html; version header 1.0.2; no launch data in the URL
+  means preview mode against an in-memory store with a PREVIEW badge. *Reason:* that is how
+  SparkLMS launches, and the preview keeps the gates and local runs honest.
+- **D19 Statements.** initialized on launch; completed per module; answered per check with
+  response and success; interacted per fake-agent choice with the option as response;
+  completed on the course with completion true and a scaled score; no passed or failed;
+  context.registration on every statement and the course as parent on module-level ones.
+  *Reason:* the smallest set a designer can read completion, score and wandering from.
+- **D20 Library and sending.** `@xapi/xapi` with the fetch adapter and version "1.0.2",
+  behind one Tracker interface (send, setState, getState); a queue that never blocks the
+  learner and retries once; failures logged, shown only in preview. *Reason:* typed,
+  maintained, takes the Spark auth string as it is, and keeps the record store out of the
+  components.
+- **D21 Authoring format.** One YAML file per module and per fridge, validated against a
+  schema at build time. *Reason:* YAML reads as text to a designer, and a bad edit fails the
+  fast gate.
+- **D22 Resume.** Progress kept with the xAPI State API under the course activity, agent
+  and registration, with localStorage as the fallback; the home page always lets a learner
+  open any module. *Reason:* a learner leaves and comes back, and State is per registration.
+- **D23 Spark specifics.** The auth value sent verbatim as the Authorization header; the
+  actor used verbatim; course-level statements on the launch activity_id when present, with
+  the course's own id in grouping when they differ; the postMessage bridge unused in round
+  one. *Reason:* the example launch URL, and the record store's open CORS makes direct
+  calls work.
+- **D24 Activity ids.** Under `https://rosslote.github.io/agent-course/`: modules,
+  checks, interactions and the two fridges (§6a). *Reason:* one stable root the LMS imports
+  from tincan.xml, and a hierarchy that reads in a report.
+
+### Epic `agent-course-wqw`'s rules
+
+- **Content in YAML.** `content/` holds course.yaml, modules/00.yaml to 07.yaml and
+  fridge/one-shot.yaml and fridge/accepted.yaml, parsed at build time by a Vite YAML plugin
+  and validated by one schema at startup and in a unit test; nothing is fetched at run time.
+  The storyboard in `docs/course/modules/` is the source of the copy, carried word for word;
+  where the design boards differ in copy, the design wins. *Reason:* D13 and D21, and the
+  storyboard and design are already reviewed.
+- **One schema, one owner.** `src/content/` belongs to bead .2; a bead that needs a field
+  the schema lacks files a bead, never edits the schema. *Reason:* parallel beads build to
+  one contract without colliding on it.
+- **One screen type per screen.** A storyboard screen that combines types becomes
+  consecutive screens (module 00's "Just ask" is the chat, the tick-everything choose, then
+  the one-shot fridge; every Check screen is two choose screens, "Check 1 of 2" and "Check 2
+  of 2"); acceptance counts refer to the YAML, never the storyboard's numbers. In copy the
+  design wins; in structure this rule wins. *Reason:* each type is built and tested once.
+- **Screen types.** scene, takeaway, chat, brief, choose, match, order, fridge, compare,
+  each defined in §6a; every interaction and check carries a slug that becomes its activity
+  id. *Reason:* that is every kind of screen the storyboard uses, and nothing more.
+- **Scene blocks.** paragraph, cards, quote, numbered list, table, two columns of blocks, a
+  monospace block, a stats row, and an aside with a glossary term. Module 04's finding
+  journey is a scene, then a choose with the fix revealed on the right verdict. *Reason:*
+  they cover the stepped plays, the timeline, the gate output, the pull request's chapters
+  and the numbers card.
+- **Choose extras.** An option may carry reveal blocks, shown only when it is chosen; a
+  choose may carry after blocks, shown once checked, and a box panel where each option names
+  the wall it draws when ticked (module 03). A wrong verdict in module 04 shows its feedback
+  and Try again. *Reason:* modules 00, 03 and 04 need them, and they keep one screen one
+  type.
+- **The chat is scripted.** A fixed learner opening, agent messages, optional reply options
+  each with the agent's scripted reply, and a side panel. No free-text box, no branches, no
+  debriefs in round one (this replaced a fuller chat). *Reason:* nothing in the storyboard
+  uses them.
+- **Course-level pages.** The scenario and the home page are the course's, not module
+  00's, and their copy is in course.yaml with the course's description for tincan.xml;
+  module 00 starts at "The request"; the home page always opens any module (D22).
+  *Reason:* they belong to no module, and their copy is content too.
+- **The look.** The design's first pass: the tokens, type and exclusions in
+  `docs/design/2026-10-15-first-pass/README.md`; fonts bundled with @fontsource packages
+  imported from `src/index.css`; icons inline SVG; no emoji, no gradient washes, no cream or
+  serif display, no left-border cards. *Reason:* the design was reviewed with Ross, and
+  nothing is fetched at run time.
+- **Hash routing, hand-rolled.** No router library and no drag library. *Reason:* the LMS
+  launch query string survives every navigation (D18, D23), and package.json stays with two
+  beads.
+- **The frame and its callback.** The module frame (bead .16) gives every screen its
+  content, its saved answer when one exists, and a read-only view of the module's progress,
+  and one event callback for its four events (§6a). No screen talks to the record store.
+  This replaced a callback defined by the course shell. *Reason:* screens stay driven by
+  content and testable alone, and a reopened screen renders itself answered.
+- **Progress and score.** A check or capstone item can be re-answered and the latest answer
+  counts; the score is 28 points and the scaled score is points over 28 (§6a). This replaced
+  30 points, which counted checks module 07 does not have. *Reason:* the point is the
+  practice, as in the fake brief's own D7 for the fridge (module 01: the latest attempt is
+  what the LMS gets).
+- **Module completion.** A module is complete when its takeaway is reached with every scored
+  screen in it answered; Next is disabled on a scored screen until it is answered, and a
+  route to a screen past the first scored screen still unanswered (typed, or resumed) shows
+  that screen instead, so reaching the takeaway means every check is done (tightened on
+  2026-10-15: Next alone did not stop a typed route reaching the takeaway); unscored
+  interactions can be skipped. Back always works; Back on a module's first screen and Next
+  on its takeaway go home. The course is complete when all eight modules are. *Reason:* one
+  event marks completion, and it still reconciles with D11's checks.
+- **Module 07.** No checks; its end screen is its takeaway (the complete box with the ring,
+  then the end copy); its score screen is a scene whose stats row reads the module's
+  progress ("14 out of 14"). *Reason:* the capstone's order and walls are its scored items.
+- **Resume.** Progress (modules completed, screen reached, every answer) is written to State
+  after every change and to localStorage always, stamped with when it was saved; in preview
+  localStorage alone. On load the newer of State and the local copy wins by that stamp, State
+  on a tie (reversed on 2026-10-15 from State always winning, which lost what a dropped State
+  write had left only in localStorage). State is keyed by the launch activity_id when
+  present, else course.yaml's id. A State read finds a document; or none (a 404, or an
+  answer that is not a JSON progress document); or nothing known (a network error, 401, 403,
+  5xx, or no answer in time). While nothing is known the course plays from the local copy,
+  writes no State, reads again before a write at most every 30 seconds, and holds the module
+  and course completions back until a read answers, then works them out against the document
+  it adopted (reversed on 2026-10-15 from a failed read counting as none, which let the local
+  copy overwrite State it had never read). The State read bypasses the HTTP cache, and what
+  is still queued, the statements and the last State write, goes out with fetch keepalive
+  when the page is hidden or closed. localStorage is keyed by course id and registration
+  ("preview" in preview; for a launch that carries no registration, "launch:" and the
+  learner: the account's homePage and name, else the mbox, mbox_sha1sum or openid; reversed
+  on 2026-10-15 from "preview" for both, then from "launch" alone, which every learner in one
+  browser shared), and a launch never loads preview's progress nor another learner's.
+  *Reason:* D22, and a dead endpoint or a preview run must not leak into a real learner's
+  record; sharing the "preview" key let exactly that happen.
+- **Preview mode.** No endpoint in the URL, or an endpoint without actor or auth, means an
+  in-memory store, a PREVIEW badge in the top bar and a statements drawer, newest first,
+  with verb, object and result; with a launch neither shows. *Reason:* D18, and a designer
+  or a test can read every statement without an LMS.
+- **Statements.** The actor and Authorization verbatim, context.registration on every
+  statement, header 1.0.2, ADL's verbs (initialized, completed, answered, interacted).
+  initialized and the course's completed use the launch activity_id as object when present,
+  else course.yaml's id; module, check, interaction and fridge statements use the D24 ids
+  with course.yaml's id as parent and the launch activity_id as grouping when it differs.
+  answered goes on every Check press of a scored screen (wrong then right sends two);
+  interacted once per option pick on unscored screens; completed once per fridge play when
+  it ends, with its score; the course's completed when the last module completes and again
+  with the new score whenever a scored item changes afterwards. The storyboards' own
+  "Statements" lines are superseded: no "module launched", no chapter opened, no per-item
+  fridge statements. *Reason:* D19 and D23, sent exactly once per thing a designer reads.
+- **The fridge component.** One component driven by its fridge file (D17): shelves, items
+  with their shelf and reason, feedback mode (reason, or flash only), score mode (right
+  first time out of n, or points), timer seconds or none, leaderboard entries or none,
+  confetti or not, a Try again. Pointer drag with mouse and touch; the keyboard route (Enter
+  picks up, arrows move between shelves, Enter places, Escape puts back); a live region and
+  a visible status line with the same words (item, shelf, result). *Reason:* both fridges
+  are one engine, and D14 holds for both.
+- **A fridge play.** A play ends when every item is placed or, on the one-shot, when the
+  timer runs out; Try again or Reset starts a new play; leaving mid-play ends nothing. The
+  one-shot's wrong drop returns the item and says only that it returned, never why (its "No
+  timer" control, which worked before or during a play for WCAG 2.2.1, was reversed on
+  2026-10-15 under 2.2.1's essential exception: the time pressure is what the activity
+  shows, it is optional and unscored, and nothing waits on it; see "The one-shot's timer" in
+  round two's rules). After Enter picks an item up, the cursor starts on the first shelf, so
+  the salad drawer is three arrow-downs away. *Reason:* one completed statement per play,
+  and the one-shot shows what an unbriefed build leaves out.
+- **Accessibility.** WCAG 2.2 AA throughout: real buttons and links, 44px targets, visible
+  focus, every control reachable by Tab, right and wrong carried by an icon as well as
+  colour. The one-shot is keyboard-operable too, and its comparison row says so. *Reason:*
+  D14, which the course teaches.
+- **The package.** `npm run package` builds with relative asset paths and writes
+  `dist/agent-course.zip` with tincan.xml at its root naming the course activity id and
+  index.html as the launch file, then checks the zip it wrote; it joins `npm run gate`;
+  `dist/` stays gitignored. *Reason:* D18, and the LMS unzips it into a folder of its own.
+- **Dependencies.** Bead .2 adds the YAML plugin, the schema library, @xapi/xapi and the
+  three @fontsource packages; bead .12 the zip library; no other bead touches package.json.
+  *Reason:* parallel beads never conflict on the lockfile.
+- **The gate.** No integration tier (CLAUDE.md): the full gate is lint, typecheck, unit and
+  e2e, plus the package. *Reason:* the course has no server to integrate with.
+- **Test fixtures.** The shell's and the frame's tests use inline fixtures, never the stub
+  modules the content beads replace. *Reason:* the tests survive the content arriving.
+
+### Epic `agent-course-7ec`'s rules (round two)
+
+Ross played round one from its branch and asked for five changes (log
+`docs/conversations/2026-10-15-round-one-feedback.md`; design
+`docs/design/2026-10-15-round-one-feedback/`). Round one's rules above still bind every
+bead, except where a rule here replaces one.
+
+- **Home, done at a glance.** Every module card on the home page says where it stands in one
+  place, a pill in the card's top row beside the module number. A done module's pill is
+  solid green with a tick and the word "Done", and its card has a 2px green border; "In
+  progress" (indigo, soft fill) and "Not started" (outline, muted) are quieter pills in the
+  same place. The status line at the card's foot goes. The words stay those of
+  `src/course/home/labels.ts`, and tick, word and colour go together (D14). The design is
+  `Main` ("1a") on the round's canvas. *Reason:* Ross could not tell a done module from one
+  not started.
+- **The multi choose's verdicts.** A multi-select choose (mode multi), once checked, judges
+  what the learner did with each option, not whether the option is a right one: ticked and
+  right "Right to tick"; left and wrong "Right to leave it"; ticked and wrong "Shouldn't be
+  ticked"; left and right "Missed: should be ticked". The first two are green with a tick,
+  the last two red with a cross, as a pill beside the option's label; the option's own
+  feedback sits under it with no icon of its own. A summary line under the list, visible and
+  announced, reads "5 of 5 right." when every choice is right, else "<n> of <total> right: "
+  then "one tick shouldn't be there" or "<k> ticks shouldn't be there", and "one missed" or
+  "<m> missed", joined by ", and ", ending with a full stop. It holds for every multi choose
+  (00 what-went-wrong, 02 write-the-acceptance, 03 build-the-box, 06
+  what-would-you-change); single choice and the statements are unchanged. *Reason:* Ross
+  read red crosses on rows he had rightly left unticked as his own mistakes.
+- **The one-shot's timer.** The one-shot fridge runs fifteen seconds
+  (`content/fridge/one-shot.yaml`), and no fridge has a No timer control. This reverses
+  round one's No timer ("A fridge play"), put there for WCAG 2.2.1, under 2.2.1's essential
+  exception: the time pressure is what the activity shows, it is optional and unscored, and
+  nothing waits on it. *Reason:* Ross wants learners to run out of time quickly; a minute
+  with no information is longer than anyone will try.
+- **The last five seconds.** The last five seconds of any timed fridge warn: the timer reads
+  red and pulses (no pulse under prefers-reduced-motion), the fridge's outline turns red,
+  and a short high beep sounds at 0:05, 0:04, 0:03, 0:02 and 0:01 and a long low tone at
+  0:00, six tones a play. The tones are made in the page with the Web Audio API (no audio
+  file, nothing fetched, no new dependency) and start only after the learner's first
+  pick-up. There is no mute control. When time is up the tray gives way to the fridge
+  file's time-up message and Reset. *Reason:* Ross asked for sound in the last five seconds
+  to raise the stress, so the learner feels how bad the unbriefed build is.
+- **The one-shot's copy.** Module 00's fridge intro reads "Optional, fifteen seconds. The
+  timer starts as soon as you pick something up."; the agent's two "60-second timer" lines
+  in module 00 read "15-second timer". A saved one-shot play with the timer switched off
+  (round one's No timer) no longer fits and counts as none. *Reason:* the copy follows the
+  timer, and a play without the timer is not a play of this one-shot.
+- **Balanced cards rows.** A cards block, numbered or plain, lays out in balanced rows: the
+  column count from two to four (one for a single card, never more than the cards) that
+  leaves the fewest empty places in the last row, more columns on a tie (5 cards: three
+  then two; 6: three and three; 7: four then three); a short last row is centred. Narrower screens drop to fewer columns and keep a short last
+  row centred. *Reason:* "How a brief goes" ran four and one, every card taller than it
+  needed to be.
+- **The brief, one round at a time.** The learner's opening message stays; the current round
+  shows alone under it with a "Send answers" button, off until every question in the round
+  has an answer, with the hint "Answer every question, then send." beside it; the last round
+  keeps Your defaults beside Send answers until every question in it is answered (as round
+  one hid it). Send answers or Your defaults fades the round out
+  and puts one learner line in its place ("My answers to 1 to 5.", "My answers to 6 to 8.",
+  or the defaults reply from the YAML); then the agent shows a spinner and "Thinking…" for
+  about 1.5 seconds, and the next round's message and questions arrive in the same place,
+  with focus moved to that message. After the last round come Thinking, the closing message
+  and the comparison card. On screen at any time: the opening, the latest learner line and
+  the agent's current turn; the record panel keeps every decision and fills as chips are
+  picked. Under prefers-reduced-motion nothing fades, and Thinking still shows. *Reason:*
+  it is Ross's real workflow (answer a batch, press Enter, the agent thinks and comes back),
+  and he did not see round two appear below round one.
+- **The brief's statements and resume.** The brief's statements are unchanged (interacted per
+  chip pick, three for Your defaults); Send answers sends nothing. Its saved answer stays
+  round one's (the picks and whether Your defaults was pressed), and a resumed brief counts
+  a round as sent once every question in it is answered: it opens on the first round with a
+  question unanswered, with its picks and no Thinking, or closed once every question is
+  answered (chosen on 2026-10-15 over recording each Send, because the frame saves an answer
+  only with a statement and Send answers sends none). Module 01's brief intro reads "…pick it or pick differently, then send your
+  answers. Every answer becomes a decision on the right." *Reason:* sending is the learner's
+  Enter, not a choice a designer reads, and a learner who comes back finds the brief where
+  they left it.
+- **Fixed words in code.** The new fixed words (the four verdicts and the summary, Send
+  answers and its hint, the "My answers to …" line, Thinking…) live in the screens' code
+  beside round one's fixed words, as `src/course/home/labels.ts` does, not in the schema;
+  this epic changes no schema. *Reason:* moving fixed words into course.yaml is a later
+  round's, and no schema change keeps the beads disjoint.
+- **The look, round two.** The first pass's tokens (`src/styles/tokens.css`); the only new
+  visual pieces are the status pills, the verdict pills and the red timer warning. No new
+  dependency. *Reason:* the round's design pass kept the first pass's look unchanged, and
+  package.json stays as round one left it.
+- **Back and Next always in view.** The frame's footer, Back and Next, sticks to the foot of
+  the window however long the screen is; a control scrolled into view stops above it, never
+  under it (WCAG 2.4.11). *Reason:* Ross could not see on a long screen whether Next was
+  open, so whether he could skip it (added 2026-10-15 after round two).
+
+## 6a. Engine terms
+
+The names later beads cite. The rules behind them are §6.
+
+- **Content.** `content/course.yaml` (title, description, activity id, the scenario and home
+  copy, the eight modules in order with slug, title, minutes, wall and file),
+  `content/modules/00.yaml` to `07.yaml` (each module's screens), `content/fridge/one-shot.yaml`
+  and `content/fridge/accepted.yaml`. One schema in `src/content/` validates all of it and
+  gives the app a typed course; `content/README.md` documents each screen type.
+- **Screen types.** *scene*: heading, eyebrow, body blocks. *takeaway*: the card and the box
+  with the wall gained (the ring on 06; the complete box and the end copy on 07). *chat*: a
+  fixed learner opening, agent messages, optional reply options each with a scripted reply,
+  a side panel. *brief*: ranked questions with chips, the recommended one marked, decision
+  text per option filling a panel, a playback message, round two, a "Your defaults" button,
+  a closing message. *choose*: prompt, options with label, right or wrong and feedback,
+  optional reveal blocks; mode multi or single; scored or not; optional after blocks and a
+  box panel; the checks are scored single-choice. *match*: rows each with a key among a
+  shared set of targets, feedback per row, scored or not. *order*: cards in a correct order,
+  keyboard-operable, scored. *fridge*: one fridge from a fridge file. *compare*: two fridges
+  side by side and a table of differences.
+- **Scene blocks.** paragraph, cards, quote, numbered list, table, two columns (each a list
+  of blocks), monospace, stats row (numbers with captions), aside (with a glossary term).
+- **Course-level pages.** The scenario (role chip, heading, memo, three lines, "Take the
+  job") and the home page (thesis quote and attribution, the box, eight module cards with
+  blurbs). Neither is part of a module; module 00 starts at "The request".
+- **The frame.** `src/course/frame/`: the top bar with the module name, eight progress dots
+  and "Screen n of m"; Back and Next; a screen registry keyed by type; hash routes per
+  screen. It gives each screen three props: its content, its saved answer when one exists,
+  and a read-only view of the module's progress (every slug's latest answer and score).
+- **The event callback.** One function the frame passes to every screen, with four events:
+  *answered* (slug, right, score raw and max: 1 of 1 for a check, n of 8 for the order,
+  n of 6 for the walls; one per Check press); *interacted* (slug, option; one per option
+  pick, three for the brief's defaults); *fridge ended* (slug, score raw and max);
+  *takeaway reached*.
+- **Module completion.** The module's takeaway is reached with every scored screen in it
+  answered. Next is disabled on a scored screen until it is answered, and no route passes
+  the first one still unanswered. The course is complete when all eight modules are.
+- **The score.** 28 points: 14 checks (two in each of modules 00 to 06, one point each),
+  the order's 8 and the walls' 6 in module 07. Scaled is points over 28. The latest answer
+  counts. Fridge scores are reported per play and are not part of it.
+- **Preview mode.** No launch (no endpoint, or no actor or auth): an in-memory store, the
+  PREVIEW badge and the statements drawer; progress in localStorage under "preview".
+- **Activity ids.** Course `https://rosslote.github.io/agent-course/`; modules
+  `…/modules/<nn>`; checks `…/modules/<nn>/checks/<n>`; interactions
+  `…/modules/<nn>/interactions/<slug>`; fridges `…/fridge/one-shot` and
+  `…/fridge/accepted`.
+- **The package.** `npm run package` writes `dist/agent-course.zip`: the built course with
+  relative asset paths, and tincan.xml at the root naming the course activity id, name and
+  description from course.yaml, and index.html as the launch file.
 
 ## 7. Log
 
@@ -125,3 +488,9 @@ durable record here.
   brief ran in one round on bead `agent-course-r4n` (docs/conversations/2026-10-15-brief.md): D18–D24,
   the SparkLMS TinCan launch, 1.0.2, statements, @xapi/xapi, YAML authoring, State resume. Next:
   `/epic agent-course-r4n`.
+- 2026-10-15, round one filed: epic `agent-course-wqw` from the brief, then `/epic-review`,
+  whose 49 findings were all fixed on the beads (the score 28 not 30, module 07's end screen
+  its takeaway, one screen type per screen, the chat scripted only, four beads split; 18 in
+  four groups). Its first bead wrote the decision record (§6, §6a), rewrote §5 to what is left
+  for UAT and later rounds, and corrected `docs/course/README.md` §7 and §10 and module 07.
+  Next: `/orchestrate agent-course-wqw`.

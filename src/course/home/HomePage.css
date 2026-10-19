@@ -1,0 +1,170 @@
+.home {
+  gap: 36px;
+  max-width: 1120px;
+}
+
+.home-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 40px;
+}
+
+.home-thesis {
+  display: flex;
+  flex: 999 1 520px;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.home-thesis h1 {
+  font-size: clamp(32px, 4.5vw, 44px);
+  font-weight: 800;
+}
+
+.home-quote {
+  margin: 0;
+  padding: 22px 26px;
+  border-radius: var(--radius-card);
+  background: var(--ink);
+  color: #fff;
+  font-size: 19px;
+  line-height: 1.45;
+}
+
+.home-quote blockquote {
+  margin: 0;
+}
+
+.home-quote figcaption {
+  margin-top: 12px;
+  color: var(--line-strong);
+  font-size: 14px;
+}
+
+.home-line {
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-box {
+  display: flex;
+  flex: 1 1 420px;
+  justify-content: center;
+  min-width: 0;
+}
+
+.home-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.home-modules h2 {
+  font-size: 24px;
+}
+
+.home-module-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-module-list li {
+  display: flex;
+}
+
+.module-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 170px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.module-card:hover {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+/* A done module: a 2px green border (the padding gives the pixel back so the text does not move). */
+.module-card[data-status='done'] {
+  padding: 17px 19px;
+  border-width: 2px;
+  border-color: var(--right);
+}
+
+.module-card[data-status='done']:hover {
+  border-color: var(--right-strong);
+}
+
+.module-card h3 {
+  font-size: 18px;
+}
+
+.module-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.module-card-number {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.module-card-wall {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* The status pill: solid green done, soft indigo in progress, outline muted not started. */
+.module-card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.module-card-status[data-status='done'] {
+  padding-left: 8px;
+  border-color: var(--right);
+  background: var(--right);
+  color: #fff;
+}
+
+.module-card-status[data-status='in-progress'] {
+  padding-left: 8px;
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}

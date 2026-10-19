@@ -1,0 +1,116 @@
+/* The match screen (M07-Capstone's name the wall in the design's first pass): a row of target
+   chips under each row's text, the row tinted right or wrong once checked. The option and
+   feedback parts come from the choose screen (../choose/Choose.css). */
+
+.match-rows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.match-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+/* With no prompt shown, the first row needs no rule above it. */
+.sr-only + .match-rows > .match-row:first-child {
+  border-top: 0;
+}
+
+.sr-only + .match-rows > .match-row:first-child:not([data-state]) {
+  padding-top: 0;
+}
+
+.match-row[data-state] {
+  margin: 0 -12px;
+  padding: 14px 12px;
+  border-radius: 10px;
+}
+
+.match-row[data-state='right'] {
+  background: var(--right-soft);
+}
+
+.match-row[data-state='wrong'] {
+  background: var(--wrong-soft);
+}
+
+.match-row-text {
+  margin-bottom: 10px;
+  padding: 0;
+  font-weight: 700;
+}
+
+.match-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* A target: a radio drawn as a chip at least 44px high, the whole chip showing the focus. */
+.match-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--target);
+  padding: 6px 16px;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.match-chip:hover:not([data-state]) {
+  border-color: var(--ink);
+}
+
+.match-chip:has(.choice-input:focus-visible) {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.match-chip:has(.choice-input:disabled) {
+  cursor: default;
+}
+
+.match-chip[data-state='on'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.match-chip[data-state='right'] {
+  border-color: var(--right);
+  background: var(--surface);
+  font-weight: 700;
+}
+
+.match-chip[data-state='wrong'] {
+  border-color: var(--wrong);
+  background: var(--surface);
+  font-weight: 700;
+}
+
+.match-chip-mark {
+  display: flex;
+  margin-left: -8px;
+}
+
+.match-chip[data-state='dim'] {
+  opacity: 0.6;
+}
+
+.match-feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+}

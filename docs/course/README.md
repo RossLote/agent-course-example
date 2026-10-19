@@ -81,7 +81,12 @@ teaches:
 The box diagram is the course's through-line: an open box in module 00, a wall added in each
 of 01 to 05 (the record, done, the gate, other agents, evidence), and the retro drawn as the
 arrow that goes round it in 06. Module 07 shows the whole thing and asks the learner to
-build it for a new request. Module 00 opens with the scenario (C16) before any of this.
+build it for a new request.
+
+Module 07 is the exception to the five parts: it has no Check, its scored order of the loop
+and its walls take that place, and its end screen is its takeaway (plan §6). The scenario
+(C16) and the home page come before module 00 and belong to the course, not to any module,
+so module 00 starts at "The request" (plan §6).
 
 ## 6. The fake agent
 
@@ -97,21 +102,26 @@ ones do: confident, helpful, fast, and happy to fill a gap with a guess.
 
 - Every check question and capstone item gives feedback on the option chosen, so the checks
   teach as well as measure.
-- A module is complete when its interaction and its check are done. The course is complete
-  when every module is.
-- The course reports a score out of the check and capstone items. There is no pass mark in
-  round one: the point is the practice, and a learner who gets a check wrong has read why.
-  The brief revisits this if the LMS needs passed or failed.
+- A module is complete when its takeaway is reached. Next stays disabled on a scored screen
+  until it is answered, so a learner reaches the takeaway only with every check done;
+  unscored interactions can be skipped. The course is complete when all eight modules are.
+- The course reports a score out of 28 points: the two checks in each of modules 00 to 06
+  (14), and the capstone's order of the loop (8) and its walls (6). Module 07 has no checks;
+  the capstone is its scored part. The scaled score is the points over 28, and when an item
+  is answered again the latest answer counts. There is no pass mark in round one: the point
+  is the practice, and a learner who gets a check wrong has read why. The brief kept it so
+  (D11, D19); "passed" is added only if the LMS turns out to need it (plan §5).
 - Every interaction is operable by keyboard and announced to a screen reader (WCAG 2.2 AA).
   The course teaches that in 02 and 03, so it has to do it.
 
 ## 8. What the course sends to the LMS
 
-xAPI statements, the exact verbs and the package format to be settled in the brief against
-the LMS (plan §5): the course launched; each module completed; each fake-agent choice as an
-interaction with the option chosen, so a designer can see where learners wander; each check
-answered with the response and whether it was right; the course completed with the score.
-Nothing else leaves the course.
+xAPI statements, as the brief settled them (D19; the full rules in plan §6): initialized
+when the course launches; completed on each module at its takeaway; answered on every Check
+press of a scored screen, with the response and whether it was right; interacted on each
+option pick on an unscored screen, so a designer can see where learners wander; completed on
+each fridge play, with its score; and completed on the course with the scaled score, the
+points out of 28. Nothing else leaves the course.
 
 ## 9. Decisions (made by the agent for Ross, 2026-10-15)
 
@@ -174,15 +184,24 @@ Nothing else leaves the course.
   it. Reason: Ross, 2026-10-15: seeing the two next to each other is the payoff, and it is
   what the LXDs are meant to see is possible.
 
-## 10. Open for the brief
+## 10. Settled by the brief
 
-- Which package format the LMS launches (cmi5, plain xAPI, SCORM) and how the record store
-  reaches the course (plan §5). This fixes the manifest, the handshake and the tests.
-- Look and feel: Claude Design's pass on the module shape, the box diagram and the fake
-  agent's chat.
-- Whether the LMS needs a pass mark, and the module length limits it imposes, if any.
-- Whether Ross's name appears on the opening screen (C10) or the course is the company's.
-- The authoring format for the content (markdown, JSON, or both).
+What this section left open was settled on 2026-10-15: by the design's first pass, then by
+the brief (bead `agent-course-r4n`, log `docs/conversations/2026-10-15-brief.md`). The
+decisions are D18–D24, recorded with this draft's C1–C17 (as D1–D17) and the epic's rules
+in plan §6.
+
+- **Package and launch.** The TinCan launch the LMS uses: a zip with tincan.xml at its root,
+  the record store's endpoint, auth and actor in the launch query string, version header
+  1.0.2 (D18, D23).
+- **Look and feel.** Claude Design's first pass, `docs/design/2026-10-15-first-pass/`; it
+  also produced C16 and C17.
+- **Pass mark.** None (D11, D19). Whether the LMS shows completion without "passed" is
+  checked on its UAT after the first import; length limits are none known (plan §5).
+- **Ross's name.** Stays on the opening screen for round one (C10); whether it stays on the
+  home page quote is a later round's question (plan §5).
+- **Authoring format.** YAML, one file per module and per fridge, checked against a schema
+  at build time (D21).
 
 ## 11. The modules
 

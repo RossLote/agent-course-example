@@ -1,0 +1,161 @@
+slug: "06"
+screens:
+  - type: scene
+    heading: The client tries it
+    blocks:
+      - type: paragraph
+        text: >-
+          The fridge activity is live. The client's feedback: "Great. Could learners get a hint
+          after two wrong drops? And the salad drawer should take the eggs too." Neither is in
+          the brief. Nothing went wrong. This is round two.
+      - type: quote
+        text: >-
+          The first round is not necessarily the one that hits. You merge it, and you go round
+          again. You may not know what you want until you see the first round.
+        attribution: Ross
+
+  - type: scene
+    heading: Rounds
+    nav: rounds
+    blocks:
+      - type: cards
+        numbered: true
+        items:
+          - title: Big things are not one-shot.
+            body: >-
+              A small fix, yes. A piece of a course, no: a first round to see it, a second to get
+              it right. Expecting that is not failure; it is the plan.
+          - title: The first round's feedback shapes the second.
+            body: >-
+              Round two starts with a brief, from what the client saw. The hint and the eggs
+              become decisions D9 and D10, a short epic, a run, a pull request. Same loop,
+              smaller.
+          - title: Each round leaves a record.
+            body: >-
+              The decisions, the beads, the run's record, the pull request. The next brief starts
+              from them, not from memory.
+
+  - type: scene
+    eyebrow: A true story
+    heading: The check that missed
+    intro: >-
+      Not every miss is the client's taste. Sometimes a wall has a gap. This happened, in Ross's
+      work, in October 2026.
+    nav: the check that missed
+    blocks:
+      - type: cards
+        numbered: true
+        items:
+          - body: >-
+              A feature was built twice, on purpose: once by hand by a colleague, once by this
+              workflow, with every agent told to ignore the other attempt. The question was
+              whether the workflow could get to a passable result on its own.
+          - body: >-
+              A reviewer on the hand-built version asked for one change: a permission check
+              looked at whether a field was **present** in the request, when it should have
+              looked at whether the field was **changing**. An ordinary user who fetched a
+              record, changed something else and sent it all back would be refused.
+          - body: >-
+              The workflow's version had the identical check. It had been written into the epic
+              as a settled decision, so no review questioned it. The adversarial review found
+              three other things and confirmed none. Two automated review rounds and two more
+              review passes found nine things each. None of them was this.
+          - body: >-
+              The workflow had a gap: nothing in it asked what an ordinary caller would do. The
+              decision was settled, so every agent respected it.
+          - title: What changed, in the days after.
+            body: >-
+              A new lens for the finders: *what would an ordinary caller do?* The skeptic's rule
+              tightened: "the code does what the spec says" is not a refutation when the spec is
+              the problem. The rule that a refutation must cite a line. And a new step, the
+              retro, that reads several runs' records back to find what goes wrong more than
+              once.
+      - type: paragraph
+        text: "*The agent was not told to be more careful. The check was changed.*"
+      - type: aside
+        term: retro
+        text: >-
+          reading several runs' records to see what repeats, and proposing changes to the
+          process.
+
+  - type: choose
+    slug: what-would-you-change
+    scored: false
+    mode: multi
+    eyebrow: Try it
+    heading: What would you change?
+    prompt: A reviewer found something none of the checks did. Tick what you would do.
+    options:
+      - label: Tell the builders to be more careful about permissions.
+        right: false
+        feedback: No. They will agree. Hope is not a wall (module 03).
+      - label: "Add a lens to the finders: what would an ordinary user do with this?"
+        right: true
+        feedback: Yes. A finder with that question would have found it.
+      - label: Write the decision as settled again, more clearly.
+        right: false
+        feedback: >-
+          No. It was settled; that was the problem. A settled decision still needs a reviewer who
+          is allowed to ask whether it is the right rule.
+      - label: Look back over the last few runs to see whether this kind of miss repeats.
+        right: true
+        feedback: >-
+          Yes. That is the retro. One miss is a story; a pattern is a change to the process.
+      - label: Add a test for the exact case that was missed.
+        right: true
+        feedback: >-
+          Yes, and not only. The test catches this case next time. The lens catches the next case
+          like it.
+    after:
+      - type: paragraph
+        text: "**Three changes to the process, none to the hope.**"
+    nav: what would you change?
+
+  - type: choose
+    slug: check-1
+    scored: true
+    mode: single
+    eyebrow: Check · 1 of 2
+    heading: The client asks for two things that were not in the brief. What does that mean?
+    intro: Every module ends with two of these. Each option tells you why, right or wrong.
+    nav: check
+    options:
+      - label: The brief failed.
+        right: false
+        feedback: >-
+          It did not. The client saw round one and knew what they wanted. That is what round one
+          is for.
+      - label: "Round two: a short brief, two decisions, a small run."
+        right: true
+        feedback: Yes. Same loop, smaller.
+      - label: The builder should have anticipated it.
+        right: false
+        feedback: Then it would have guessed. Module 00.
+
+  - type: choose
+    slug: check-2
+    scored: true
+    mode: single
+    eyebrow: Check · 2 of 2
+    heading: A review missed a bug that a person caught. What is the useful question?
+    nav: question 2
+    options:
+      - label: Which agent was at fault?
+        right: false
+        feedback: None of them disobeyed anything. They did what the process asked.
+      - label: Which check, if it had existed, would have caught it, and does the miss repeat?
+        right: true
+        feedback: Yes. That is the retro's question.
+      - label: Should we stop trusting the reviews?
+        right: false
+        feedback: >-
+          They found fifty things in one run. One miss is a gap to close, not a reason to go back
+          to reading everything.
+
+  - type: takeaway
+    eyebrow: Takeaway
+    nav: takeaway
+    text: >-
+      **Expect a second round. When a check misses, change the check.** The process is not set in
+      stone; it is the thing you improve.
+    caption: The box is complete, and the arrow of the retro is drawn round it.

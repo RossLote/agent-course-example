@@ -1,0 +1,146 @@
+/* The conversation with the scripted agent (M00-JustAsk and M01-Brief in the design's first
+   pass): the agent in teal on the left, the learner in amber on the right, and the chips the
+   chat's replies and the brief's answers are picked with. */
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chat-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.chat-msg[data-who='learner'] {
+  flex-direction: row-reverse;
+}
+
+.chat-avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.chat-msg[data-who='agent'] .chat-avatar {
+  background: var(--agent);
+}
+
+.chat-msg[data-who='learner'] .chat-avatar {
+  background: var(--learner);
+}
+
+.chat-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.chat-msg[data-who='learner'] .chat-body {
+  align-items: flex-end;
+}
+
+.chat-msg-wide .chat-body {
+  flex: 1 1 auto;
+}
+
+.chat-who {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.chat-bubble {
+  max-width: 640px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.chat-msg-wide .chat-bubble {
+  max-width: none;
+}
+
+.chat-msg[data-who='agent'] .chat-bubble {
+  border-color: var(--agent-line);
+  border-top-left-radius: 4px;
+  background: var(--agent-soft);
+}
+
+.chat-msg[data-who='learner'] .chat-bubble {
+  border-color: var(--learner-line);
+  border-top-right-radius: 4px;
+  background: var(--learner-soft);
+}
+
+/* The chat's reply options under the conversation. */
+.chat-replies {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.chat-prompt {
+  font-weight: 700;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* A chip: a pill at least 44px high. The recommended one is dashed, in a colour that stands out
+   from the white; a picked one is filled. */
+.chip {
+  min-height: var(--target);
+  padding: 8px 16px;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--ink);
+}
+
+.chip[data-recommended] {
+  border-style: dashed;
+  border-color: var(--muted);
+}
+
+.chip[aria-pressed='true'] {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}

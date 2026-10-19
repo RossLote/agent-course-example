@@ -1,0 +1,76 @@
+title: 'Module 00: "Build me a fridge activity"'
+caption: >-
+  A wrong drop flashes red and snaps back. No reason is given. Five shelves, fourteen items, and
+  the rules are the agent's guess: try raw chicken on the lower middle shelf.
+shelves:
+  - id: top
+    name: Top shelf
+  - id: upper-middle
+    name: Upper middle
+  - id: lower-middle
+    name: Lower middle
+  - id: bottom
+    name: Bottom shelf
+  - id: door
+    name: The door
+items:
+  - id: cheese
+    name: Cheese
+    shelf: top
+  - id: yoghurt
+    name: Yoghurt
+    shelf: top
+  - id: butter
+    name: Butter
+    shelf: top
+  - id: milk
+    name: Milk
+    shelf: door
+  - id: eggs
+    name: Eggs
+    shelf: door
+  - id: ketchup
+    name: Ketchup
+    shelf: door
+  - id: orange-juice
+    name: Orange juice
+    shelf: door
+  - id: cooked-chicken
+    name: Cooked chicken
+    shelf: upper-middle
+  - id: lasagne
+    name: Lasagne
+    shelf: upper-middle
+  - id: raw-chicken
+    name: Raw chicken
+    shelf: lower-middle
+  - id: mince
+    name: Mince
+    shelf: lower-middle
+  - id: raw-salmon
+    name: Raw salmon
+    shelf: bottom
+  - id: lettuce
+    name: Lettuce
+    shelf: bottom
+  - id: tomatoes
+    name: Tomatoes
+    shelf: bottom
+feedback: flash
+score:
+  mode: points
+  right: 100
+  wrong: -50
+timer:
+  seconds: 15
+  message: "**Time's up!** Better luck next time."
+leaderboard:
+  - name: Sam
+    score: 1400
+  - name: Priya
+    score: 1250
+  - name: You
+    learner: true
+confetti: true
+finish: You did it! Final score {score}.
+resetLabel: Reset

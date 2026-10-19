@@ -1,0 +1,374 @@
+/* The choose screen (Check, M00-JustAsk, M03-Box and M04-Skeptic in the design's first pass). The
+   choice-* parts are the option, its feedback and the actions, which match and order use too. */
+
+.choose {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+
+.choose-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.choice-set {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice-prompt {
+  margin-bottom: 12px;
+  padding: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* An option: its control and label on a row at least 44px high, its feedback under once checked. */
+.choice {
+  border: 2px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+
+.choice:hover:not([data-state]) {
+  border-color: var(--line-strong);
+}
+
+.choice[data-state='on'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* A single choice's marked pick, and a multi choice's option ticked rightly or wrongly. */
+.choice[data-state='right'],
+.choice[data-state='right-tick'] {
+  border-color: var(--right);
+  background: var(--right-soft);
+}
+
+.choice[data-state='wrong'],
+.choice[data-state='wrong-tick'] {
+  border-color: var(--wrong);
+  background: var(--wrong-soft);
+}
+
+.choice[data-state='dim'] {
+  opacity: 0.6;
+}
+
+/* A multi choice once checked (Tick-AllRight and Tick-Mixed in the round's design): what the
+   learner did with each option, rightly ticked (above) or left in green, wrongly ticked (above)
+   or missed in red, a missed one dashed. */
+.choice[data-state='right-leave'] {
+  border-color: var(--right-line);
+}
+
+.choice[data-state='missed'] {
+  border-color: var(--wrong);
+  border-style: dashed;
+}
+
+.choice-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: var(--target);
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.choice-row:has(.choice-input:disabled) {
+  cursor: default;
+}
+
+/* The native control stays in the page for the keyboard and the screen reader; the box draws it,
+   and the whole row shows the focus. */
+.choice-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.choice-row:has(.choice-input:focus-visible) {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.choice-box {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border: 2px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: #fff;
+}
+
+.choice-box-radio {
+  border-radius: 50%;
+}
+
+.choice-input:checked + .choice-box {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+/* Once checked, what was picked stays plain to see beside the mark. */
+.choice-input:checked:disabled + .choice-box {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.choice-label {
+  min-width: 0;
+  font-weight: 700;
+}
+
+/* The label and, once a multi choice is checked, its verdict pill at the right of the row; the
+   pill drops under the label when the row is too narrow for both. */
+.choice-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px 12px;
+  min-width: 0;
+}
+
+.choice-text .choice-label {
+  flex: 1 1 12em;
+}
+
+.choice-verdict {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 3px 12px 3px 8px;
+  border-radius: 999px;
+  background: var(--right);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.choice-verdict[data-tone='wrong'] {
+  background: var(--wrong);
+}
+
+.choice-feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0 14px 12px 48px;
+  font-size: 15px;
+}
+
+.choice-feedback .mark {
+  margin-left: -34px;
+}
+
+/* The summary under a multi choice's list once checked, a soft green or red band. */
+.choice-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-control);
+  background: var(--right-soft);
+  color: var(--right);
+  font-weight: 700;
+}
+
+.choice-summary[data-tone='wrong'] {
+  background: var(--wrong-soft);
+  color: var(--wrong);
+}
+
+.choice-summary .tone-icon {
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.choice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* The box panel beside the options (module 03). */
+.choose-with-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 28px;
+}
+
+.choose-with-box > .choose-card {
+  flex: 999 1 420px;
+  min-width: 0;
+}
+
+.choose-box {
+  display: flex;
+  flex: 1 1 260px;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+}
+
+.choose-box-drawing {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+}
+
+.choose-box-builder {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.choose-box-drawing text {
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.choose-box-title {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.choose-box-subtitle {
+  fill: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.choose-box-wall line {
+  stroke-linecap: round;
+}
+
+.choose-box-wall[data-state='down'] line {
+  stroke: var(--line-strong);
+  stroke-width: 3;
+  stroke-dasharray: 8 7;
+}
+
+.choose-box-wall[data-state='up'] line {
+  stroke: var(--accent);
+  stroke-width: 10;
+}
+
+.choose-box-wall circle {
+  stroke-width: 2;
+}
+
+.choose-box-wall[data-state='down'] circle {
+  fill: var(--ground);
+  stroke: var(--line-strong);
+}
+
+.choose-box-wall[data-state='up'] circle {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.choose-box-wall text {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.choose-box-wall[data-state='down'] text {
+  fill: var(--muted);
+}
+
+.choose-box-wall[data-state='up'] text {
+  fill: #fff;
+}
+
+.choose-box-key {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  list-style: none;
+}
+
+.choose-box-key li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.choose-box-key li[data-state='up'] {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.choose-box-key-number {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.choose-box-key li[data-state='up'] .choose-box-key-number {
+  border: 1.5px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.choose-box-caption {
+  max-width: 300px;
+  text-align: center;
+}
+
+.choose-reveal {
+  padding: 18px 22px;
+  border: 2px solid var(--right-line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}

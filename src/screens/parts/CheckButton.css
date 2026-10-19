@@ -1,0 +1,13 @@
+/* Beside the Check button (match and order): how far along the learner is before Check, and the
+   result once checked. The result is a live region, so it stays in the page while empty (never
+   display: none); empty, it takes no room. */
+
+.check-count,
+.check-result {
+  align-self: center;
+  margin: 0;
+}
+
+.check-result {
+  font-weight: 700;
+}

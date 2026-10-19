@@ -1,0 +1,89 @@
+.frame {
+  flex: 1 0 auto;
+  max-width: 1120px;
+}
+
+.frame-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.frame-screen {
+  display: flex;
+  flex: 999 1 560px;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+
+.frame-side {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+
+.frame-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.frame-head h1 {
+  font-size: clamp(26px, 3.6vw, 34px);
+  font-weight: 800;
+}
+
+.frame-intro {
+  max-width: 72ch;
+  margin-top: 2px;
+}
+
+/* The modules, the current one an open ring. */
+.frame-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.frame-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+.frame-dot[data-current] {
+  border: 2px solid var(--accent);
+  background: var(--surface);
+}
+
+/* Back and Next stay in view at the foot of the window however long the screen is, so a
+   learner can always see whether Next is open; under the drag ghost and the statements drawer. */
+.frame-foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  padding: 20px 24px calc(20px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+/* A control scrolled into view (by Tab, or a focus move) stops above the footer, never under
+   it (WCAG 2.4.11). The footer is about 85px tall, two rows on a phone. */
+html:has(.frame-foot) {
+  scroll-padding-bottom: 140px;
+}
+
+.frame-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px 12px;
+}

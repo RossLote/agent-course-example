@@ -1,0 +1,220 @@
+slug: "03"
+screens:
+  - type: scene
+    heading: The wandering worker
+    blocks:
+      - type: paragraph
+        text: >-
+          Bead .4 is clear. The builder gets it, and its decisions, and starts. Forty minutes
+          later:
+      - type: quote
+        text: >-
+          Done! Feedback and the score screen are in. While I was there I noticed the shelf layout
+          was a bit cramped so I tidied that up too, and I simplified the drag code. I ran it and
+          it looks good.
+        attribution: The agent
+      - type: paragraph
+        text: >-
+          Two things happened that nobody asked for. The tidying changed the file bead .3 was
+          working in. The simplified drag code no longer works on touch. The builder does not know
+          either of these, because nothing stopped it and nothing checked.
+      - type: quote
+        text: >-
+          Tests, linting, whatever else you have: you want to put the agent in a tight box it can't
+          wander off from.
+        attribution: Ross
+
+  - type: scene
+    heading: The walls
+    nav: the walls
+    intro: Four walls the workflow puts up before a builder starts.
+    blocks:
+      - type: cards
+        numbered: true
+        items:
+          - title: Its own working area.
+            body: >-
+              Every builder gets a separate copy of the project (a **worktree**) and a list of the
+              files it may touch. Two builders at once cannot tread on each other, and a change
+              outside the list is a failure, not a favour.
+          - title: The gate.
+            body: >-
+              Before the builder may say done, a set of checks must all pass: code style, types,
+              the unit tests, and a run through the thing in a real browser. A red check is the box
+              pushing back. The builder fixes and runs it again, as many times as it takes.
+          - title: Done, in its instructions.
+            body: >-
+              The bead's acceptance, the gate, and the rule "nothing outside your files" are in the
+              prompt the builder is given, as the finish line, not as advice.
+          - title: Its word is not taken.
+            body: >-
+              The builder pastes the gate's own output into its report, and says plainly what it
+              could not confirm. The orchestrator reads the output, not the summary. "I ran it and
+              it looks good" is not a gate result.
+      - type: aside
+        term: gate
+        text: the checks that must be green before work is handed back.
+      - type: aside
+        term: worktree
+        text: a builder's own copy of the project.
+
+  - type: choose
+    slug: build-the-box
+    scored: false
+    mode: multi
+    eyebrow: Try it
+    heading: Build the box
+    intro: >-
+      Bead .4 is about to start. Choose what goes round the builder. Tick everything that is a
+      wall; the box on the right draws itself as you go.
+    nav: build the box
+    checkLabel: Check my box
+    options:
+      - label: A unit test that every item has exactly one right shelf and a reason.
+        right: true
+        wall: gate
+        feedback: Wall. If the builder breaks the data, this goes red.
+      - label: A line asking it to please be careful and not change anything else.
+        right: false
+        feedback: Not a wall. It will agree, and then it will tidy the shelves. Hope is not a check.
+      - label: A run through the demo script in a browser, which must pass.
+        right: true
+        wall: gate
+        feedback: Wall. The touch drag breaking would be caught here.
+      - label: Its own working area, with the feedback and score files as the only ones it may touch.
+        right: true
+        wall: area
+        feedback: Wall. The shelf layout is not on the list.
+      - label: A much longer prompt explaining the whole project so it understands.
+        right: false
+        feedback: >-
+          Not a wall. More context is not a constraint; the record from the brief is what it
+          needs. The rest is room to wander in.
+      - label: '"Done means" in its instructions: the acceptance, the gate green, nothing outside its files.'
+        right: true
+        wall: done
+        feedback: Wall. The finish line, in writing.
+      - label: The gate's own output pasted into its report, and anything unconfirmed named.
+        right: true
+        wall: word
+        feedback: Wall. The orchestrator reads the output, not the summary.
+    box:
+      builder:
+        title: the builder
+        subtitle: bead .4
+      walls:
+        - id: area
+          label: own area, its files only
+        - id: gate
+          label: "the gate: lint, types, tests, a browser run"
+        - id: done
+          label: done, in its instructions
+        - id: word
+          label: its word not taken
+      caption: "{up} of {total} walls up. Hope, context and a promise to report are not walls."
+
+  - type: scene
+    heading: The same bead, twice
+    nav: the same bead, twice
+    blocks:
+      - type: columns
+        columns:
+          - heading: Loose
+            blocks:
+              - type: list
+                items:
+                  - text: Changes the feedback files.
+                    marker: "00:00"
+                    tone: neutral
+                  - text: '"While I was there" tidies the shelf layout, in bead .3''s file.'
+                    marker: "00:20"
+                    tone: neutral
+                  - text: Simplifies the drag code. Touch dragging stops working. Nothing notices.
+                    marker: "00:30"
+                    tone: neutral
+                  - text: '**"Done, I ran it and it looks good."**'
+                    marker: "00:40"
+                    tone: neutral
+                  - text: The client finds the touch bug. Bead .3's work was overwritten.
+                    marker: +7 days
+                    tone: wrong
+          - heading: Boxed
+            blocks:
+              - type: list
+                items:
+                  - text: Changes the feedback files.
+                    marker: "00:00"
+                    tone: neutral
+                  - text: "Tries to tidy the shelves: the file is outside its list. Rejected."
+                    marker: "00:20"
+                    tone: wrong
+                  - text: "Runs the gate: the browser run goes red at step 3, touch drag."
+                    marker: "00:35"
+                    tone: wrong
+                  - text: "Fixes it, runs the gate again: green."
+                    marker: "00:50"
+                    tone: right
+                  - text: >-
+                      **Reports with the gate's output pasted in**, and one line: "Could not
+                      confirm the screen-reader wording; that is bead .3's."
+                    marker: "00:55"
+                    tone: right
+              - type: mono
+                text: |-
+                  gate: lint ok · typecheck ok · unit 14/14 · e2e fridge 6/6 · 4m12s
+                  touched: src/feedback/*, src/score/*  (2 files)
+                  unconfirmed: screen-reader wording (bead .3)
+      - type: paragraph
+        text: >-
+          Fifteen minutes slower. The whole of the difference is that the box pushed back twice.
+
+  - type: choose
+    slug: check-1
+    scored: true
+    mode: single
+    eyebrow: Check · 1 of 2
+    heading: The gate is red. What happens?
+    intro: Every module ends with two of these. Each option tells you why, right or wrong.
+    nav: check
+    options:
+      - label: The builder explains why the failure does not matter and hands back.
+        right: false
+        feedback: A red gate is not a discussion. Green or not done.
+      - label: The builder fixes it and runs the gate again, as many times as it takes.
+        right: true
+        feedback: Yes. The gate is the finish line; it does not move.
+      - label: You turn off the failing check so the work can land.
+        right: false
+        feedback: >-
+          Then it is not a wall. If the check is wrong, that is its own piece of work, found and
+          fixed as one.
+
+  - type: choose
+    slug: check-2
+    scored: true
+    mode: single
+    eyebrow: Check · 2 of 2
+    heading: >-
+      The builder's report says "I tested it manually and everything works." The gate output is not
+      in the report. What do you do?
+    nav: question 2
+    options:
+      - label: Accept it; it tested it.
+        right: false
+        feedback: Its word. Module 00.
+      - label: Treat it as not done until the gate's own output is there and green.
+        right: true
+        feedback: Yes. The output, not the summary.
+      - label: Run the tests yourself.
+        right: false
+        feedback: >-
+          You can, but then you are the gate, every time, for every builder. The point is that the
+          box does it.
+
+  - type: takeaway
+    eyebrow: Takeaway
+    nav: takeaway
+    text: >-
+      **A builder needs walls, not advice.** Its own area, the files it may touch, a gate that must
+      be green, and done written in. The gate's output is the proof, never the builder's word.
+    caption: "The box gains its third wall: **the gate**."

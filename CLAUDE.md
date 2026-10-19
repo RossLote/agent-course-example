@@ -74,8 +74,14 @@ npm run lint           # ESLint, zero warnings allowed
 npm run typecheck      # tsc -b over src/ and e2e/ (the type-check half of build)
 npm run test           # Vitest unit tests (src/**/*.test.ts[x])
 npm run gate:fast      # lint + typecheck + unit
-npm run gate           # gate:fast + e2e; there is no integration tier
+npm run gate           # gate:fast + e2e + package; there is no integration tier
 npm run e2e            # Playwright e2e, Chromium only (e2e/, excluding e2e/walkthrough/)
+npm run package        # build with relative asset paths into dist/agent-course/, write
+                       # tincan.xml beside index.html, zip it as dist/agent-course.zip,
+                       # then reopen the zip and fail unless tincan.xml (naming
+                       # course.yaml's course) and index.html are at its root and every
+                       # asset path is relative; run it last: npm run build empties dist/,
+                       # the zip with it
 E2E_PORT=5281 npx playwright test e2e/smoke   # one spec, on its own port (default 5280)
 npm run walkthrough    # the throwaway e2e/walkthrough/*.spec.ts the orchestrator writes
                        # (e2e/walkthrough/recorder.ts is its committed step helper), with
@@ -85,14 +91,27 @@ npm run walkthrough    # the throwaway e2e/walkthrough/*.spec.ts the orchestrato
 
 The e2e web server starts on `E2E_PORT` and is never reused, so parallel runs need distinct
 ports; the defaults (5280, walkthrough 5290) differ from the presentation repo's so both can
-run at once. Nothing is fetched from the network at run time, and the smoke spec asserts it.
+run at once. Nothing is fetched from the network at run time, and every e2e spec asserts it.
 
 ## Architecture Overview
 
-Nothing is built yet: `src/App.tsx` is a placeholder the gates check. The brief settles the
-shape (PLAN.md §5). The plan's current thinking is that the learning designers author the
-modules as data in the repo and the agents build the engine that renders them and sends the
-xAPI statements, so a wording change needs no run.
+The learning designers author the course as data and the engine renders it and sends the xAPI
+statements, so a wording change needs no run (PLAN.md §6 and §6a).
+
+- `content/`: the course as YAML (`course.yaml`, `modules/00..07.yaml`, `fridge/*.yaml`),
+  parsed at build time and validated by the one schema in `src/content/`, which also derives
+  the activity ids and the box.
+- `src/course/`: the shell: hash routes, the top bar, the scenario and home pages, the box;
+  `src/course/frame/` is the frame every module screen plays in, and `src/screens/` the screen
+  registry with one folder per screen type.
+- `src/fridge/`: the fridge activity, one component driven by its fridge file.
+- `src/xapi/`: the launch, the tracker (record store with a launch, in-memory store and the
+  statements drawer in preview), the statement builders and the State document.
+- `src/progress/`: the learner's progress, the score and resume, and the statements each
+  change sends.
+- `scripts/package/`: `npm run package` and its zip check.
+- `e2e/`: the smoke spec, the whole course in preview with every statement in the drawer
+  (`e2e/course/`), and a launch against an intercepted record store (`e2e/launch/`).
 
 ## Conventions & Patterns
 

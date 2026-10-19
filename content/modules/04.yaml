@@ -1,0 +1,289 @@
+slug: "04"
+screens:
+  - type: scene
+    heading: The build was green
+    blocks:
+      - type: stats
+        heading: One real run of this workflow
+        items:
+          - value: 16
+            caption: pieces built, all green at the gate
+          - value: 16
+            caption: finders, one lens each
+          - value: 50
+            caption: findings
+          - value: 39
+            caption: fixed
+      - type: paragraph
+        text: A public project of Ross's, October 2026.
+      - type: paragraph
+        text: >-
+          Every one of those sixteen pieces passed its gate. The gate catches what a test can
+          describe. It does not catch three copies of the same function, a message that reads
+          wrongly, or a drop that is silently lost while another message is on screen. Those took
+          other agents, reading with a question in mind.
+      - type: quote
+        text: >-
+          Agents are better at reviewing than building. Whenever you have agents do anything,
+          have agents look at what the agents have done.
+        attribution: Ross
+
+  - type: scene
+    heading: Three layers, three kinds of mistake
+    nav: three layers, three kinds of mistake
+    intro: In the order they run.
+    blocks:
+      - type: cards
+        numbered: true
+        items:
+          - title: Simplify.
+            body: >-
+              Agents over-build, and they write a new helper rather than find the one that
+              exists. Four reviewers read the whole change with one question each: *should this
+              reuse something? is it more complicated than it needs to be? does it waste work? is
+              it at the wrong level?* The fixes are applied and the gate run again. Any fix that
+              changes behaviour is reverted: this layer tidies, it does not decide.
+          - title: Review.
+            body: >-
+              A plain pass for the obvious bugs: a typo in a shelf name, a message that never
+              shows, a case that was not handled. Its fixes are applied first so the next layer
+              is not spent on easy things.
+          - title: Adversarial review.
+            body: >-
+              The hard look. It is built so that a real bug cannot be waved away:
+      - type: list
+        style: bullets
+        items:
+          - >-
+            **Find.** Several finders each read the work through one **lens** (is it correct;
+            what states can the screen be in; is it consistent with what already exists; what
+            would an ordinary user do). Each finding carries a concrete scenario in which it goes
+            wrong and the exact lines the finder read.
+          - >-
+            **Dedupe.** One agent reads only the list of findings, never the code, and says which
+            ones are the same bug, so each bug is verified once and fixed in every place.
+          - >-
+            **Verify.** Two **skeptics** per finding, independently. **Confirmed**: they read the
+            lines and the scenario happens. **Refuted**: only by citing the exact line that makes
+            the scenario impossible; a refutation without a line is recorded as uncertain.
+            **Uncertain**: a legitimate answer that keeps the finding alive at lower priority. If
+            the two disagree, the finding goes to the fixer with both views; there is no third
+            vote to kill it.
+          - >-
+            **Fix.** Every surviving finding becomes a piece of work and goes through the box.
+      - type: paragraph
+        text: >-
+          *Why so strict about refuting? An earlier version let skeptics refute whenever they were
+          unsure. The record showed it killed a real bug, which a second review raised again
+          later. A wrong refutation costs a bug in production; an uncertain costs a few minutes.*
+      - type: aside
+        term: lens
+        text: >-
+          one way of reading the work (correctness, the states a screen can be in, consistency
+          with what exists, what an ordinary caller would do, and so on). One finder, one lens.
+      - type: aside
+        term: skeptic
+        text: >-
+          the agent that verifies one finding: confirmed, refuted or uncertain. A refutation must
+          cite the exact line that makes the failure impossible; uncertain keeps the finding
+          alive.
+
+  - type: scene
+    eyebrow: Try it
+    heading: Follow one finding
+    intro: >-
+      The build is green. The adversarial review starts. Follow one finding from the finder to
+      the fix, and take the skeptic's seat in the middle.
+    nav: follow one finding
+    blocks:
+      - type: cards
+        numbered: true
+        items:
+          - title: The finder.
+            body: >-
+              *Lens: the states a screen can be in.* **Finding.** If the learner drops a second
+              item while a wrong-placement message is still on screen, the drop is ignored: the
+              item snaps back to the tray with no message. **Scenario:** drop raw chicken on the
+              top shelf (the message shows for 2.5 seconds); within that time drop cheese on the
+              top shelf; cheese returns to the tray and nothing explains why. **Lines read:** the
+              drop handler, 40 to 58; the message timer, 80 to 84.
+          - title: The deduper.
+            body: >-
+              A finder with the *correctness* lens found the same thing in different words. The
+              deduper reads the list, never the code, and folds the two into one finding with
+              both locations. It will be verified once and fixed everywhere.
+    side:
+      - type: list
+        heading: The skeptic's rules
+        items:
+          - "**Confirmed** means you read the lines and the scenario happens."
+          - "**Refuted** only by citing the exact line that makes it impossible. No line, no refutation."
+          - >-
+            **Uncertain** is allowed. It keeps the finding alive at lower priority. A wrong
+            refutation costs a bug; an uncertain costs minutes.
+          - >-
+            "Unlikely", "a test exists", "the framework handles it", "the spec says so": none of
+            these is a refutation.
+
+  - type: choose
+    slug: verdict
+    scored: false
+    mode: single
+    eyebrow: Try it
+    heading: You are the skeptic
+    intro: Three excerpts.
+    body:
+      - type: paragraph
+        heading: The finding
+        text: >-
+          If the learner drops a second item while a wrong-placement message is still on screen,
+          the drop is ignored: the item snaps back to the tray with no message.
+      - type: mono
+        heading: A · drop handler, line 41
+        text: "if (message.visible) return;"
+      - type: mono
+        heading: B · message timer, line 82
+        text: "hideAfter(message, 2500);"
+      - type: mono
+        heading: C · test
+        text: >-
+          "shows the reason on a wrong drop":
+          drops one item, checks the message.
+    prompt: Your verdict?
+    options:
+      - label: Confirmed, citing A.
+        right: true
+        feedback: >-
+          Yes. Line 41 returns before anything happens when a message is showing. The scenario
+          happens. You cited the line.
+        reveal:
+          - type: paragraph
+            heading: The fix
+            text: >-
+              The second skeptic also confirmed, citing line 41. The finding becomes a piece of
+              work: *a drop while a message is showing replaces the message*, with its own
+              acceptance, built in the box, gate green.
+      - label: "Refuted: there is a test for wrong drops (C)."
+        right: false
+        feedback: >-
+          Not a refutation. The test drops one item; it never exercises this scenario. "A test
+          exists" refutes nothing unless it tests exactly this.
+      - label: "Refuted: nobody drops two items within 2.5 seconds."
+        right: false
+        feedback: >-
+          Not a refutation. "Unlikely" is about how bad it is, not whether it is true.
+          Likelihood is severity.
+      - label: Uncertain.
+        right: false
+        feedback: >-
+          Allowed, and never wrong to say. But you were shown line 41; the honest reading here is
+          confirmed. Uncertain is for when you cannot find the line either way.
+    checkLabel: Check my verdict
+    tryAgainLabel: Try another verdict
+    nav: your verdict
+    side:
+      - type: list
+        heading: The skeptic's rules
+        items:
+          - "**Confirmed** means you read the lines and the scenario happens."
+          - "**Refuted** only by citing the exact line that makes it impossible. No line, no refutation."
+          - >-
+            **Uncertain** is allowed. It keeps the finding alive at lower priority. A wrong
+            refutation costs a bug; an uncertain costs minutes.
+          - >-
+            "Unlikely", "a test exists", "the framework handles it", "the spec says so": none of
+            these is a refutation.
+
+  - type: match
+    slug: who-catches-it
+    scored: false
+    eyebrow: Try it
+    heading: Who catches it?
+    nav: who catches it?
+    prompt: >-
+      Four things went wrong in the fridge build. Match each to the layer that catches it.
+    targets:
+      - id: simplify
+        label: Simplify
+      - id: review
+        label: Review
+      - id: adversarial
+        label: Adversarial review
+      - id: epic
+        label: "None of the reviews: the epic"
+    rows:
+      - text: >-
+          Three copies of the "return the item to the tray" code, one per shelf.
+        key: simplify
+        feedback: >-
+          Simplify (reuse). Its first question is whether this should reuse something.
+      - text: >-
+          The message for yoghurt says "Dairy goes on the top shelf" and the top shelf is labelled
+          "Top (ready to eat)".
+        key: review
+        feedback: >-
+          Review (obvious). The plain pass is for the obvious bugs: a typo in a shelf name, a
+          message that is wrong.
+      - text: A drop during a message is silently lost.
+        key: adversarial
+        feedback: >-
+          Adversarial review (a scenario, verified). A finder reported it with a concrete
+          scenario and two skeptics confirmed it.
+      - text: A 60-second timer was built, which D6 said no to.
+        key: epic
+        feedback: >-
+          None of the reviews: the epic. The acceptance bar has no timer step, and the
+          walkthrough would show one. The reviews read code for mistakes; the demo script holds
+          the build to the decisions. Not every miss is a review's job. Some are caught by done
+          being defined.
+    checkLabel: Check my matches
+
+  - type: choose
+    slug: check-1
+    scored: true
+    mode: single
+    eyebrow: Check · 1 of 2
+    heading: >-
+      A skeptic writes: "Refuted. The framework handles this." No line is cited. What is
+      recorded?
+    intro: Every module ends with two of these. Each option tells you why, right or wrong.
+    nav: check
+    options:
+      - label: Refuted; frameworks do handle things.
+        right: false
+        feedback: Which line of the framework, for this call? Without it this is a belief.
+      - label: Uncertain; the finding stays alive.
+        right: true
+        feedback: Yes. A refutation without a line is not one.
+      - label: Confirmed, to be safe.
+        right: false
+        feedback: No. Confirmed also needs the lines read. Uncertain is the honest verdict.
+
+  - type: choose
+    slug: check-2
+    scored: true
+    mode: single
+    eyebrow: Check · 2 of 2
+    heading: >-
+      Simplify's reviewer proposes a change that makes the score screen also show the time
+      taken. What happens to it?
+    nav: question 2
+    options:
+      - label: Applied; it is an improvement.
+        right: false
+        feedback: It is a change of behaviour, and D6 said no timer.
+      - label: Reverted; simplify tidies, it does not decide.
+        right: true
+        feedback: Yes. A behaviour change in the simplify layer is reverted on sight.
+      - label: Sent to the client to decide.
+        right: false
+        feedback: The record already decided. Reverted.
+
+  - type: takeaway
+    eyebrow: Takeaway
+    nav: takeaway
+    text: >-
+      **The same kind of agent that guessed in module 00 is a sharp reviewer, given one question
+      and the rule that it must cite its evidence.** Three layers, three kinds of mistake, and no
+      finding dies on a feeling.
+    caption: "The box gains its fourth wall: **other agents**."

@@ -1,0 +1,17 @@
+/* The mark (./Tone.tsx): a tick or a cross on green or red. */
+
+.mark {
+  flex-shrink: 0;
+}
+
+.mark circle {
+  fill: var(--wrong);
+}
+
+.mark path {
+  stroke: #fff;
+}
+
+.mark[data-right='true'] circle {
+  fill: var(--right);
+}

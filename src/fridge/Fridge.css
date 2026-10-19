@@ -1,0 +1,476 @@
+/* The fridge (docs/design/2026-10-15-first-pass/M05-TwoFridges.dc.html), on the design's tokens.
+   Its panel is a .scene-card (src/styles/controls.css). */
+
+.fridge {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fridge-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fridge-title {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.fridge-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.fridge-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* The cabinet: its shelves top to bottom, each a button that takes the held item. */
+.fridge-cabinet {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 10px;
+  border: 2px solid var(--line-strong);
+  border-radius: 14px;
+  background: var(--ground);
+  list-style: none;
+}
+
+.fridge-shelf {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 12px;
+  border: 2px solid var(--surface);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+
+.fridge-shelf:disabled {
+  cursor: default;
+}
+
+.fridge-shelf:not(:disabled) {
+  cursor: pointer;
+}
+
+.fridge-shelf[data-target] {
+  border-style: dashed;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.fridge-shelf[data-target]:hover,
+.fridge-shelf[data-cursor],
+.fridge-shelf[data-over] {
+  border-style: solid;
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.fridge-shelf-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fridge-shelf-sub {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.fridge-on-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 24px;
+}
+
+.fridge-placed {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--right-line);
+  border-radius: 999px;
+  background: var(--right-soft);
+  color: var(--right);
+  font-size: 13px;
+}
+
+/* A flash fridge never says right: what stays is just there. */
+.fridge[data-feedback='flash'] .fridge-placed {
+  border-color: var(--line);
+  background: var(--ground);
+  color: var(--ink);
+}
+
+.fridge[data-feedback='flash'] .fridge-placed .tone-icon {
+  display: none;
+}
+
+/* The tray. Its items are buttons that also drag, so a touch on one never scrolls the page. */
+.fridge-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 68px;
+  padding: 10px;
+  border: 2px dashed var(--line-strong);
+  border-radius: 10px;
+}
+
+.fridge-item {
+  min-height: var(--target);
+  padding: 6px 14px;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.fridge-item:hover {
+  border-color: var(--ink);
+}
+
+.fridge-item[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.fridge-item[data-dragging] {
+  opacity: 0.4;
+}
+
+/* The status line: the live region's words, with a tick or a cross for a drop. */
+.fridge-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+/* Each drop's words come in afresh (a new span each turn), so a repeated sentence still shows a
+   change; a fade, not a movement, so it stays where motion is reduced. */
+.fridge-status[data-tone] .fridge-words {
+  animation: fridge-words-in 400ms ease-out;
+}
+
+@keyframes fridge-words-in {
+  from {
+    opacity: 0.2;
+  }
+}
+
+.fridge-status .tone-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.fridge-status[data-tone='right'] {
+  border-color: var(--right-line);
+  background: var(--right-soft);
+  color: var(--right);
+}
+
+.fridge-status[data-tone='wrong'] {
+  border-color: var(--learner-line);
+  background: var(--learner-soft);
+}
+
+.fridge-status[data-tone='wrong'] .tone-icon {
+  color: var(--wrong);
+}
+
+.fridge-score {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--right-line);
+  border-radius: 10px;
+  background: var(--right-soft);
+}
+
+.fridge-score-line {
+  font-weight: 700;
+}
+
+.fridge-wrong {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  list-style: none;
+}
+
+.fridge-wrong li,
+.fridge-all-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.fridge-wrong .tone-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: var(--wrong);
+}
+
+.fridge-all-right .tone-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: var(--right);
+}
+
+/* The timer pill, beside the placed count and the score. In the last five seconds (and at
+   zero) it reads red and the cabinet's outline turns red; while it still runs it shows a
+   speaker and pulses, where motion is allowed. */
+.fridge-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fridge[data-warning] .fridge-timer {
+  background: var(--wrong);
+}
+
+.fridge-timer-icon {
+  flex-shrink: 0;
+}
+
+.fridge[data-warning] .fridge-cabinet {
+  border-color: var(--wrong);
+}
+
+/* The pulse: the pill swells, and a red ring (the pill's shape drawn behind its text) grows out
+   of it and fades. Only transform and opacity move, so the browser can run it off the main
+   thread. The pill's own colour is the same red, so the ring shows only outside it. */
+@media (prefers-reduced-motion: no-preference) {
+  .fridge-timer[data-pulse] {
+    position: relative;
+    isolation: isolate;
+    animation: fridge-pulse 1s ease-in-out infinite;
+  }
+
+  .fridge-timer[data-pulse]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--wrong);
+    opacity: 0;
+    animation: fridge-ring 1s ease-in-out infinite;
+  }
+}
+
+@keyframes fridge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+/* 8px out on every side of the pill at its widest (it is about 73px by 27.5px while it pulses). */
+@keyframes fridge-ring {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.22, 1.58);
+    opacity: 0;
+  }
+}
+
+/* The cabinet and the leaderboard side by side, stacked when there is no room. */
+.fridge-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.fridge-body .fridge-cabinet {
+  flex: 999 1 300px;
+  min-width: 0;
+}
+
+.fridge-board {
+  display: flex;
+  flex: 1 1 150px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 14px;
+}
+
+.fridge-board-title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fridge-board-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.fridge-board-rows li[data-learner] {
+  font-weight: 700;
+}
+
+/* Time's up: the file's message and Reset in the tray's place, bordered as well as coloured,
+   so it is not colour alone. */
+.fridge-timeup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 2px solid var(--wrong);
+  border-radius: 10px;
+  background: var(--wrong-soft);
+}
+
+.fridge-timeup p {
+  flex: 1 1 auto;
+}
+
+/* A wrong drop on a flash fridge: the item that came back is red and stays so (the static
+   state), and shakes in a short flash where motion is allowed. data-returned alternates between
+   even and odd turns, and each has its own (identical) keyframes, so a second wrong drop of the
+   same item changes the animation's name and flashes again. */
+.fridge[data-feedback='flash'] .fridge-item[data-returned] {
+  border-color: var(--wrong);
+  background: var(--wrong-soft);
+  color: var(--wrong);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fridge[data-feedback='flash'] .fridge-item[data-returned] {
+    animation: fridge-flash 600ms ease-out;
+  }
+
+  .fridge[data-feedback='flash'] .fridge-item[data-returned='odd'] {
+    animation-name: fridge-flash-again;
+  }
+}
+
+@keyframes fridge-flash {
+  0%,
+  40% {
+    background: var(--wrong);
+    color: #fff;
+    transform: translateX(0);
+  }
+  10%,
+  30% {
+    transform: translateX(-4px);
+  }
+  20% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fridge-flash-again {
+  0%,
+  40% {
+    background: var(--wrong);
+    color: #fff;
+    transform: translateX(0);
+  }
+  10%,
+  30% {
+    transform: translateX(-4px);
+  }
+  20% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* The confetti banner: the finish line on ink, with a few pieces that drop in. */
+.fridge-score[data-confetti] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.fridge-confetti {
+  display: flex;
+  gap: 8px;
+}
+
+.fridge-confetto {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fridge-confetto {
+    animation: fridge-confetti 900ms ease-out backwards;
+  }
+}
+
+@keyframes fridge-confetti {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) rotate(0deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
