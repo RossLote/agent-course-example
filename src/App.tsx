@@ -27,12 +27,11 @@ function useFocusHeadingOnNavigate(route: Route) {
   }, [key]);
 }
 
-export interface AppProps {
-  /** The learner's progress; the course's own store unless a test gives one. */
-  store?: ProgressStore;
-  /** The course; content/'s unless a test gives an inline one, with a store made for it. */
-  course?: Course;
-}
+/**
+ * The learner's progress, the course's own store unless a test gives one; and the course,
+ * content/'s unless a test gives an inline one, which then needs a store made for it.
+ */
+export type AppProps = { store?: ProgressStore; course?: undefined } | { store: ProgressStore; course: Course };
 
 /**
  * The course: the scenario, the home page, or a module, by the route in the hash. Progress

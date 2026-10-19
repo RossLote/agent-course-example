@@ -48,7 +48,7 @@ function brief({ slug, rounds }: ScreenOf<'brief'>, picks: [number, number][]): 
 function expectPlainText(sent: readonly Statement[]) {
   for (const s of sent) {
     expect(s.result?.response ?? '').not.toContain('*');
-    expect(s.object.objectType === 'Activity' && s.object.definition?.name?.['en-US']).not.toContain('*');
+    expect((s.object.objectType === 'Activity' && s.object.definition?.name?.['en-US']) || '').not.toContain('*');
   }
 }
 

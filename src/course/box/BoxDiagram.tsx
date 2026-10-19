@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { plainText } from '../../content/copy.ts';
 import { BOX_WALLS, type BoxWall, type Course } from '../../content/index.ts';
 import { Copy } from '../../screens/scene/Copy.tsx';
 import './BoxDiagram.css';
@@ -33,15 +34,15 @@ const RING_RADIUS = 170;
  */
 const ALL_WALLS = ({ 4: 'four' } satisfies Record<typeof BOX_WALLS.length, string>)[BOX_WALLS.length];
 
-/** What the diagram shows, in words: its text alternative. */
+/** What the diagram shows, in words: its text alternative, the labels as plain text. */
 function describeBox({ labels, centre, walls, ring }: BoxDiagramProps): string {
-  const up = BOX_WALLS.filter((w) => walls.includes(w)).map((w) => labels.walls[w]);
-  const dashed = BOX_WALLS.filter((w) => !walls.includes(w)).map((w) => labels.walls[w]);
-  const parts = [`The box round ${centre ?? labels.centre}.`];
+  const up = BOX_WALLS.filter((w) => walls.includes(w)).map((w) => plainText(labels.walls[w]));
+  const dashed = BOX_WALLS.filter((w) => !walls.includes(w)).map((w) => plainText(labels.walls[w]));
+  const parts = [`The box round ${plainText(centre ?? labels.centre)}.`];
   if (up.length === 0) parts.push(`No wall is up yet; all ${ALL_WALLS} are dashed: ${dashed.join(', ')}.`);
   else if (dashed.length === 0) parts.push(`All ${ALL_WALLS} walls are up: ${up.join(', ')}.`);
   else parts.push(`Walls up: ${up.join(', ')}. Still dashed: ${dashed.join(', ')}.`);
-  if (ring) parts.push(`A ring is drawn round it: ${labels.ring}.`);
+  if (ring) parts.push(`A ring is drawn round it: ${plainText(labels.ring)}.`);
   return parts.join(' ');
 }
 
@@ -64,11 +65,11 @@ export function BoxDiagram(props: BoxDiagramProps) {
         {ring && (
           <g className="box-ring">
             <circle r={RING_RADIUS} />
-            <text y={RING_RADIUS + 10}>{labels.ring}</text>
+            <text y={RING_RADIUS + 10}>{plainText(labels.ring)}</text>
           </g>
         )}
         <circle className={walls.length > 0 ? 'box-centre box-centre-held' : 'box-centre'} r={48} />
-        <text className="box-centre-label">{centre ?? labels.centre}</text>
+        <text className="box-centre-label">{plainText(centre ?? labels.centre)}</text>
         {BOX_WALLS.map((wall, i) => {
           const solid = walls.includes(wall);
           const degrees = (i * 360) / BOX_WALLS.length;
@@ -90,7 +91,7 @@ export function BoxDiagram(props: BoxDiagramProps) {
                 y={-radius * Math.cos(radians)}
                 style={side ? { textAnchor: Math.sin(radians) > 0 ? 'start' : 'end' } : undefined}
               >
-                {labels.walls[wall]}
+                {plainText(labels.walls[wall])}
               </text>
             </g>
           );

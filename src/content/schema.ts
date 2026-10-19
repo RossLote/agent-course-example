@@ -176,7 +176,7 @@ const takeawayScreen = z.strictObject({
   nav: text.optional(),
   /** The takeaway card. */
   text,
-  /** The line under the box ("The box gains its first wall. Four to go, then the arrow."). */
+  /** The line under the box ("The box gains its first wall. Three to go, then the arrow."). */
   caption: text,
   /** Shown after the card; the last module's end copy. */
   end: blocks.optional(),
@@ -248,7 +248,7 @@ const chooseOption = z.strictObject({
   label: text,
   right: z.boolean(),
   feedback: text,
-  /** Shown only when this option is chosen (module 04's fix on the right verdict). */
+  /** Shown only when this option is chosen (a fix shown on the right verdict). */
   reveal: blocks.optional(),
   /** The box panel wall this option draws while ticked; the id of one of `box.walls`. */
   wall: slug.optional(),
@@ -268,7 +268,7 @@ const chooseScreen = z
     options: z.array(chooseOption).min(2),
     /** Shown once the answer is checked. */
     after: blocks.optional(),
-    /** The box panel beside the options (module 03): walls drawn as options are ticked. */
+    /** The box panel beside the options: walls drawn as options are ticked. */
     box: z
       .strictObject({
         builder: z.strictObject({ title: text, subtitle: text.optional() }),

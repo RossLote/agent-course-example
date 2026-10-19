@@ -13,7 +13,7 @@ export const CONTENT = readContent();
 export const COURSE_ID = CONTENT.id;
 
 /** The home page's h1, which module 00's takeaway goes on to. */
-export const HOME_HEADING = 'Talk it through before it builds. Then never let the builder judge its own work.';
+export const HOME_HEADING = CONTENT.home.heading;
 
 /**
  * Aborts and records every request that would leave `origin`. Register it before any narrower

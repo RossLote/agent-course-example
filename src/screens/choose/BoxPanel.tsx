@@ -31,9 +31,9 @@ function describe(box: Box, up: ReadonlySet<string>): string {
 }
 
 /**
- * The box panel beside a choose's options (module 03): each wall the ticked options name is
+ * The box panel beside a choose's options: each wall the ticked options name is
  * drawn solid, the rest dashed, with the caption counting them. A wall counts once however many
- * options draw it. The box is the screen's own walls, not the course's five.
+ * options draw it. The box is the screen's own walls, not the course's four.
  */
 export function BoxPanel({ box, up }: { box: Box; up: ReadonlySet<string> }) {
   const titleId = useId();

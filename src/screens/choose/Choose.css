@@ -221,7 +221,7 @@
   gap: 12px;
 }
 
-/* The box panel beside the options (module 03). */
+/* The box panel beside the options. */
 .choose-with-box {
   display: flex;
   flex-wrap: wrap;
