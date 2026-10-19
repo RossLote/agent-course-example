@@ -414,3 +414,19 @@ rest. Ross was reviewing the two builds screen by screen and stopped on module
   which would fail its own finish line; 04's story carries no counts; .2
   stays one bead. Recorded on the epic and on beads .4 and .6.
 - Ready to orchestrate.
+
+## Ross: the local branch is still the round-two one
+
+- The local branch is still set to that round-two one. Should that not have
+  merged in and sorted itself out by now?
+
+## Agent: the merge is done; the folder is a worktree
+
+- Main has the merge. What you are looking at is the second folder,
+  agent-course-round-two, which is a git worktree pinned to the round-two
+  branch: a worktree cannot sit on main while the main checkout does. Both
+  branches are fully merged into main, nothing runs from that folder now,
+  and main has its packages installed and type-checks. Removing the
+  worktree and deleting the two branches is a destructive step the harness
+  would not let me take unasked; the two commands are in the session for
+  you to run or approve.
