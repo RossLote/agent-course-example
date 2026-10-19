@@ -35,13 +35,12 @@ const answers = (module = m00): ProgressCause[] =>
 const played = (modules: typeof course.modules, { complete = true } = {}, doc: ProgressDoc = EMPTY_PROGRESS): ProgressDoc =>
   modules.flatMap((m) => [...answers(m), ...(complete ? [takeaway(m)] : [])]).reduce(takeCause, doc);
 const saved = (doc: ProgressDoc, savedAt: string): ProgressDoc => ({ ...doc, savedAt });
-
 const EARLIER = '2026-10-15T09:00:00.000Z';
 const LATER = '2026-10-15T10:00:00.000Z';
 
 /** A document with module 00 done, or module 01 reached, to tell the sources apart. */
-const DONE_00: ProgressDoc = { version: 2, modules: { '00': { answers: {}, reached: 7, completed: true } } };
-const AT_01: ProgressDoc = { version: 2, modules: { '01': { answers: {}, reached: 2, completed: false } } };
+const DONE_00: ProgressDoc = { ...EMPTY_PROGRESS, modules: { '00': { answers: {}, reached: 7, completed: true } } };
+const AT_01: ProgressDoc = { ...EMPTY_PROGRESS, modules: { '01': { answers: {}, reached: 2, completed: false } } };
 /** DONE_00 as round two saved it: version 1, against the modules round three replaced under the same slugs. */
 const ROUND_TWO = { ...DONE_00, version: 1, savedAt: LATER };
 
@@ -86,9 +85,7 @@ describe('the progress store in preview', () => {
     expect(createProgressStore(course, createMemoryTracker(course)).getSnapshot()).toBe(EMPTY_PROGRESS);
     localStorage.setItem(localStateKey(course, null), '{not json');
     expect(createProgressStore(course, createMemoryTracker(course)).getSnapshot()).toBe(EMPTY_PROGRESS);
-  });
-
-  it("starts empty from round two's localStorage copy (version 1)", () => {
+    // Round two's copy: version 1, which round three's modules under the same slugs would misread.
     localStorage.setItem(localStateKey(course, null), JSON.stringify(ROUND_TWO));
     expect(createProgressStore(course, createMemoryTracker(course)).getSnapshot()).toBe(EMPTY_PROGRESS);
   });
@@ -255,7 +252,7 @@ describe('the progress store with a launch', () => {
   });
 
   it('writes State when what the learner did while it was read changes it, even when it changed nothing locally', async () => {
-    const reached = (n: number, savedAt: string): ProgressDoc => ({ version: 2, savedAt, modules: { '00': { answers: {}, reached: n, completed: false } } });
+    const reached = (n: number, savedAt: string): ProgressDoc => ({ ...EMPTY_PROGRESS, savedAt, modules: { '00': { answers: {}, reached: n, completed: false } } });
     localStorage.setItem(localStateKey(course, launch), JSON.stringify(reached(5, EARLIER)));
     let answer: (response: Response) => void = () => {};
     recordStore(() => new Promise((resolve) => (answer = resolve)));

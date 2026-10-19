@@ -5,7 +5,7 @@ import { plainText } from './content/copy.ts';
 import { course, type Course, type Screen, type ScreenOf } from './content/index.ts';
 import { fixtureCheck, fixtureCourse, fixtureScene, fixtureTakeaway } from './course/frame/fixture.ts';
 import { firstAwaiting, NO_ANSWERS, scoredItem, shownScreen } from './course/frame/progress.ts';
-import type { ProgressDoc } from './progress/progress.ts';
+import { EMPTY_PROGRESS, type ProgressDoc } from './progress/progress.ts';
 import { createProgressStore } from './progress/store.ts';
 import { jsonResponse, sparkLaunch } from './xapi/fixtures.ts';
 import { localStateKey } from './xapi/state.ts';
@@ -145,7 +145,7 @@ describe('App with progress', () => {
 
   it(`reads "${total} of ${total} done", every card "Done" and "Review from module 00" once all are done`, () => {
     const done: ProgressDoc = {
-      version: 2,
+      ...EMPTY_PROGRESS,
       modules: Object.fromEntries(course.modules.map((m) => [m.slug, { answers: {}, reached: m.screens.length, completed: true }])),
     };
     localStorage.setItem(localStateKey(course, null), JSON.stringify(done));
@@ -279,7 +279,7 @@ describe('App with a launch', () => {
       vi.fn<typeof fetch>((_url, init) => (init?.method === 'GET' ? new Promise((resolve) => (answer = resolve)) : Promise.resolve(new Response(null, { status: 204 })))),
     );
     const state: ProgressDoc = {
-      version: 2,
+      ...EMPTY_PROGRESS,
       modules: { '00': { answers: { 'check-1': { answer: { picked: [1] }, score: { raw: 1, max: 1 }, right: true } }, reached: 5, completed: false } },
     };
     const store = createProgressStore(inline, createLrsTracker(inline, sparkLaunch()));

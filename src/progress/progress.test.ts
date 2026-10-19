@@ -122,7 +122,7 @@ describe('the views', () => {
   });
 
   it('counts each stored raw between 0 and what its screen is worth now', () => {
-    const stored = (raw: number, max = 1): ProgressDoc => ({ version: 2, modules: { '00': { answers: { 'check-1': { score: { raw, max } }, 'check-2': { score: { raw: 1, max: 1 } } }, reached: 3, completed: false } } });
+    const stored = (raw: number, max = 1): ProgressDoc => ({ ...EMPTY_PROGRESS, modules: { '00': { answers: { 'check-1': { score: { raw, max } }, 'check-2': { score: { raw: 1, max: 1 } } }, reached: 3, completed: false } } });
     // A score saved when the screen was worth more counts no more than it is worth now.
     expect(courseScore(course, stored(6, 6))).toEqual({ raw: 2, max: 2 });
     expect(courseScore(course, stored(-3))).toEqual({ raw: 1, max: 2 });
@@ -241,7 +241,7 @@ describe('parseProgress', () => {
 });
 
 describe('isNewer', () => {
-  const at = (savedAt?: string): ProgressDoc => ({ version: 2, ...(savedAt !== undefined && { savedAt }), modules: {} });
+  const at = (savedAt?: string): ProgressDoc => ({ ...EMPTY_PROGRESS, ...(savedAt !== undefined && { savedAt }), modules: {} });
 
   it('says a document saved later is newer, and a tie is not', () => {
     expect(isNewer(at('2026-10-15T10:00:01.000Z'), at('2026-10-15T10:00:00.000Z'))).toBe(true);

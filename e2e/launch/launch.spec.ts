@@ -86,8 +86,6 @@ test('a launch sends every statement and State write to the record store with th
     expect.objectContaining({ success: false, score: expect.objectContaining({ raw: 0, max: 1 }) }),
     expect.objectContaining({ success: true, score: expect.objectContaining({ raw: 1, max: 1 }) }),
   ]);
-  // State keeps the latest answer, the right one, not the wrong one before it.
-  expect(lastState()).toMatchObject({ modules: { '00': { answers: { 'check-1': { answer: { picked: [1] }, right: true } } } } });
 
   // Every request: the version header and the Authorization value, as the launch gave it.
   for (const request of requests) {
@@ -132,6 +130,7 @@ test('a launch sends every statement and State write to the record store with th
         answers: {
           'what-went-wrong': { answer: { picked: [0, 1, 2] } },
           'one-shot': expect.objectContaining({ score: { raw: 50, max: 1400 } }),
+          // State keeps the latest answer, the right one, not the wrong one before it.
           'check-1': { answer: { picked: [1] }, score: { raw: 1, max: 1 }, right: true },
           'check-2': { answer: { picked: [1] }, score: { raw: 1, max: 1 }, right: true },
         },

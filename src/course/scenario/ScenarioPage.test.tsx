@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
+import { expectEmphasis, markedAll } from '../frame/emphasis.ts';
 import { ScenarioPage } from './ScenarioPage.tsx';
 
 const course = {
@@ -45,22 +46,19 @@ describe('ScenarioPage', () => {
   });
 
   it('renders **bold** and *italic* in every piece of its copy as strong and em, with no asterisks', () => {
-    /** A field's copy, in bold and in italic, named so each field's emphasis can be found. */
-    const marked = (name: string) => `**${name}** and *${name} too*`;
+    const lineNumbers = [1, 2, 3];
+    const names = ['label', 'role', 'heading', 'from', 'date', 'subject', 'body 1', 'body 2', 'button', 'note', ...lineNumbers.flatMap((n) => [`title ${n}`, `text ${n}`])] as const;
+    const c = markedAll(names);
     const scenario = {
-      label: marked('label'),
-      role: marked('role'),
-      heading: marked('heading'),
-      memo: { from: marked('from'), date: marked('date'), subject: marked('subject'), body: [marked('body 1'), marked('body 2')] },
-      lines: [1, 2, 3].map((n) => ({ title: marked(`title ${n}`), text: marked(`text ${n}`) })),
-      button: marked('button'),
-      note: marked('note'),
+      label: c.label,
+      role: c.role,
+      heading: c.heading,
+      memo: { from: c.from, date: c.date, subject: c.subject, body: [c['body 1'], c['body 2']] },
+      lines: lineNumbers.map((n) => ({ title: c[`title ${n}`], text: c[`text ${n}`] })),
+      button: c.button,
+      note: c.note,
     };
     const { container } = render(<ScenarioPage course={{ ...course, scenario }} />);
-    const names = ['label', 'role', 'heading', 'from', 'date', 'subject', 'body 1', 'body 2', 'button', 'note', ...[1, 2, 3].flatMap((n) => [`title ${n}`, `text ${n}`])];
-    const texts = (tag: string) => [...container.querySelectorAll(tag)].map((e) => e.textContent);
-    expect(texts('strong')).toEqual(expect.arrayContaining(names));
-    expect(texts('em')).toEqual(expect.arrayContaining(names.map((n) => `${n} too`)));
-    expect(container.textContent).not.toContain('*');
+    expectEmphasis(container, names);
   });
 });

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
+import { expectEmphasis, markedAll } from '../frame/emphasis.ts';
 import { fixtureCourse } from '../frame/fixture.ts';
 import { HomePage } from './HomePage.tsx';
 
@@ -99,26 +100,28 @@ describe('HomePage', () => {
   });
 
   it('renders **bold** and *italic* in every piece of its copy as strong and em, with no asterisks', () => {
-    /** A field's copy, in bold and in italic, named so each field's emphasis can be found. */
-    const marked = (name: string) => `**${name}** and *${name} too*`;
+    const fields = ['meta', 'leave', 'eyebrow', 'heading', 'quote', 'attribution', 'line', 'start', 'scenarioLink', 'caption', 'modulesHeading'] as const;
+    const moduleFields = (slug: string) => [`title ${slug}`, `wallLabel ${slug}`, `blurb ${slug}`] as const;
+    const names = [...fields, ...course.modules.flatMap((m) => moduleFields(m.slug))];
+    // The box's centre is drawn as plain SVG text, so its markers are stripped, not turned into strong and em.
+    const c = markedAll([...names, 'centre']);
     const home = {
-      meta: marked('meta'),
-      leave: marked('leave'),
-      eyebrow: marked('eyebrow'),
-      heading: marked('heading'),
-      quote: { text: marked('quote'), attribution: marked('attribution') },
-      line: marked('line'),
-      start: marked('start'),
-      scenarioLink: marked('scenarioLink'),
-      box: { centre: marked('centre'), caption: marked('caption') },
-      modulesHeading: marked('modulesHeading'),
+      meta: c.meta,
+      leave: c.leave,
+      eyebrow: c.eyebrow,
+      heading: c.heading,
+      quote: { text: c.quote, attribution: c.attribution },
+      line: c.line,
+      start: c.start,
+      scenarioLink: c.scenarioLink,
+      box: { centre: c.centre, caption: c.caption },
+      modulesHeading: c.modulesHeading,
     };
-    const modules = course.modules.map((m) => ({ ...m, title: marked(`title ${m.slug}`), wallLabel: marked(`wallLabel ${m.slug}`), blurb: marked(`blurb ${m.slug}`) }));
+    const modules = course.modules.map((m) => {
+      const [title, wallLabel, blurb] = moduleFields(m.slug);
+      return { ...m, title: c[title], wallLabel: c[wallLabel], blurb: c[blurb] };
+    });
     const { container } = render(<HomePage course={{ ...course, home, modules }} />);
-    const names = [...'meta leave eyebrow heading quote attribution line start scenarioLink caption modulesHeading'.split(' '), ...modules.flatMap((m) => [`title ${m.slug}`, `wallLabel ${m.slug}`, `blurb ${m.slug}`])];
-    const texts = (tag: string) => [...container.querySelectorAll(tag)].map((e) => e.textContent);
-    expect(texts('strong')).toEqual(expect.arrayContaining(names));
-    expect(texts('em')).toEqual(expect.arrayContaining(names.map((n) => `${n} too`)));
-    expect(container.textContent).not.toContain('*');
+    expectEmphasis(container, names);
   });
 });
