@@ -182,7 +182,8 @@ test('the whole course in preview sends every statement, in order, and comes bac
   await page.clock.runFor(THINKING_MS);
   // Round two in the same place, focus on its message; the learner line stays above it.
   await expect(page.locator('[data-message="round-1"]')).toBeFocused();
-  await expect(chat).toContainText('Took your answers as D1 to D5 on the right.');
+  // Its message exactly, so no count of the questions left can follow it (brief SKILL.md:48, C23).
+  await expect(page.locator('[data-message="round-1"] .chat-bubble > p').first()).toHaveText('Took your answers as D1 to D5 on the right.');
   await expect(learner.last()).toHaveText('My answers to 1 to 5.');
   await expect(chat).not.toContainText('Thinking…');
   // Its three questions, the third the agent's own idea.
@@ -234,6 +235,9 @@ test('the whole course in preview sends every statement, in order, and comes bac
   const boxed = main.locator('.block-column', { hasText: 'Boxed' });
   await expect(boxed.locator('.block-list-item[data-tone="wrong"]', { hasText: 'goes red' })).toHaveCount(1);
   await expect(boxed.locator('.block-list-item', { hasText: 'three files changed against a list of two' })).toContainText('sends the piece back');
+  // Its report hands the screen-reader wording to another piece, and confirms nothing it could not.
+  await expect(boxed).toContainText("The screen-reader wording is the keyboard piece's work");
+  await expect(boxed).not.toContainText(/could not confirm/i);
   await expect(page.locator('body')).not.toContainText(/rejected/i);
   await next(page, 'The reviewers');
   await expect(main.locator('.block-table td')).toHaveText(['16', '16', '50', '39']);
@@ -256,6 +260,10 @@ test('the whole course in preview sends every statement, in order, and comes bac
   const chapters = main.locator('.block-list-item', { has: page.locator('.block-list-marker', { hasText: /^ch \d$/ }) });
   await expect(chapters).toHaveCount(6);
   await expect(chapters.nth(3)).toContainText('"Lettuce placed. Correct."');
+  // Chapter 4 alone has no evidence: no tick, where the other five have one.
+  await expect.poll(() => chapters.evaluateAll((items) => items.map((item) => item.getAttribute('data-tone')))).toEqual(['right', 'right', 'right', 'neutral', 'right', 'right']);
+  await expect(chapters.getByRole('img', { name: 'right' })).toHaveCount(5);
+  await expect(chapters.nth(3).locator('.block-list-tone')).toBeEmpty();
   const choices = main.locator('.block-paragraph', { hasText: 'Choices made for you' });
   await expect(choices).toContainText('stays on screen until the next move');
   await expect(choices).not.toContainText('2.5');
@@ -311,6 +319,13 @@ test('the whole course in preview sends every statement, in order, and comes bac
   await next(page, 'The check that missed');
   await expect(main.locator('.block-card')).toHaveCount(3);
   await expect(main.locator('.block-cards')).not.toContainText('cite');
+  // The cards count no findings and no rounds, in digits or in words.
+  const missed = main.locator('.block-card > p');
+  await expect(missed).toHaveCount(3);
+  for (const text of await missed.allInnerTexts()) {
+    expect(text).not.toMatch(/\d/);
+    expect(text).not.toMatch(/\b(findings?|rounds?)\b/i);
+  }
   await next(page, 'Make it yours');
   const makeASkill = main.locator('.block-quote', { hasText: 'Ross' });
   await expect(makeASkill).toContainText('make a skill');

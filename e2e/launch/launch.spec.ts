@@ -23,6 +23,7 @@ interface Statement {
   actor: unknown;
   verb: { id: string };
   object: { id: string };
+  result?: { success?: boolean; score?: { raw?: number; max?: number } };
   context?: { registration?: string; contextActivities?: Record<string, { id: string }[]> };
 }
 
@@ -58,7 +59,8 @@ test('a launch sends every statement and State write to the record store with th
 
   await page.getByRole('link', { name: 'Take the job' }).click();
   await expect(heading(page)).toHaveText(HOME_HEADING);
-  await playModule00(page);
+  // The first check answered wrong, then right: both answers go to the record store.
+  await playModule00(page, { missFirstCheck: true });
   await expect(page.getByRole('banner')).toContainText('1 of 5 done');
 
   const isStatements = (r: Recorded) => r.url.pathname.endsWith('/statements');
@@ -72,11 +74,20 @@ test('a launch sends every statement and State write to the record store with th
     ...Array.from({ length: 3 }, () => `${VERB}interacted ${COURSE_ID}modules/00/interactions/what-went-wrong`),
     `${VERB}completed ${COURSE_ID}fridge/one-shot`,
     `${VERB}answered ${COURSE_ID}modules/00/checks/1`,
+    `${VERB}answered ${COURSE_ID}modules/00/checks/1`,
     `${VERB}answered ${COURSE_ID}modules/00/checks/2`,
     `${VERB}completed ${COURSE_ID}modules/00`,
   ];
   await expect.poll(() => statements().map((s) => `${s.verb.id} ${s.object.id}`)).toEqual(sent);
   await expect.poll(() => lastState()?.modules?.['00']?.completed).toBe(true);
+  // The first check's two answers, wrong then right, each with its own result.
+  const firstCheck = statements().filter((s) => s.verb.id === `${VERB}answered` && s.object.id === `${COURSE_ID}modules/00/checks/1`);
+  expect(firstCheck.map((s) => s.result)).toEqual([
+    expect.objectContaining({ success: false, score: expect.objectContaining({ raw: 0, max: 1 }) }),
+    expect.objectContaining({ success: true, score: expect.objectContaining({ raw: 1, max: 1 }) }),
+  ]);
+  // State keeps the latest answer, the right one, not the wrong one before it.
+  expect(lastState()).toMatchObject({ modules: { '00': { answers: { 'check-1': { answer: { picked: [1] }, right: true } } } } });
 
   // Every request: the version header and the Authorization value, as the launch gave it.
   for (const request of requests) {

@@ -123,9 +123,10 @@ export const dashedWalls = (page: Page) => page.locator('[data-wall][data-state=
  * (its timer at 0:15; raw chicken on the lower middle stays, cheese on the bottom returns, then
  * the clock runs the fifteen seconds out through the last five's warning), both checks right.
  * The page's clock must be installed before it loaded; it is paused for the countdown and runs
- * on again after it.
+ * on again after it. With `missFirstCheck`, the first check is answered wrong, then Try again
+ * and right (the launch spec's retry; the bar answers it right first time).
  */
-export async function playModule00(page: Page): Promise<void> {
+export async function playModule00(page: Page, { missFirstCheck = false } = {}): Promise<void> {
   await page.getByRole('region', { name: 'The modules' }).getByRole('link', { name: /^00 · / }).click();
   await expect(heading(page)).toHaveText('The request');
 
@@ -182,6 +183,12 @@ export async function playModule00(page: Page): Promise<void> {
   await page.clock.resume();
 
   await next(page, 'Your agent built a feature you never mentioned. What most likely happened?');
+  if (missFirstCheck) {
+    const misread = await choose(page, 'It misread your message.');
+    await expect(misread).toHaveAttribute('data-state', 'wrong');
+    await expect(misread).toContainText('Not usually. It read what you wrote');
+    await page.getByRole('button', { name: 'Try again' }).click();
+  }
   await expect(await choose(page, 'It filled a gap in your ask with a guess.')).toHaveAttribute('data-state', 'right');
 
   await next(page, 'The agent says "I tested it myself and it all works." What is that worth?');
