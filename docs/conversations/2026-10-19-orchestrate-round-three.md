@@ -89,3 +89,19 @@ is the agent working alone, so the log is short.
   the question was whether the workflow did any better. The second card's
   reviewer is on the one-shot version. The design note for the module and C8
   say the same, and C8 no longer mentions a colleague.
+
+## Ross: publish it on GitHub Pages
+
+- I've made a GitHub repo for this, RossLote/agent-course-example, with Pages
+  turned on and set to deploy from GitHub Actions. Publish the final build
+  there. I was going to host it in an LMS, but that's more complicated than I'd
+  like. And merge all of round three's work.
+
+## Agent: merged and published
+
+- I merged round three into main as a fast-forward, with the two fixes from
+  this session on top. A workflow runs the fast gate on every push to main,
+  builds with relative asset paths and deploys to Pages. With no LMS launch the
+  course runs in preview mode: progress is kept in the learner's browser, and
+  the PREVIEW badge and statements drawer show. I pushed main and set up the
+  beads remote on the same repo.

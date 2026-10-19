@@ -161,6 +161,11 @@ The e2e web server starts on `E2E_PORT` and is never reused, so parallel runs ne
 ports; the defaults (5280, walkthrough 5290) differ from the presentation repo's so both can
 run at once. Nothing is fetched from the network at run time, and every e2e spec asserts it.
 
+Every push to main publishes the course to GitHub Pages
+(https://rosslote.github.io/agent-course-example/) through `.github/workflows/pages.yml`: the
+fast gate, then `npm run build -- --base=./`. There is no launch on Pages, so it runs in
+preview mode, with progress kept in the browser's localStorage.
+
 ## Architecture Overview
 
 The learning designers author the course as data and the engine renders it and sends the xAPI
