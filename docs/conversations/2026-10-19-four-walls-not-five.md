@@ -389,3 +389,28 @@ rest. Ross was reviewing the two builds screen by screen and stopped on module
   3a83f84. The only conflict was the beads export, which I regenerated from
   the database. Main now holds the whole course; the epic's run mode is
   updated to say base is main.
+
+## Agent: the epic review's result, and the five answers
+
+- The review ran through Agent calls (the Workflow tool was not available to
+  the subagent): 16 finders, one deduper, 58 skeptics; 29 findings, all
+  confirmed, 24 fixed on the beads, 5 put as questions. The biggest fix: .2's
+  acceptance now rehearses everything the later beads do to the content
+  (delete three modules, add a screen, cut three modules to a scene and two
+  checks), since as written it only rehearsed deleting one file and every
+  content bead's fast gate would have gone red in tests no bead may touch.
+  The rest: more of the README and PLAN.md brought into line by .1; the
+  home page's copy and the content guide's module numbers named for .3; the
+  brief's "Three more." dropped, as the brief skill never says how many
+  remain; 02's plan steps pinned to round two's script minus the keyboard
+  step, which the learner's ask puts back as step 4; the accepted fridge's
+  title given to .6; the smoke and launch specs added to .8.
+- The five questions, answered under Ross's standing delegation of content
+  details, each reversible: D8 becomes an idea the accepted fridge already
+  shows, labelling each shelf with what goes there, because the fridge
+  cannot shuffle; 03's "choices made for you" names what the fridge does,
+  the reason staying until the next move; 02's boxed builder says the
+  screen-reader wording is another piece's rather than "could not confirm",
+  which would fail its own finish line; 04's story carries no counts; .2
+  stays one bead. Recorded on the epic and on beads .4 and .6.
+- Ready to orchestrate.
