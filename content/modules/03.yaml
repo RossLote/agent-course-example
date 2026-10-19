@@ -5,7 +5,7 @@ screens:
     blocks:
       - type: paragraph
         text: >-
-          The run built five pieces, simplified, reviewed, fixed, recorded the walkthrough and
+          The run built the pieces, simplified, reviewed, fixed, recorded the walkthrough last and
           wrote up the result. It is waiting for you: forty changed files. Reading them is not
           your job. Judging them is.
       - type: aside
@@ -66,7 +66,8 @@ screens:
           - title: Choices made for you.
             body: >-
               What the run decided on its own, each as the choice, what it was chosen over, and
-              why: the ones that matter most on the page, the rest in a list at the end. You can
+              why. On the page: anything that cannot be undone, and anywhere the build followed
+              your decisions over what the plan said. The rest in a list at the end. You can
               disagree with any of them.
       - type: quote
         text: >-
@@ -123,7 +124,8 @@ screens:
         heading: Choices made for you
         text: >-
           The reason for a wrong drop stays on screen until the next move, over fading after a
-          few seconds, because D3 says one line and nothing about how long.
+          few seconds: the plan said nothing about how long, so the run followed your D3, which
+          says a wrong drop shows its one-line reason, and a reason that fades can go unread.
       - type: list
         heading: Review guide (about 6 minutes)
         items:
