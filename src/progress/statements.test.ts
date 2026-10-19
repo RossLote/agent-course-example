@@ -1,7 +1,8 @@
 import type { Statement } from '@xapi/xapi';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { course, type Module, type Screen, type ScreenOf } from '../content/index.ts';
-import { realScreen } from '../course/frame/fixture.ts';
+import { activityPath, course as realCourse, type Course, type Module, type Screen, type ScreenOf } from '../content/index.ts';
+import { fixtureCourse, fixtureFridge, fixtureMatch, fixtureModule, fixtureOrder, fixtureTakeaway } from '../course/frame/fixture.ts';
+import { scoredItem } from '../course/frame/progress.ts';
 import type { ScreenEvent, Score } from '../screens/types.ts';
 import { LAUNCH_ACTIVITY_ID, REGISTRATION, sparkLaunch } from '../xapi/fixtures.ts';
 import type { Launch } from '../xapi/launch.ts';
@@ -9,22 +10,13 @@ import { createMemoryTracker } from '../xapi/tracker.ts';
 import { connectStatements } from './statements.ts';
 import { createProgressStore } from './store.ts';
 
-// The real course, played through a fresh store connected to a memory tracker. The events are
-// built from the content the way the screens build them (src/screens/*/index.tsx).
-const COURSE_ID = course.id;
-function mod(slug: string): Module {
-  const module = course.modules.find((m) => m.slug === slug);
-  if (!module) throw new Error(`no module ${slug}`);
-  return module;
-}
-
-function screenOf<T extends Screen['type']>(module: Module, type: T, slug?: string): ScreenOf<T> {
-  return realScreen(module.slug, type, slug).screen;
-}
+// A course played through a fresh store connected to a memory tracker. The events are built from
+// the screens the way the screens build them (src/screens/*/index.tsx). Most tests play an inline
+// course of four modules with a screen of every kind; the last plays the real course, whatever
+// its modules hold, and builds what it expects from what it reads.
 
 /** A Check press on a choose: `answered` when scored, else `interacted` per pick, as ChooseScreen sends them. */
-function choose(module: Module, slug: string, picked: number[]): ScreenEvent[] {
-  const { options, scored } = screenOf(module, 'choose', slug);
+function choose({ slug, options, scored }: ScreenOf<'choose'>, picked: number[]): ScreenEvent[] {
   const answer = { picked };
   if (!scored) return picked.map((i) => ({ type: 'interacted', slug, response: options[i].label, answer }));
   const right = options.every((o, i) => o.right === picked.includes(i));
@@ -32,8 +24,7 @@ function choose(module: Module, slug: string, picked: number[]): ScreenEvent[] {
 }
 
 /** A Check press on a match with each row's target, as MatchScreen sends it. */
-function match(module: Module, slug: string, picks: string[]): ScreenEvent[] {
-  const { rows, targets, scored } = screenOf(module, 'match', slug);
+function match({ slug, rows, targets, scored }: ScreenOf<'match'>, picks: string[]): ScreenEvent[] {
   const answer = { picks };
   const said = rows.map((row, i) => `${row.text}: ${targets.find((t) => t.id === picks[i])?.label}`);
   if (!scored) return said.map((response) => ({ type: 'interacted', slug, response, answer }));
@@ -42,29 +33,112 @@ function match(module: Module, slug: string, picks: string[]): ScreenEvent[] {
 }
 
 /** A Check press on an order with its cards in their right order, as OrderScreen sends it. */
-function orderRight(module: Module, slug: string): ScreenEvent {
-  const { cards } = screenOf(module, 'order', slug);
+function orderRight({ slug, cards }: ScreenOf<'order'>): ScreenEvent {
   const response = cards.map((c) => c.label).join('; ');
   return { type: 'answered', slug, right: true, score: { raw: cards.length, max: cards.length }, response, answer: { order: cards.map((c) => c.id) } };
 }
 
 /** Brief chip picks (question, chip), each reported as BriefScreen reports it. */
-function brief(module: Module, slug: string, picks: [number, number][]): ScreenEvent[] {
-  const questions = screenOf(module, 'brief', slug).rounds.flatMap((r) => r.questions);
+function brief({ slug, rounds }: ScreenOf<'brief'>, picks: [number, number][]): ScreenEvent[] {
+  const questions = rounds.flatMap((r) => r.questions);
   return picks.map(([q, c]) => ({ type: 'interacted', slug, response: `D${q + 1}: ${questions[q].chips[c].label}`, answer: {} }));
 }
 
 const fridgeEnded = (name: string, score: Score): ScreenEvent => ({ type: 'fridge-ended', slug: name, score });
 const takeaway: ScreenEvent = { type: 'takeaway-reached' };
 
-/** Module 07's walls, every row named right. */
-const WALLS_RIGHT = ['record', 'done', 'gate', 'agents', 'evidence', 'arrow'];
+// ---------------------------------------------------------------------------------------------
+// The inline course.
+
+const options = [
+  { label: 'Wrong', right: false, feedback: 'No.' },
+  { label: 'Right', right: true, feedback: 'Yes.' },
+];
+const check = (slug: string): ScreenOf<'choose'> => ({ type: 'choose', slug, scored: true, mode: 'single', heading: slug, options });
+const scene: Screen = { type: 'scene', heading: 'A scene', blocks: [{ type: 'paragraph', text: 'Text.' }] };
+const chips = (text: string) => [
+  { label: `${text} yes`, decision: 'Yes.', recommended: true },
+  { label: `${text} no`, decision: 'No.' },
+];
+
+const tick: ScreenOf<'choose'> = {
+  type: 'choose',
+  slug: 'what-went-wrong',
+  scored: false,
+  mode: 'multi',
+  heading: 'Tick everything that went wrong.',
+  options: ['One', 'Two', 'Three', 'Four', 'Five'].map((label, i) => ({ label, right: i < 3, feedback: 'Why.' })),
+};
+const fridgeScreen: ScreenOf<'fridge'> = { type: 'fridge', heading: 'Try it', fridge: 'one-shot' };
+const fridgeBrief: ScreenOf<'brief'> = {
+  type: 'brief',
+  slug: 'fridge-brief',
+  heading: 'The brief',
+  opening: 'A fridge.',
+  rounds: [
+    { message: 'Two questions.', questions: ['First?', 'Second?'].map((text) => ({ text, chips: chips(text) })) },
+    { message: 'One more.', questions: [{ text: 'Third?', chips: chips('Third?') }] },
+  ],
+  defaults: { label: 'Your defaults', reply: 'Your defaults.' },
+  closing: 'Done.',
+  panel: { heading: 'The record', note: '{filled} of {total}' },
+};
+const verdict: ScreenOf<'choose'> = {
+  type: 'choose',
+  slug: 'verdict',
+  scored: false,
+  mode: 'single',
+  heading: 'Your verdict?',
+  options: [
+    { label: 'Confirmed.', right: true, feedback: 'Yes.' },
+    { label: 'Refuted.', right: false, feedback: 'No.' },
+  ],
+};
+const compare: ScreenOf<'compare'> = {
+  type: 'compare',
+  heading: 'The two fridges',
+  left: 'one-shot',
+  right: 'accepted',
+  table: { rows: [{ aspect: 'A', left: 'L', right: 'R', wall: 'W' }] },
+};
+/** A scored match of three rows, one of them in emphasis. */
+const walls: ScreenOf<'match'> = {
+  type: 'match',
+  slug: 'name-the-wall',
+  scored: true,
+  heading: 'Name the wall',
+  targets: [
+    { id: 'record', label: 'the record' },
+    { id: 'gate', label: 'the gate' },
+    { id: 'arrow', label: 'the arrow' },
+  ],
+  rows: [
+    { text: 'A counter nobody asked for.', key: 'record', feedback: 'The record.' },
+    { text: 'It changed another file too.', key: 'gate', feedback: 'The gate.' },
+    { text: 'The hint shows after two wrong drops *of the same item*, which nobody specified.', key: 'arrow', feedback: 'The arrow.' },
+  ],
+};
+const WALLS_RIGHT = ['record', 'gate', 'arrow'];
+
+/** Four modules: 00 as round one's (tick everything, a fridge, two checks), 01 a brief, 02 a verdict, a match and the compare, 03 an order and a scored match. */
+const [m00, m01, m02, m03] = [
+  fixtureModule('00', [scene, tick, fridgeScreen, check('check-1'), check('check-2'), fixtureTakeaway()]),
+  fixtureModule('01', [scene, fridgeBrief, check('check-1'), check('check-2'), fixtureTakeaway()]),
+  fixtureModule('02', [scene, verdict, fixtureMatch, check('check-1'), check('check-2'), compare, fixtureTakeaway()]),
+  fixtureModule('03', [scene, fixtureOrder, walls, fixtureTakeaway()]),
+];
+const course: Course = {
+  ...fixtureCourse(),
+  modules: [m00, m01, m02, m03],
+  fridges: { 'one-shot': fixtureFridge('The one-shot'), accepted: fixtureFridge('What you accepted') },
+};
+const COURSE_ID = course.id;
 
 /** A learner with a fresh store and a memory tracker, connected; `at` plays events on a module's screen. */
-function learner(launch: Launch | null = null) {
-  const tracker = createMemoryTracker(course);
-  const store = createProgressStore(course, tracker);
-  const stop = connectStatements(store, tracker, course, launch);
+function learner(of: Course = course, launch: Launch | null = null) {
+  const tracker = createMemoryTracker(of);
+  const store = createProgressStore(of, tracker);
+  const stop = connectStatements(store, tracker, of, launch);
   const at = (module: Module, screen: Screen, events: ScreenEvent[]) => {
     store.take({ type: 'visit', module, screen: module.screens.indexOf(screen) + 1 });
     for (const event of events) store.take({ type: 'event', event, module, screen });
@@ -75,62 +149,39 @@ function learner(launch: Launch | null = null) {
 
 type Learner = ReturnType<typeof learner>;
 
-const fridgeScreen = (module: Module) => module.screens.find((s) => s.type === 'fridge' || s.type === 'compare') ?? module.screens[0];
 const last = (module: Module) => module.screens[module.screens.length - 1];
+const checksOf = (module: Module) => module.screens.filter((s): s is ScreenOf<'choose'> => s.type === 'choose' && s.scored);
 
-/** Module 00 as the ACCEPTANCE BAR plays it: tick all five, the one-shot's timer runs out after two drops, check 1 wrong then right, check 2 right, the takeaway twice (StrictMode). */
+/** Module 00 as round one's bar plays it: tick all five, the one-shot's timer runs out after two drops, check 1 wrong then right, check 2 right, the takeaway twice (StrictMode). */
 function play00({ at }: Learner) {
-  const m = mod('00');
-  at(m, screenOf(m, 'choose', 'what-went-wrong'), choose(m, 'what-went-wrong', [0, 1, 2, 3, 4]));
-  at(m, fridgeScreen(m), [fridgeEnded('one-shot', { raw: 50, max: 1400 })]);
-  at(m, screenOf(m, 'choose', 'check-1'), [...choose(m, 'check-1', [0]), ...choose(m, 'check-1', [1])]);
-  at(m, screenOf(m, 'choose', 'check-2'), choose(m, 'check-2', [1]));
-  at(m, last(m), [takeaway, takeaway]);
+  const [check1, check2] = checksOf(m00);
+  at(m00, tick, choose(tick, [0, 1, 2, 3, 4]));
+  at(m00, fridgeScreen, [fridgeEnded('one-shot', { raw: 50, max: 1400 })]);
+  at(m00, check1, [...choose(check1, [0]), ...choose(check1, [1])]);
+  at(m00, check2, choose(check2, [1]));
+  at(m00, last(m00), [takeaway, takeaway]);
 }
 
 /** Both checks of a module right, then its takeaway. */
 function checksAndTakeaway({ at }: Learner, m: Module) {
-  for (const slug of ['check-1', 'check-2']) at(m, screenOf(m, 'choose', slug), choose(m, slug, [1]));
+  for (const s of checksOf(m)) at(m, s, choose(s, [1]));
   at(m, last(m), [takeaway, takeaway]);
 }
 
-/** Every module after 00 as the ACCEPTANCE BAR plays it, every scored item right. */
-function play01to07(l: Learner) {
+/** Every module after 00, every scored item right. */
+function playTheRest(l: Learner) {
   const { at } = l;
-  const m01 = mod('01');
-  const firstRound: [number, number][] = [0, 1, 2, 3, 4].map((q) => [q, 0]);
-  const defaults: [number, number][] = [5, 6, 7].map((q) => [q, 0]);
-  at(m01, screenOf(m01, 'brief'), brief(m01, 'fridge-brief', [...firstRound, ...defaults]));
+  at(m01, fridgeBrief, brief(fridgeBrief, [0, 1, 2].map((q) => [q, 0])));
   checksAndTakeaway(l, m01);
 
-  const m02 = mod('02');
-  at(m02, screenOf(m02, 'choose', 'write-the-acceptance'), choose(m02, 'write-the-acceptance', [0, 2, 4]));
-  at(m02, screenOf(m02, 'choose', 'epic-review'), choose(m02, 'epic-review', [1]));
+  at(m02, verdict, [...choose(verdict, [1]), ...choose(verdict, [0])]);
+  at(m02, fixtureMatch, match(fixtureMatch, fixtureMatch.rows.map((r) => r.key)));
+  at(m02, compare, [fridgeEnded('accepted', { raw: 7, max: 8 })]);
   checksAndTakeaway(l, m02);
 
-  const m03 = mod('03');
-  at(m03, screenOf(m03, 'choose', 'build-the-box'), choose(m03, 'build-the-box', [0, 3, 5, 6]));
-  checksAndTakeaway(l, m03);
-
-  const m04 = mod('04');
-  const verdict = screenOf(m04, 'choose', 'verdict');
-  at(m04, verdict, [...choose(m04, 'verdict', [1]), ...choose(m04, 'verdict', [0])]);
-  at(m04, screenOf(m04, 'match', 'who-catches-it'), match(m04, 'who-catches-it', ['simplify', 'review', 'adversarial', 'epic']));
-  checksAndTakeaway(l, m04);
-
-  const m05 = mod('05');
-  at(m05, screenOf(m05, 'choose', 'merge-or-not'), choose(m05, 'merge-or-not', [1]));
-  at(m05, fridgeScreen(m05), [fridgeEnded('accepted', { raw: 7, max: 8 })]);
-  checksAndTakeaway(l, m05);
-
-  const m06 = mod('06');
-  at(m06, screenOf(m06, 'choose', 'what-would-you-change'), choose(m06, 'what-would-you-change', [1, 3, 4]));
-  checksAndTakeaway(l, m06);
-
-  const m07 = mod('07');
-  at(m07, screenOf(m07, 'order'), [orderRight(m07, 'order-the-loop')]);
-  at(m07, screenOf(m07, 'match'), match(m07, 'name-the-wall', WALLS_RIGHT));
-  at(m07, last(m07), [takeaway, takeaway]);
+  at(m03, fixtureOrder, [orderRight(fixtureOrder)]);
+  at(m03, walls, match(walls, WALLS_RIGHT));
+  at(m03, last(m03), [takeaway, takeaway]);
 }
 
 const objectId = (s: Statement) => (s.object.objectType === 'Activity' ? s.object.id : '');
@@ -147,62 +198,58 @@ function short(s: Statement): string {
   return parts.join(' ');
 }
 
-const opt = (m: Module, slug: string, i: number) => screenOf(m, 'choose', slug).options[i].label;
-
 beforeEach(() => localStorage.clear());
 
 describe('statements from the progress store', () => {
   it('module 00 as the bar plays it: interacted on Check, answered per press, the fridge, completed on the module once', () => {
     const l = learner();
     play00(l);
-    const m = mod('00');
     expect(l.sent().map(short)).toEqual([
-      ...[0, 1, 2, 3, 4].map((i) => `interacted modules/00/interactions/what-went-wrong ${JSON.stringify(opt(m, 'what-went-wrong', i))}`),
+      ...tick.options.map((o) => `interacted modules/00/interactions/what-went-wrong ${JSON.stringify(o.label)}`),
       'completed fridge/one-shot 50/1400 scaled 0.0357 completion',
-      `answered modules/00/checks/1 ${JSON.stringify(opt(m, 'check-1', 0))} wrong 0/1 scaled 0`,
-      `answered modules/00/checks/1 ${JSON.stringify(opt(m, 'check-1', 1))} right 1/1 scaled 1`,
-      `answered modules/00/checks/2 ${JSON.stringify(opt(m, 'check-2', 1))} right 1/1 scaled 1`,
+      'answered modules/00/checks/1 "Wrong" wrong 0/1 scaled 0',
+      'answered modules/00/checks/1 "Right" right 1/1 scaled 1',
+      'answered modules/00/checks/2 "Right" right 1/1 scaled 1',
       'completed modules/00',
     ]);
   });
 
-  it('completes the course once, with completion and 28 of 28, when the last module completes', () => {
+  it('completes the course once, with completion and 17 of 17, when the last module completes', () => {
     const l = learner();
     play00(l);
-    play01to07(l);
+    playTheRest(l);
     const onCourse = l.sent().filter((s) => objectId(s) === COURSE_ID);
     expect(onCourse).toHaveLength(1);
     expect(onCourse[0].verb.id).toBe('http://adlnet.gov/expapi/verbs/completed');
-    expect(onCourse[0].result).toEqual({ completion: true, score: { raw: 28, min: 0, max: 28, scaled: 1 } });
-    expect(l.sent().map(short).slice(-2)).toEqual(['completed modules/07', 'completed course 28/28 scaled 1 completion']);
-    expect(l.sent().map(short).filter((s) => /^completed modules\/0\d$/.test(s))).toHaveLength(8);
+    expect(onCourse[0].result).toEqual({ completion: true, score: { raw: 17, min: 0, max: 17, scaled: 1 } });
+    expect(l.sent().map(short).slice(-2)).toEqual(['completed modules/03', 'completed course 17/17 scaled 1 completion']);
+    expect(l.sent().map(short).filter((s) => /^completed modules\/\d\d$/.test(s))).toHaveLength(4);
     const count = (verb: string) => l.sent().filter((s) => s.verb.display?.['en-US'] === verb).length;
-    expect([count('interacted'), count('answered'), count('completed')]).toEqual([31, 17, 11]);
+    expect([count('interacted'), count('answered'), count('completed')]).toEqual([14, 9, 7]);
   });
 
   it('sends completed on the course again with the new score when a scored item changes afterwards, and not otherwise', () => {
     const l = learner();
     play00(l);
-    play01to07(l);
+    playTheRest(l);
     const before = l.sent().length;
-    const m07 = mod('07');
-    const walls = screenOf(m07, 'match');
-    l.at(m07, walls, match(m07, 'name-the-wall', ['done', 'record', ...WALLS_RIGHT.slice(2)]));
-    l.at(mod('00'), last(mod('00')), [takeaway]);
-    l.at(m07, walls, match(m07, 'name-the-wall', ['done', 'record', ...WALLS_RIGHT.slice(2)]));
+    const twoWrong = ['gate', 'record', ...WALLS_RIGHT.slice(2)];
+    l.at(m03, walls, match(walls, twoWrong));
+    l.at(m00, last(m00), [takeaway]);
+    l.at(m03, walls, match(walls, twoWrong));
     expect(l.sent().slice(before).map(short)).toEqual([
-      expect.stringMatching(/^answered modules\/07\/interactions\/name-the-wall ".*" wrong 4\/6 scaled 0.6667$/),
-      'completed course 26/28 scaled 0.9286 completion',
-      expect.stringMatching(/^answered modules\/07\/interactions\/name-the-wall ".*" wrong 4\/6 scaled 0.6667$/),
+      expect.stringMatching(/^answered modules\/03\/interactions\/name-the-wall ".*" wrong 1\/3 scaled 0.3333$/),
+      'completed course 15/17 scaled 0.8824 completion',
+      expect.stringMatching(/^answered modules\/03\/interactions\/name-the-wall ".*" wrong 1\/3 scaled 0.3333$/),
     ]);
   });
 
   it('with a launch: parent and grouping on the module, check, interaction and fridge statements; the launch id as the course object', () => {
     const launch = sparkLaunch();
     expect(launch.activityId).not.toBe(COURSE_ID);
-    const l = learner(launch);
+    const l = learner(course, launch);
     play00(l);
-    play01to07(l);
+    playTheRest(l);
     const sent = l.sent();
     for (const s of sent) {
       expect(s.context?.registration).toBe(REGISTRATION);
@@ -225,9 +272,9 @@ describe('statements from the progress store', () => {
   it('sends responses and names as plain text, with no emphasis markers', () => {
     const l = learner();
     play00(l);
-    play01to07(l);
-    const walls = l.sent().find((s) => short(s).startsWith('answered modules/07/interactions/name-the-wall'));
-    expect(walls?.result?.response).toContain('after two wrong drops of the same item, which');
+    playTheRest(l);
+    const said = l.sent().find((s) => short(s).startsWith('answered modules/03/interactions/name-the-wall'));
+    expect(said?.result?.response).toContain('after two wrong drops of the same item, which');
     for (const s of l.sent()) {
       expect(s.result?.response ?? '').not.toContain('*');
       expect(s.object.objectType === 'Activity' && s.object.definition?.name?.['en-US']).not.toContain('*');
@@ -236,11 +283,79 @@ describe('statements from the progress store', () => {
 
   it('sends nothing for a visit, and nothing once disconnected', () => {
     const l = learner();
-    const m = mod('00');
-    l.store.take({ type: 'visit', module: m, screen: 3 });
+    l.store.take({ type: 'visit', module: m00, screen: 3 });
     expect(l.sent()).toEqual([]);
     l.stop();
     play00(l);
     expect(l.sent()).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------
+// The real course, whatever its modules hold.
+
+/** The events a learner sends on a screen getting everything right: the right picks, each row's key, the cards in order, each brief question's first chip, the first reply, each fridge played, the takeaway twice. */
+function rightEvents(screen: Screen): ScreenEvent[] {
+  switch (screen.type) {
+    case 'choose':
+      return choose(screen, screen.options.flatMap((o, i) => (o.right ? [i] : [])));
+    case 'match':
+      return match(screen, screen.rows.map((r) => r.key));
+    case 'order':
+      return [orderRight(screen)];
+    case 'brief':
+      return brief(screen, screen.rounds.flatMap((r) => r.questions).map((_, q) => [q, 0]));
+    case 'chat':
+      return screen.replies ? [{ type: 'interacted', slug: screen.slug, response: screen.replies.options[0].label, answer: { reply: 0 } }] : [];
+    case 'fridge':
+      return [fridgeEnded(screen.fridge, { raw: 1, max: 1 })];
+    case 'compare':
+      return [fridgeEnded(screen.left, { raw: 1, max: 1 }), fridgeEnded(screen.right, { raw: 1, max: 1 })];
+    case 'takeaway':
+      return [takeaway, takeaway];
+    case 'scene':
+      return [];
+  }
+}
+
+/** What a screen's own event sends, as its verb and its object's path. */
+function ownStatement(module: Module, screen: Screen, event: ScreenEvent): string[] {
+  switch (event.type) {
+    case 'answered':
+    case 'interacted':
+      return [`${event.type} ${activityPath(module, screen)}`];
+    case 'fridge-ended':
+      return [`completed fridge/${event.slug}`];
+    case 'takeaway-reached':
+      return [];
+  }
+}
+
+describe('statements from the real course', () => {
+  it('sends each screen its own statement, completed on each module once, then the course once at full marks out of its points, all in plain text', () => {
+    const launch = sparkLaunch();
+    const l = learner(realCourse, launch);
+    const expected: string[] = [];
+    let points = 0;
+    for (const module of realCourse.modules) {
+      for (const screen of module.screens) {
+        const events = rightEvents(screen);
+        l.at(module, screen, events);
+        expected.push(...events.flatMap((event) => ownStatement(module, screen, event)));
+        points += scoredItem(screen)?.max ?? 0;
+      }
+      expected.push(`completed modules/${module.slug}`);
+    }
+    expected.push('completed course');
+
+    const sent = l.sent();
+    const path = (s: Statement) => (objectId(s) === launch.activityId ? 'course' : objectId(s).replace(realCourse.id, ''));
+    expect(sent.map((s) => `${s.verb.display?.['en-US']} ${path(s)}`)).toEqual(expected);
+    expect(points).toBeGreaterThan(0);
+    expect(sent.at(-1)?.result).toEqual({ completion: true, score: { raw: points, min: 0, max: points, scaled: 1 } });
+    for (const s of sent) {
+      expect(s.result?.response ?? '').not.toContain('*');
+      expect(s.object.objectType === 'Activity' && s.object.definition?.name?.['en-US']).not.toContain('*');
+    }
   });
 });

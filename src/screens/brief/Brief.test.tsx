@@ -1,14 +1,50 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { course } from '../../content/index.ts';
-import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
+import type { ScreenOf } from '../../content/index.ts';
+import { fixtureCourse, fixtureModule, fixtureTakeaway, NO_PROGRESS } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { BriefScreen } from './index.tsx';
 import { FADE_MS, THINKING_MS } from './labels.ts';
 
-// Module 01's brief, as authored.
-const { module: module01, screen: brief } = realScreen('01', 'brief');
+type Question = ScreenOf<'brief'>['rounds'][number]['questions'][number];
+
+/** A question whose first chip is the recommended one; each chip's decision is its label with "Decided: " before it. */
+function question(text: string, labels: string[], decisions: Record<number, string> = {}): Question {
+  return { text, chips: labels.map((label, i) => ({ label, decision: decisions[i] ?? `Decided: ${label}.`, ...(i === 0 && { recommended: true }) })) };
+}
+
+// An inline brief shaped as module 01's: five questions of three chips, then three of two.
+const brief: ScreenOf<'brief'> = {
+  type: 'brief',
+  slug: 'fridge-brief',
+  heading: 'The fridge brief',
+  opening: 'A fridge activity for a food-hygiene course.',
+  rounds: [
+    {
+      message: 'Five questions, ranked. My recommended answer is the dashed one.',
+      questions: [
+        question('Who does this, and where?', ['Kitchen staff on induction, tablet or laptop, about five minutes', 'Managers at a desk', 'Everyone, on their phones']),
+        question('Which shelves and items?', ['Four shelves, eight items', 'Three shelves, six items', 'Let the agent pick']),
+        question('What happens on a wrong drop?', ['Item goes back with a reason', 'Three tries', 'No feedback until the end'], {
+          2: 'No feedback during; all results shown at the end. It is a test.',
+        }),
+        question('How does it end?', ['All eight placed, a score out of eight', 'No score', 'A pass mark']),
+        question('Keyboard and touch?', ['Both', 'Mouse and touch only', 'Keyboard only']),
+      ],
+    },
+    {
+      message: 'Took your answers as D1 to D5 on the right.',
+      questions: [question('A timer?', ['No timer', 'A timer']), question('Can they retry?', ['A Try again button', 'One attempt only']), question('Label each shelf?', ['Label each shelf', 'No labels'])],
+    },
+  ],
+  defaults: { label: 'Your defaults', hint: 'One line is a complete reply.', reply: 'Your defaults.' },
+  closing: "That's the brief. Eight decisions on the record.",
+  panel: { heading: 'The record', note: '{filled} of {total} decisions. The builder reads these, not your memory of the conversation.' },
+  comparison: 'Compare this with the one-line ask.',
+};
 const [round1, round2] = brief.rounds;
+const course = fixtureCourse();
+const module01 = fixtureModule('01', [brief, fixtureTakeaway()]);
 
 function renderBrief(saved?: SavedAnswer) {
   const onEvent = vi.fn();
@@ -60,13 +96,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('BriefScreen, the fridge brief (module 01)', () => {
-  it('has the intro that says to send the answers', () => {
-    expect(brief.intro).toBe(
-      'Same agent as module 00. This time it asks before it builds. Each question comes with its recommended answer (dashed); pick it or pick differently, then send your answers. Every answer becomes a decision on the right.',
-    );
-  });
-
+describe('BriefScreen, a brief of two rounds', () => {
   it("shows the learner's opening and round one alone: five questions of three chips each, the recommended one marked", () => {
     renderBrief();
     expect(conversation()).toEqual([

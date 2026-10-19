@@ -1,13 +1,43 @@
 import { describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { course, type ScreenOf } from '../../content/index.ts';
-import { NO_PROGRESS, realScreen } from '../../course/frame/fixture.ts';
+import type { ScreenOf } from '../../content/index.ts';
+import { fixtureCourse, fixtureMatch, fixtureModule, fixtureTakeaway, NO_PROGRESS } from '../../course/frame/fixture.ts';
 import type { SavedAnswer } from '../types.ts';
 import { MatchScreen } from './index.tsx';
 
-// The real modules, as authored.
-function renderMatch(slug: string, match: string, saved?: SavedAnswer) {
-  const { module, screen: shown } = realScreen(slug, 'match', match);
+/** A scored match of six rows, with a body above them and a row in emphasis. */
+const walls: ScreenOf<'match'> = {
+  type: 'match',
+  slug: 'name-the-wall',
+  scored: true,
+  heading: 'Name the wall',
+  body: [{ type: 'paragraph', heading: 'The loop you ordered', text: 'brief › epic › build › reviews › you judge › retro' }],
+  targets: [
+    { id: 'record', label: 'the record' },
+    { id: 'done', label: 'done' },
+    { id: 'gate', label: 'the gate' },
+    { id: 'agents', label: 'other agents' },
+    { id: 'evidence', label: 'evidence' },
+    { id: 'arrow', label: 'the arrow' },
+  ],
+  rows: [
+    { text: 'The builder added a counter nobody asked for.', key: 'record', feedback: 'The record.' },
+    { text: 'The builder says it is done, and you cannot say whether it is.', key: 'done', feedback: 'Done.' },
+    { text: 'It changed the score screen too.', key: 'gate', feedback: 'The gate. Its files were not limited.' },
+    { text: 'The new code is a copy of the old with one word changed.', key: 'agents', feedback: 'Other agents.' },
+    { text: 'A forty-file change is waiting.', key: 'evidence', feedback: 'Evidence.' },
+    { text: 'The hint shows after two wrong drops *of the same item*, which nobody specified.', key: 'arrow', feedback: 'The arrow.' },
+  ],
+  checkLabel: 'Check my answers',
+};
+
+const course = fixtureCourse();
+const MATCHES: Record<string, ScreenOf<'match'>> = { 'who-catches-it': fixtureMatch, 'name-the-wall': walls };
+
+// Inline matches: who catches it (unscored, four rows) and name the wall (scored, six rows).
+function renderMatch(match: string, saved?: SavedAnswer) {
+  const shown = MATCHES[match];
+  const module = fixtureModule('01', [shown, fixtureTakeaway()]);
   const onEvent = vi.fn();
   const { container } = render(
     <MatchScreen screen={shown} module={module} course={course} saved={saved} progress={NO_PROGRESS} onEvent={onEvent} />,
@@ -28,9 +58,9 @@ const press = (name: string | RegExp) => fireEvent.click(screen.getByRole('butto
 const states = (container: HTMLElement) => [...container.querySelectorAll('.match-row')].map((li) => li.getAttribute('data-state') ?? 'none');
 const keys = (shown: ScreenOf<'match'>) => shown.rows.map((r) => r.key);
 
-describe('MatchScreen, who catches it (module 04, unscored)', () => {
+describe('MatchScreen, who catches it (unscored)', () => {
   it('shows the four rows, each a group of the four targets, with Check waiting for every row', () => {
-    const { shown, onEvent } = renderMatch('04', 'who-catches-it');
+    const { shown, onEvent } = renderMatch('who-catches-it');
     expect(shown.rows).toHaveLength(4);
     for (const row of shown.rows) {
       expect(within(screen.getByRole('group', { name: row.text })).getAllByRole('radio')).toHaveLength(4);
@@ -45,7 +75,7 @@ describe('MatchScreen, who catches it (module 04, unscored)', () => {
   });
 
   it('marks all four rows right with their feedback, and sends one interacted per row on Check', () => {
-    const { shown, onEvent, container } = renderMatch('04', 'who-catches-it');
+    const { shown, onEvent, container } = renderMatch('who-catches-it');
     pickAll(shown, keys(shown));
     expect(onEvent).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Check my matches' }).getAttribute('aria-disabled')).toBeNull();
@@ -69,7 +99,7 @@ describe('MatchScreen, who catches it (module 04, unscored)', () => {
   });
 
   it('marks a wrong row red with a cross, its pick wrong and its right target marked', () => {
-    const { shown, container } = renderMatch('04', 'who-catches-it');
+    const { shown, container } = renderMatch('who-catches-it');
     pickAll(shown, ['review', 'review', 'adversarial', 'epic']);
     press('Check my matches');
     expect(states(container)).toEqual(['wrong', 'right', 'right', 'right']);
@@ -83,9 +113,9 @@ describe('MatchScreen, who catches it (module 04, unscored)', () => {
   });
 });
 
-describe('MatchScreen, name the wall (module 07, scored)', () => {
+describe('MatchScreen, name the wall (scored)', () => {
   it('reports 6 out of 6 right as answered 6 of 6', () => {
-    const { shown, onEvent } = renderMatch('07', 'name-the-wall');
+    const { shown, onEvent } = renderMatch('name-the-wall');
     expect(shown.rows).toHaveLength(6);
     pickAll(shown, keys(shown));
     press('Check my answers');
@@ -102,7 +132,7 @@ describe('MatchScreen, name the wall (module 07, scored)', () => {
   });
 
   it('reports one wrong row as 5 of 6, not right, and sends again after Try again', () => {
-    const { shown, onEvent, container } = renderMatch('07', 'name-the-wall');
+    const { shown, onEvent, container } = renderMatch('name-the-wall');
     const picks = [...keys(shown)];
     picks[2] = 'evidence';
     pickAll(shown, picks);
@@ -122,14 +152,14 @@ describe('MatchScreen, name the wall (module 07, scored)', () => {
   });
 
   it('shows the loop the learner ordered above the rows', () => {
-    renderMatch('07', 'name-the-wall');
+    renderMatch('name-the-wall');
     expect(screen.getByText('The loop you ordered')).toBeTruthy();
   });
 });
 
 describe('MatchScreen, from a saved answer', () => {
   it('renders checked, with each row marked and its feedback', () => {
-    const { shown, container, onEvent } = renderMatch('07', 'name-the-wall', { picks: ['record', 'done', 'evidence', 'agents', 'evidence', 'arrow'] });
+    const { shown, container, onEvent } = renderMatch('name-the-wall', { picks: ['record', 'done', 'evidence', 'agents', 'evidence', 'arrow'] });
     expect(states(container)).toEqual(['right', 'right', 'wrong', 'right', 'right', 'right']);
     expect(screen.getByRole('status').textContent).toBe('5 out of 6 right');
     expect(screen.getAllByRole('radio').every((r) => r.hasAttribute('disabled'))).toBe(true);
@@ -147,7 +177,7 @@ describe('MatchScreen, from a saved answer', () => {
       { picks: ['simplify', 'review', 'adversarial', null] },
     ];
     for (const saved of misfits) {
-      const { container, onEvent } = renderMatch('04', 'who-catches-it', saved);
+      const { container, onEvent } = renderMatch('who-catches-it', saved);
       expect(states(container), JSON.stringify(saved)).toEqual(['none', 'none', 'none', 'none']);
       expect(screen.getAllByRole('radio').some((r) => (r as HTMLInputElement).checked)).toBe(false);
       expect(screen.getByText('0 of 4 answered')).toBeTruthy();

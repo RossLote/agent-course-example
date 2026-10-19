@@ -7,6 +7,9 @@ import { createLrsTracker, createMemoryTracker, createTracker, flushWhenHidden }
 
 const COURSE_ID = 'https://rosslote.github.io/agent-course/';
 const launch = sparkLaunch();
+/** The modules a module statement names: only a slug and a title, not the course's modules. */
+const m00 = { slug: '00', title: 'Module 00' };
+const m01 = { slug: '01', title: 'Module 01' };
 
 let fetchMock: ReturnType<typeof vi.fn<typeof fetch>>;
 let warn: ReturnType<typeof vi.fn<typeof console.warn>>;
@@ -66,7 +69,7 @@ describe('the record store tracker', () => {
     fetchMock.mockImplementation(async () => ok());
     const tracker = createLrsTracker(course, launch, { retryDelayMs: 0 });
 
-    tracker.send(moduleCompleted(course, launch, course.modules[0]));
+    tracker.send(moduleCompleted(course, launch, m00));
     await tracker.idle();
 
     const [{ body }] = requests();
@@ -82,7 +85,7 @@ describe('the record store tracker', () => {
     fetchMock.mockResolvedValueOnce(failure()).mockImplementation(async () => ok());
     const tracker = createLrsTracker(course, launch, { retryDelayMs: 0 });
     const first = initialized(course, launch);
-    const second = moduleCompleted(course, launch, course.modules[0]);
+    const second = moduleCompleted(course, launch, m00);
 
     tracker.send(first);
     tracker.send(second);
@@ -96,7 +99,7 @@ describe('the record store tracker', () => {
     fetchMock.mockResolvedValueOnce(failure()).mockRejectedValueOnce(new TypeError('Failed to fetch')).mockImplementation(async () => ok());
     const tracker = createLrsTracker(course, launch, { retryDelayMs: 0 });
     const first = initialized(course, launch);
-    const second = moduleCompleted(course, launch, course.modules[0]);
+    const second = moduleCompleted(course, launch, m00);
 
     expect(() => tracker.send(first)).not.toThrow();
     tracker.send(second);
@@ -224,8 +227,8 @@ describe('the record store tracker as the page is hidden or closed', () => {
     fetchMock.mockImplementationOnce(() => new Promise((resolve) => (release = resolve))).mockImplementation(async () => ok());
     const tracker = createLrsTracker(course, launch, { retryDelayMs: 0 });
     const first = initialized(course, launch);
-    const second = moduleCompleted(course, launch, course.modules[0]);
-    const third = moduleCompleted(course, launch, course.modules[1]);
+    const second = moduleCompleted(course, launch, m00);
+    const third = moduleCompleted(course, launch, m01);
     tracker.send(first);
     tracker.send(second);
     tracker.setState({ step: 1 });
@@ -292,7 +295,7 @@ describe('the in-memory tracker (preview)', () => {
     const listener = vi.fn();
     tracker.log?.subscribe(listener);
     const first = initialized(course, null);
-    const second = moduleCompleted(course, null, course.modules[0]);
+    const second = moduleCompleted(course, null, m00);
 
     tracker.send(first);
     tracker.send(second);

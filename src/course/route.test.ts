@@ -6,7 +6,7 @@ describe('routes', () => {
     { page: 'scenario' },
     { page: 'home' },
     { page: 'module', slug: '00', screen: 1 },
-    { page: 'module', slug: '07', screen: 12 },
+    { page: 'module', slug: '11', screen: 12 },
   ];
 
   it.each(routes)('formats and parses %o back to itself', (route) => {
@@ -14,7 +14,7 @@ describe('routes', () => {
   });
 
   it('formats each route as its hash', () => {
-    expect(routes.map(formatRoute)).toEqual(['#/', '#/home', '#/modules/00/1', '#/modules/07/12']);
+    expect(routes.map(formatRoute)).toEqual(['#/', '#/home', '#/modules/00/1', '#/modules/11/12']);
   });
 
   it('reads the empty hash, and the hash with or without its # or a trailing slash', () => {

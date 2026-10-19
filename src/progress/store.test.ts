@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { course } from '../content/index.ts';
+import type { Screen } from '../content/index.ts';
+import { fixtureCourse, fixtureTakeaway } from '../course/frame/fixture.ts';
 import { scoredItem } from '../course/frame/progress.ts';
 import { htmlResponse as html, jsonResponse as json, sparkLaunch } from '../xapi/fixtures.ts';
 import { localStateKey, readLocalState } from '../xapi/state.ts';
@@ -8,8 +9,19 @@ import { EMPTY_PROGRESS, moduleRecord, moduleStatus, parseProgress, takeCause, t
 import { createProgressStore, STATE_TIMEOUT_MS, type ProgressUpdate } from './store.ts';
 
 const launch = sparkLaunch();
+const options = [
+  { label: 'Wrong', right: false, feedback: 'No.' },
+  { label: 'Right', right: true, feedback: 'Yes.' },
+];
+const check = (slug: string): Screen => ({ type: 'choose', slug, scored: true, mode: 'single', heading: slug, options });
+const scene = (heading: string): Screen => ({ type: 'scene', heading, blocks: [{ type: 'paragraph', text: 'Text.' }] });
+/** An inline course whose module 00 has seven screens, two of them checks (two points in all), and module 01 five. */
+const course = fixtureCourse({
+  '00': [scene('One'), scene('Two'), scene('Three'), scene('Four'), check('check-1'), check('check-2'), fixtureTakeaway()],
+  '01': [scene('One'), scene('Two'), scene('Three'), scene('Four'), fixtureTakeaway()],
+});
 const [m00, m01] = course.modules;
-const m07 = course.modules[7];
+const last = course.modules[course.modules.length - 1];
 const visit = (screen: number, module = m00): ProgressCause => ({ type: 'visit', module, screen });
 const takeaway = (module = m00): ProgressCause => ({
   type: 'event',
@@ -286,13 +298,13 @@ describe('what the progress store tells the statements while State is read', () 
   });
 
   it('sends the course completed when the module finished while State was read completes the course State holds the rest of', async () => {
-    const l = loading(played([m07], { complete: false }));
-    l.store.take(takeaway(m07));
-    l.answer(played(course.modules.slice(0, 7), {}, played([m07], { complete: false })));
+    const l = loading(played([last], { complete: false }));
+    l.store.take(takeaway(last));
+    l.answer(played(course.modules.slice(0, -1), {}, played([last], { complete: false })));
     await l.store.loaded;
     expect(l.effects()).toEqual([
-      { type: 'module-completed', module: m07 },
-      { type: 'course-completed', score: { raw: 28, max: 28 } },
+      { type: 'module-completed', module: last },
+      { type: 'course-completed', score: { raw: 2, max: 2 } },
     ]);
   });
 });

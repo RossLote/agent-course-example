@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { course } from './content/index.ts';
+import { course as authored, type Course } from './content/index.ts';
 import { HomePage } from './course/home/HomePage.tsx';
 import { ModuleFrame } from './course/frame/ModuleFrame.tsx';
 import { shownScreen } from './course/frame/progress.ts';
@@ -30,6 +30,8 @@ function useFocusHeadingOnNavigate(route: Route) {
 export interface AppProps {
   /** The learner's progress; the course's own store unless a test gives one. */
   store?: ProgressStore;
+  /** The course; content/'s unless a test gives an inline one, with a store made for it. */
+  course?: Course;
 }
 
 /**
@@ -38,7 +40,7 @@ export interface AppProps {
  * as reached (the one the frame shows, never one past an unanswered check), and the home page
  * shows each module's status and where to go on.
  */
-export default function App({ store = progress }: AppProps) {
+export default function App({ store = progress, course = authored }: AppProps) {
   const route = useRoute();
   useFocusHeadingOnNavigate(route);
   const { doc, generation, onEvent } = useProgress(store);

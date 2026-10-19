@@ -51,8 +51,8 @@ describe('Tracking in preview', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Statements (0)' }));
 
     act(() => {
-      tracker.send(moduleCompleted(course, null, course.modules[0]));
-      tracker.send(courseCompleted(course, null, { raw: 28, max: 28 }));
+      tracker.send(moduleCompleted(course, null, { slug: '00', title: 'Module 00' }));
+      tracker.send(courseCompleted(course, null, { raw: 9, max: 12 }));
     });
 
     expect(screen.getByRole('button', { name: 'Statements (2)' })).toBeTruthy();
@@ -63,7 +63,7 @@ describe('Tracking in preview', () => {
     ]);
     const result = within(items[0]);
     expect(result.getByText('Completion').nextElementSibling?.textContent).toBe('true');
-    expect(result.getByText('Score').nextElementSibling?.textContent).toBe('28 of 28 (min 0, scaled 1)');
+    expect(result.getByText('Score').nextElementSibling?.textContent).toBe('9 of 12 (min 0, scaled 0.75)');
   });
 });
 
