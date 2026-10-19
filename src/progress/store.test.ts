@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Screen } from '../content/index.ts';
-import { fixtureCourse, fixtureTakeaway } from '../course/frame/fixture.ts';
+import { fixtureCheck, fixtureCourse, fixtureScene, fixtureTakeaway } from '../course/frame/fixture.ts';
 import { scoredItem } from '../course/frame/progress.ts';
 import { htmlResponse as html, jsonResponse as json, sparkLaunch } from '../xapi/fixtures.ts';
 import { localStateKey, readLocalState } from '../xapi/state.ts';
@@ -9,12 +8,8 @@ import { EMPTY_PROGRESS, moduleRecord, moduleStatus, parseProgress, takeCause, t
 import { createProgressStore, STATE_TIMEOUT_MS, type ProgressUpdate } from './store.ts';
 
 const launch = sparkLaunch();
-const options = [
-  { label: 'Wrong', right: false, feedback: 'No.' },
-  { label: 'Right', right: true, feedback: 'Yes.' },
-];
-const check = (slug: string): Screen => ({ type: 'choose', slug, scored: true, mode: 'single', heading: slug, options });
-const scene = (heading: string): Screen => ({ type: 'scene', heading, blocks: [{ type: 'paragraph', text: 'Text.' }] });
+const check = fixtureCheck;
+const scene = fixtureScene;
 /** An inline course whose module 00 has seven screens, two of them checks (two points in all), and module 01 five. */
 const course = fixtureCourse({
   '00': [scene('One'), scene('Two'), scene('Three'), scene('Four'), check('check-1'), check('check-2'), fixtureTakeaway()],

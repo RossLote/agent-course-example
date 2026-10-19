@@ -44,20 +44,19 @@ export type BoxWall = (typeof BOX_WALLS)[number];
 /**
  * What a module adds to the box: nothing (`none`), one wall, two walls as a list
  * (`[gate, agents]`), or the retro's ring round it (`ring`). No module adds the whole box.
+ * Parsed as a list of what it adds: `none` is `[]`.
  */
-export const moduleWall = z.union(
-  [
-    z.enum(['none', ...BOX_WALLS, 'ring']),
-    z.tuple([z.enum(BOX_WALLS), z.enum(BOX_WALLS)], { error: (issue) => (issue.code === 'too_big' || issue.code === 'too_small' ? 'must list exactly two walls' : undefined) }),
-  ],
-  `must be none, one of ${BOX_WALLS.join(', ')}, a list of two of them, or ring`,
-);
-export type ModuleWall = z.infer<typeof moduleWall>;
-
-/** The walls and the ring a module adds, as a list: `none` adds nothing. */
-export function wallsAdded(wall: ModuleWall): (BoxWall | 'ring')[] {
-  return wall === 'none' ? [] : [wall].flat();
-}
+export const moduleWall = z
+  .union(
+    [
+      z.enum(['none', ...BOX_WALLS, 'ring']),
+      z.tuple([z.enum(BOX_WALLS), z.enum(BOX_WALLS)], { error: (issue) => (issue.code === 'too_big' || issue.code === 'too_small' ? 'must list exactly two walls' : undefined) }),
+    ],
+    `must be none, one of ${BOX_WALLS.join(', ')}, a list of two of them, or ring`,
+  )
+  .transform((wall): (BoxWall | 'ring')[] => (wall === 'none' ? [] : [wall].flat()));
+/** The walls and the ring a module adds, as parsed: `[]` for none. */
+export type ModuleWall = z.output<typeof moduleWall>;
 
 // ---------------------------------------------------------------------------------------------
 // Scene blocks (PLAN.md §6a). Columns hold any block but another columns block.
@@ -523,7 +522,7 @@ export const courseFile = z
   .superRefine((c, ctx) => {
     uniqueIds(idsOf(c.modules, 'modules', (m) => m.slug), ctx, 'module slug');
     uniqueIds(idsOf(c.modules, 'modules', (m) => m.file), ctx, 'module file');
-    const walls = c.modules.flatMap((m, i) => wallsAdded(m.wall).map((id) => ({ id, path: ['modules', i, 'wall'] })));
+    const walls = c.modules.flatMap((m, i) => m.wall.map((id) => ({ id, path: ['modules', i, 'wall'] })));
     uniqueIds(walls, ctx, 'wall');
   });
 export type CourseFile = z.infer<typeof courseFile>;

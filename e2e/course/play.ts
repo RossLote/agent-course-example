@@ -6,8 +6,11 @@ import { VERDICTS, type Verdict } from '../../src/screens/choose/labels.ts';
 // the guard that keeps every request on the local server, the frame's Next, a pointer drag, and
 // module 00 played as the ACCEPTANCE BAR's step 2 plays it (the launch spec plays it too).
 
+/** The course as content/ gives it, read once. */
+export const CONTENT = readContent();
+
 /** course.yaml's id: the root of every module, check, interaction and fridge id (D24). */
-export const COURSE_ID = readContent().id;
+export const COURSE_ID = CONTENT.id;
 
 /** The home page's h1, which module 00's takeaway goes on to. */
 export const HOME_HEADING = 'Talk it through before it builds. Then never let the builder judge its own work.';
@@ -84,23 +87,23 @@ export function fridge(page: Page, title: string) {
 }
 
 /** Picks a single-choice option and presses Check; the screen marks it with its feedback. */
-export async function choose(page: Page, label: string, check = 'Check my answer'): Promise<Locator> {
+export async function choose(page: Page, label: string): Promise<Locator> {
   await page.getByRole('radio', { name: label }).check();
-  await page.getByRole('button', { name: check }).click();
+  await page.getByRole('button', { name: 'Check my answer' }).click();
   return page.locator('.choice', { has: page.getByRole('radio', { name: label }) });
 }
 
 /** Ticks each multi-choice option and presses Check. */
-export async function tick(page: Page, labels: readonly string[], check = 'Check my answer'): Promise<void> {
+async function tick(page: Page, labels: readonly string[]): Promise<void> {
   for (const label of labels) await page.getByRole('checkbox', { name: label }).check();
-  await page.getByRole('button', { name: check }).click();
+  await page.getByRole('button', { name: 'Check my answer' }).click();
 }
 
 /**
  * A checked multi choose, option by option: what the learner did with each (its data-state and
  * its pill's words), and the summary under the list, which is the screen's live region.
  */
-export async function verdicts(page: Page, expected: readonly Verdict[], summary: string): Promise<void> {
+async function verdicts(page: Page, expected: readonly Verdict[], summary: string): Promise<void> {
   const options = page.locator('.choice');
   await expect.poll(() => options.evaluateAll((rows) => rows.map((row) => row.getAttribute('data-state')))).toEqual(expected);
   await expect(options.locator('.choice-verdict')).toHaveText(expected.map((verdict) => VERDICTS[verdict].label));

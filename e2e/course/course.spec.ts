@@ -1,7 +1,6 @@
-import { expect, test, type Page } from '@playwright/test';
-import { readContent } from '../../scripts/content.ts';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { FADE_MS, THINKING_MS } from '../../src/screens/brief/labels.ts';
-import { choose, COURSE_ID, dashedWalls, drag, fridge, heading, HOME_HEADING, keepLocal, next, pauseClock, playModule00, solidWalls } from './play.ts';
+import { choose, CONTENT, COURSE_ID, dashedWalls, drag, fridge, heading, HOME_HEADING, keepLocal, next, pauseClock, playModule00, solidWalls } from './play.ts';
 
 // The whole course in preview, played as the ACCEPTANCE BAR plays it (steps 1 to 6, with the run
 // record's changes), then a reload, and the statements drawer read along the way: every
@@ -51,8 +50,11 @@ const FULL_PLAY = [
   line('completed', 'course', `${score(10, 10)} · completion true`),
 ];
 
-/** Opens the drawer, reads every statement as a line, oldest first, and closes it again. */
-async function drawerLines(page: Page, count: number): Promise<string[]> {
+/**
+ * Opens the drawer, reads every statement as a line, oldest first, runs `whileOpen` on the
+ * drawer's entries (newest first), and closes it again.
+ */
+async function drawerLines(page: Page, count: number, whileOpen?: (items: Locator) => Promise<void>): Promise<string[]> {
   await page.getByRole('banner').getByRole('button', { name: `Statements (${count})` }).click();
   const drawer = page.getByRole('dialog', { name: `Statements sent (${count})` });
   const items = drawer.locator('li.statement');
@@ -68,6 +70,7 @@ async function drawerLines(page: Page, count: number): Promise<string[]> {
       return `${el.getAttribute('data-verb')} ${object}${parts.join('')}`;
     }),
   COURSE_ID);
+  await whileOpen?.(items);
   await drawer.getByRole('button', { name: 'Close' }).click();
   // The drawer lists newest first.
   return lines.reverse();
@@ -332,14 +335,11 @@ test('the whole course in preview sends every statement, in order, and comes bac
 
   // Every statement the play sent, in order, and the count exact; the drawer's top entry, the
   // newest, is the course completed at 10 of 10.
-  expect(await drawerLines(page, FULL_PLAY.length)).toEqual(FULL_PLAY);
-  expect(FULL_PLAY.at(-1)).toBe(line('completed', 'course', ' · score 10 of 10 (min 0, scaled 1) · completion true'));
-  expect(FULL_PLAY.filter((statement) => /modules\/(0[5-9]|[1-9]\d)/.test(statement))).toEqual([]);
-  await banner.getByRole('button', { name: `Statements (${FULL_PLAY.length})` }).click();
-  const top = page.getByRole('dialog', { name: `Statements sent (${FULL_PLAY.length})` }).locator('li.statement').first();
-  await expect(top.locator('.statement-line')).toHaveText(`completed ${readContent().title}`);
-  await expect(top.locator('.statement-result')).toContainText('10 of 10');
-  await page.getByRole('dialog').getByRole('button', { name: 'Close' }).click();
+  expect(await drawerLines(page, FULL_PLAY.length, async (items) => {
+    const top = items.first();
+    await expect(top.locator('.statement-line')).toHaveText(`completed ${CONTENT.title}`);
+    await expect(top.locator('.statement-result')).toContainText('10 of 10');
+  })).toEqual(FULL_PLAY);
 
   // A reload keeps it all: five done, and module 04's choice as it was left.
   await page.goto('/');

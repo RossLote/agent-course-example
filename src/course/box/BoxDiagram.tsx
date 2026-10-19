@@ -27,17 +27,19 @@ const SIDE_LABEL_RADIUS = APOTHEM + 12;
 const HALF_WIDTH = 215;
 const RING_RADIUS = 170;
 
-/** How many, in words, for the text alternative. */
-const COUNTS = ['no', 'one', 'two', 'three', 'four', 'five', 'six'];
-const count = (n: number) => COUNTS[n] ?? String(n);
+/**
+ * How many walls the box has, in words, for the text alternative; keyed by BOX_WALLS' length, so
+ * a box with another number of walls does not type-check until its word is given.
+ */
+const ALL_WALLS = ({ 4: 'four' } satisfies Record<typeof BOX_WALLS.length, string>)[BOX_WALLS.length];
 
 /** What the diagram shows, in words: its text alternative. */
 function describeBox({ labels, centre, walls, ring }: BoxDiagramProps): string {
   const up = BOX_WALLS.filter((w) => walls.includes(w)).map((w) => labels.walls[w]);
   const dashed = BOX_WALLS.filter((w) => !walls.includes(w)).map((w) => labels.walls[w]);
   const parts = [`The box round ${centre ?? labels.centre}.`];
-  if (up.length === 0) parts.push(`No wall is up yet; all ${count(dashed.length)} are dashed: ${dashed.join(', ')}.`);
-  else if (dashed.length === 0) parts.push(`All ${count(up.length)} walls are up: ${up.join(', ')}.`);
+  if (up.length === 0) parts.push(`No wall is up yet; all ${ALL_WALLS} are dashed: ${dashed.join(', ')}.`);
+  else if (dashed.length === 0) parts.push(`All ${ALL_WALLS} walls are up: ${up.join(', ')}.`);
   else parts.push(`Walls up: ${up.join(', ')}. Still dashed: ${dashed.join(', ')}.`);
   if (ring) parts.push(`A ring is drawn round it: ${labels.ring}.`);
   return parts.join(' ');

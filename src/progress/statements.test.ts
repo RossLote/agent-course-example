@@ -1,12 +1,12 @@
 import type { Statement } from '@xapi/xapi';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { activityPath, course as realCourse, type Course, type Module, type Screen, type ScreenOf } from '../content/index.ts';
-import { fixtureCourse, fixtureFridge, fixtureMatch, fixtureModule, fixtureOrder, fixtureTakeaway } from '../course/frame/fixture.ts';
-import { scoredItem } from '../course/frame/progress.ts';
+import { activityPath, course as realCourse, fridgeActivityPath, moduleActivityPath, type Course, type Module, type Screen, type ScreenOf } from '../content/index.ts';
+import { fixtureCheck, fixtureCourse, fixtureFridge, fixtureMatch, fixtureModule, fixtureOrder, fixtureScene, fixtureTakeaway } from '../course/frame/fixture.ts';
 import type { ScreenEvent, Score } from '../screens/types.ts';
 import { LAUNCH_ACTIVITY_ID, REGISTRATION, sparkLaunch } from '../xapi/fixtures.ts';
 import type { Launch } from '../xapi/launch.ts';
 import { createMemoryTracker } from '../xapi/tracker.ts';
+import { courseScore, EMPTY_PROGRESS } from './progress.ts';
 import { connectStatements } from './statements.ts';
 import { createProgressStore } from './store.ts';
 
@@ -44,18 +44,22 @@ function brief({ slug, rounds }: ScreenOf<'brief'>, picks: [number, number][]): 
   return picks.map(([q, c]) => ({ type: 'interacted', slug, response: `D${q + 1}: ${questions[q].chips[c].label}`, answer: {} }));
 }
 
+/** No response and no activity name sent carries an emphasis marker. */
+function expectPlainText(sent: readonly Statement[]) {
+  for (const s of sent) {
+    expect(s.result?.response ?? '').not.toContain('*');
+    expect(s.object.objectType === 'Activity' && s.object.definition?.name?.['en-US']).not.toContain('*');
+  }
+}
+
 const fridgeEnded = (name: string, score: Score): ScreenEvent => ({ type: 'fridge-ended', slug: name, score });
 const takeaway: ScreenEvent = { type: 'takeaway-reached' };
 
 // ---------------------------------------------------------------------------------------------
 // The inline course.
 
-const options = [
-  { label: 'Wrong', right: false, feedback: 'No.' },
-  { label: 'Right', right: true, feedback: 'Yes.' },
-];
-const check = (slug: string): ScreenOf<'choose'> => ({ type: 'choose', slug, scored: true, mode: 'single', heading: slug, options });
-const scene: Screen = { type: 'scene', heading: 'A scene', blocks: [{ type: 'paragraph', text: 'Text.' }] };
+const check = (slug: string) => fixtureCheck(slug);
+const scene = fixtureScene();
 const chips = (text: string) => [
   { label: `${text} yes`, decision: 'Yes.', recommended: true },
   { label: `${text} no`, decision: 'No.' },
@@ -275,10 +279,7 @@ describe('statements from the progress store', () => {
     playTheRest(l);
     const said = l.sent().find((s) => short(s).startsWith('answered modules/03/interactions/name-the-wall'));
     expect(said?.result?.response).toContain('after two wrong drops of the same item, which');
-    for (const s of l.sent()) {
-      expect(s.result?.response ?? '').not.toContain('*');
-      expect(s.object.objectType === 'Activity' && s.object.definition?.name?.['en-US']).not.toContain('*');
-    }
+    expectPlainText(l.sent());
   });
 
   it('sends nothing for a visit, and nothing once disconnected', () => {
@@ -325,7 +326,7 @@ function ownStatement(module: Module, screen: Screen, event: ScreenEvent): strin
     case 'interacted':
       return [`${event.type} ${activityPath(module, screen)}`];
     case 'fridge-ended':
-      return [`completed fridge/${event.slug}`];
+      return [`completed ${fridgeActivityPath(event.slug)}`];
     case 'takeaway-reached':
       return [];
   }
@@ -336,26 +337,22 @@ describe('statements from the real course', () => {
     const launch = sparkLaunch();
     const l = learner(realCourse, launch);
     const expected: string[] = [];
-    let points = 0;
     for (const module of realCourse.modules) {
       for (const screen of module.screens) {
         const events = rightEvents(screen);
         l.at(module, screen, events);
         expected.push(...events.flatMap((event) => ownStatement(module, screen, event)));
-        points += scoredItem(screen)?.max ?? 0;
       }
-      expected.push(`completed modules/${module.slug}`);
+      expected.push(`completed ${moduleActivityPath(module)}`);
     }
     expected.push('completed course');
 
+    const points = courseScore(realCourse, EMPTY_PROGRESS).max;
     const sent = l.sent();
     const path = (s: Statement) => (objectId(s) === launch.activityId ? 'course' : objectId(s).replace(realCourse.id, ''));
     expect(sent.map((s) => `${s.verb.display?.['en-US']} ${path(s)}`)).toEqual(expected);
     expect(points).toBeGreaterThan(0);
     expect(sent.at(-1)?.result).toEqual({ completion: true, score: { raw: points, min: 0, max: points, scaled: 1 } });
-    for (const s of sent) {
-      expect(s.result?.response ?? '').not.toContain('*');
-      expect(s.object.objectType === 'Activity' && s.object.definition?.name?.['en-US']).not.toContain('*');
-    }
+    expectPlainText(sent);
   });
 });

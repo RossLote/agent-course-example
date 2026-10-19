@@ -1,10 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, assert, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import App from './App.tsx';
 import { plainText } from './content/copy.ts';
 import { course, type Course, type Screen, type ScreenOf } from './content/index.ts';
-import { fixtureCourse, fixtureTakeaway } from './course/frame/fixture.ts';
-import { scoredItem } from './course/frame/progress.ts';
+import { fixtureCheck, fixtureCourse, fixtureScene, fixtureTakeaway } from './course/frame/fixture.ts';
+import { firstAwaiting, NO_ANSWERS, scoredItem, shownScreen } from './course/frame/progress.ts';
 import type { ProgressDoc } from './progress/progress.ts';
 import { createProgressStore } from './progress/store.ts';
 import { jsonResponse, sparkLaunch } from './xapi/fixtures.ts';
@@ -67,8 +67,9 @@ describe('App', () => {
     // A screen past the first that Next can leave (not scored) for one with a heading of its own.
     const hasHeading = (s: Screen | undefined) => s !== undefined && 'heading' in s;
     const leavable = (screens: Screen[], i: number) => scoredItem(screens[i]) === null && hasHeading(screens[i]) && hasHeading(screens[i + 1]);
-    const module = course.modules.find((m) => m.screens.some((_, i) => i > 0 && leavable(m.screens, i))) ?? course.modules[0];
-    const at = Math.max(module.screens.findIndex((_, i) => i > 0 && leavable(module.screens, i)), 0) + 1;
+    const module = course.modules.find((m) => m.screens.some((_, i) => i > 0 && leavable(m.screens, i)));
+    assert(module, 'no module has a screen Next can leave for one with a heading');
+    const at = module.screens.findIndex((_, i) => i > 0 && leavable(module.screens, i)) + 1;
     const [shown, then] = [module.screens[at - 1], module.screens[at]];
     window.history.replaceState(null, '', `/?registration=r1#/modules/${module.slug}/${at}`);
     render(<App store={freshStore()} />);
@@ -118,8 +119,7 @@ describe('App with progress', () => {
 
   it('continues module 00 at the furthest screen reached', async () => {
     // As far as screen 3, short of the first scored screen, which no route passes unanswered.
-    const awaiting = first.screens.findIndex((s) => scoredItem(s) !== null);
-    const furthest = Math.min(3, awaiting === -1 ? first.screens.length : awaiting + 1);
+    const furthest = shownScreen(first, NO_ANSWERS, 3);
     window.history.replaceState(null, '', `/#/modules/${first.slug}/${furthest}`);
     render(<App store={freshStore()} />);
     window.location.hash = `#/modules/${first.slug}/1`;
@@ -162,19 +162,13 @@ describe('App with progress', () => {
 // An inline course, for the tests that answer particular options: module 00 is round one's
 // shape (four screens, then two checks and the takeaway) and module 01 has a verdict.
 
-const scene = (heading: string): Screen => ({ type: 'scene', heading, blocks: [{ type: 'paragraph', text: 'Text.' }] });
-const check = (slug: string, heading: string): ScreenOf<'choose'> => ({
-  type: 'choose',
-  slug,
-  scored: true,
-  mode: 'single',
-  heading,
-  options: [
+const scene = fixtureScene;
+const check = (slug: string, heading: string) =>
+  fixtureCheck(slug, heading, [
     { label: 'It misread your message.', right: false, feedback: 'Not usually.' },
     { label: 'It filled a gap in your ask with a guess.', right: true, feedback: 'Yes. Gaps get filled, confidently.' },
     { label: 'It was showing off.', right: false, feedback: 'Agents do not show off.' },
-  ],
-});
+  ]);
 const verdict: ScreenOf<'choose'> = {
   type: 'choose',
   slug: 'verdict',
@@ -267,7 +261,7 @@ describe('App and a route past an unanswered check', () => {
 
   it('stops the real course at the first scored screen of module 00 for a route to its takeaway', async () => {
     const [first] = course.modules;
-    const awaiting = first.screens.findIndex((s) => scoredItem(s) !== null) + 1;
+    const awaiting = firstAwaiting(first, NO_ANSWERS) + 1;
     expect(awaiting).toBeGreaterThan(0);
     window.history.replaceState(null, '', `/#/modules/${first.slug}/${first.screens.length}`);
     const store = freshStore();

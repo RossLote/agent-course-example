@@ -1,14 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { Screen } from '../../content/index.ts';
 import type { ModuleAnswers, ScreenEvent } from '../../screens/types.ts';
+import { fixtureCheck, fixtureScene } from './fixture.ts';
 import { answerKey, awaitsAnswer, firstAwaiting, moduleProgress, NO_ANSWERS, recordEvent, scoredItem, shownScreen } from './progress.ts';
 
-const options = [
-  { label: 'Right', right: true, feedback: 'Yes.' },
-  { label: 'Wrong', right: false, feedback: 'No.' },
-];
-const check = (slug: string): Screen => ({ type: 'choose', slug, scored: true, mode: 'single', heading: slug, options });
-const tick: Screen = { type: 'choose', slug: 'tick', scored: false, mode: 'multi', heading: 'Tick', options };
+const check = (slug: string) => fixtureCheck(slug);
+const tick: Screen = { ...fixtureCheck('tick', 'Tick'), scored: false, mode: 'multi' };
 const targets = [
   { id: 'x', label: 'X' },
   { id: 'y', label: 'Y' },
@@ -27,7 +24,7 @@ const order: Screen = {
   start: ['c', 'b', 'a'],
 };
 const fridge: Screen = { type: 'fridge', heading: 'Fridge', fridge: 'one-shot' };
-const scene: Screen = { type: 'scene', heading: 'Scene', blocks: [{ type: 'paragraph', text: 'Text.' }] };
+const scene = fixtureScene('Scene');
 const takeaway: Screen = { type: 'takeaway', text: 'Card.', caption: 'Caption.' };
 
 describe('scoredItem', () => {

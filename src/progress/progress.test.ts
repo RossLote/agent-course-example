@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { course as realCourse, type Module, type Screen } from '../content/index.ts';
-import { fixtureCourse, fixtureTakeaway } from '../course/frame/fixture.ts';
+import { course as realCourse, type Module } from '../content/index.ts';
+import { fixtureCheck, fixtureCourse, fixtureScene, fixtureTakeaway } from '../course/frame/fixture.ts';
 import { scoredItem } from '../course/frame/progress.ts';
 import type { ScreenEvent } from '../screens/types.ts';
 import { resultScore } from '../xapi/statements.ts';
@@ -22,13 +22,7 @@ import {
   type ProgressDoc,
 } from './progress.ts';
 
-const options = [
-  { label: 'Wrong', right: false, feedback: 'No.' },
-  { label: 'Right', right: true, feedback: 'Yes.' },
-];
-const check = (slug: string): Screen => ({ type: 'choose', slug, scored: true, mode: 'single', heading: slug, options });
-const scene: Screen = { type: 'scene', heading: 'Scene', blocks: [{ type: 'paragraph', text: 'Text.' }] };
-const course = fixtureCourse({ '00': [scene, check('check-1'), check('check-2'), fixtureTakeaway()] });
+const course = fixtureCourse({ '00': [fixtureScene('Scene'), fixtureCheck('check-1'), fixtureCheck('check-2'), fixtureTakeaway()] });
 const [m00, m01] = course.modules;
 
 const answered = (slug: string, right: boolean, raw = right ? 1 : 0, max = 1): ScreenEvent => ({

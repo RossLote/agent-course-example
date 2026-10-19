@@ -1,6 +1,6 @@
 // What the content alone decides about ids and the box, derived in one place so the record
 // store (.8), the statements (.9, .18) and the takeaway never derive it again.
-import { BOX_WALLS, wallsAdded, type BoxWall, type ModuleWall, type Screen } from './schema.ts';
+import { BOX_WALLS, type BoxWall, type ModuleWall, type Screen } from './schema.ts';
 
 /**
  * A screen's activity path under the course id (D24, PLAN.md §6a), or null for a screen that
@@ -63,7 +63,7 @@ export interface BoxState {
 export function boxAfter(modules: readonly { slug: string; wall: ModuleWall }[], slug: string): BoxState {
   const upTo = modules.findIndex((m) => m.slug === slug);
   if (upTo === -1) throw new Error(`no module "${slug}"`);
-  const added = new Set(modules.slice(0, upTo + 1).flatMap((m) => wallsAdded(m.wall)));
+  const added = new Set(modules.slice(0, upTo + 1).flatMap((m) => m.wall));
   return {
     walls: BOX_WALLS.filter((w) => added.has(w)),
     ring: added.has('ring'),

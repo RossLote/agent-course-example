@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import readme from '../../content/README.md?raw';
+import { FIXTURE_WALLS } from '../course/frame/fixture.ts';
 import { block, fridgeFile, screen } from './schema.ts';
-import { ContentError, activityId, activityPath, boxAfter, contentFiles, course, fridgeActivityPath, moduleActivityPath, validateContent, type ModuleWall, type Screen } from './index.ts';
+import { ContentError, activityId, activityPath, boxAfter, contentFiles, course, fridgeActivityPath, moduleActivityPath, validateContent, type Screen } from './index.ts';
 
 /** contentFiles with one file replaced by a changed copy of itself. */
 function withFile(file: string, change: (data: Record<string, unknown>) => void): Record<string, unknown> {
@@ -181,8 +182,7 @@ describe('activityPath (D24)', () => {
 });
 
 describe('boxAfter', () => {
-  const walls: ModuleWall[] = ['none', 'record', ['agents', 'gate'], 'evidence', 'ring'];
-  const modules = walls.map((wall, i) => ({ slug: `0${i}`, wall }));
+  const modules = FIXTURE_WALLS.map((wall, i) => ({ slug: `0${i}`, wall }));
 
   it("draws a module's walls, none, one or two, and every earlier module's, in the order of the walls", () => {
     expect(boxAfter(modules, '00')).toEqual({ walls: [], ring: false });

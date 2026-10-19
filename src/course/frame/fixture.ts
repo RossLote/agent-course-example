@@ -7,24 +7,40 @@ import type { Course, Fridge, Module, ModuleWall, Screen, ScreenOf } from '../..
 import type { ModuleProgress } from '../../screens/types.ts';
 import { NO_ANSWERS } from './progress.ts';
 
-/** What each fixture module adds to the box, by its number: as the real course is walled (C20). */
-const WALLS: readonly ModuleWall[] = ['none', 'record', ['gate', 'agents'], 'evidence', 'ring'];
+/**
+ * What each fixture module adds to the box, by its number: none, the record, two walls given
+ * out of the box's order, evidence, the ring.
+ */
+export const FIXTURE_WALLS: readonly ModuleWall[] = [[], ['record'], ['agents', 'gate'], ['evidence'], ['ring']];
 
 /** The progress of a module nothing has been answered in: what a screen's test renders it with. */
 export const NO_PROGRESS: ModuleProgress = { items: NO_ANSWERS, score: { raw: 0, max: 0 } };
 
-/** A module with these screens; its title is "Module <nn> title" and its wall the course's order. */
+/** A module with these screens; its title is "Module <nn> title" and its wall FIXTURE_WALLS'. */
 export function fixtureModule(slug: string, screens: Screen[]): Module {
   return {
     slug,
     title: `Module ${slug} title`,
     minutes: 5,
-    wall: WALLS[Number(slug)] ?? 'none',
+    wall: FIXTURE_WALLS[Number(slug)] ?? [],
     wallLabel: `wall of ${slug}`,
     blurb: `The blurb of ${slug}.`,
     file: `modules/${slug}.yaml`,
     screens,
   };
+}
+
+/** A one-paragraph scene. */
+export function fixtureScene(heading = 'A scene'): ScreenOf<'scene'> {
+  return { type: 'scene', heading, blocks: [{ type: 'paragraph', text: 'Text.' }] };
+}
+
+/** A scored single choose, headed by its slug unless `heading` is given: Wrong, then Right. */
+export function fixtureCheck(slug: string, heading = slug, options: ScreenOf<'choose'>['options'] = [
+  { label: 'Wrong', right: false, feedback: 'No.' },
+  { label: 'Right', right: true, feedback: 'Yes.' },
+]): ScreenOf<'choose'> {
+  return { type: 'choose', slug, scored: true, mode: 'single', heading, options };
 }
 
 /** A takeaway screen, the last of every module. */
@@ -33,9 +49,8 @@ export function fixtureTakeaway(text = 'The takeaway card.'): Screen {
 }
 
 /**
- * The course: five modules 00 to 04 walled as the real one is (none, the record, the gate and
- * the reviews together, evidence, the ring), each a scene and its takeaway unless `modules`
- * gives some of them by slug.
+ * The course: five modules 00 to 04 walled as FIXTURE_WALLS says, each a scene and its takeaway
+ * unless `modules` gives some of them by slug.
  */
 export function fixtureCourse(modules: Readonly<Record<string, Screen[]>> = {}): Course {
   return {
@@ -72,9 +87,9 @@ export function fixtureCourse(modules: Readonly<Record<string, Screen[]>> = {}):
       box: { centre: 'the agent', caption: 'An open box.' },
       modulesHeading: 'The modules',
     },
-    modules: WALLS.map((_, i) => {
+    modules: FIXTURE_WALLS.map((_, i) => {
       const slug = `0${i}`;
-      return fixtureModule(slug, modules[slug] ?? [{ type: 'scene', heading: `Scene of ${slug}`, blocks: [{ type: 'paragraph', text: 'Text.' }] }, fixtureTakeaway()]);
+      return fixtureModule(slug, modules[slug] ?? [fixtureScene(`Scene of ${slug}`), fixtureTakeaway()]);
     }),
     fridges: {},
   };
