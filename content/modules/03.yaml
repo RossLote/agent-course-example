@@ -1,193 +1,262 @@
 slug: "03"
 screens:
   - type: scene
-    heading: The wandering worker
+    heading: It finished at two in the morning
     blocks:
       - type: paragraph
         text: >-
-          Bead .4 is clear. The builder gets it, and its decisions, and starts. Forty minutes
-          later:
-      - type: quote
+          The run built five pieces, simplified, reviewed, fixed, recorded the walkthrough and
+          wrote up the result. It is waiting for you: forty changed files. Reading them is not
+          your job. Judging them is.
+      - type: aside
+        term: pull request
         text: >-
-          Done! Feedback and the score screen are in. While I was there I noticed the shelf layout
-          was a bit cramped so I tidied that up too, and I simplified the drag code. I ran it and
-          it looks good.
-        attribution: The agent
-      - type: paragraph
-        text: >-
-          Two things happened that nobody asked for. The tidying changed the file bead .3 was
-          working in. The simplified drag code no longer works on touch. The builder does not know
-          either of these, because nothing stopped it and nothing checked.
-      - type: quote
-        text: >-
-          Tests, linting, whatever else you have: you want to put the agent in a tight box it can't
-          wander off from.
-        attribution: Ross
+          the hand-back: everything the run did, written for one time-poor reviewer who will not
+          read the code.
 
   - type: scene
-    heading: The walls
-    nav: the walls
-    intro: Four walls the workflow puts up before a builder starts.
+    heading: The first three lines
+    nav: the first three lines
     blocks:
+      - type: list
+        heading: The fridge pull request's top, as it would appear
+        style: bullets
+        items:
+          - "**Two-way door.** Reverting the merge removes the activity and nothing else depends on it."
+          - "**Before merging:** nothing."
+          - "**Undo:** revert the merge and redeploy."
       - type: cards
         numbered: true
         items:
-          - title: Its own working area.
+          - title: The door.
             body: >-
-              Every builder gets a separate copy of the project (a **worktree**) and a list of the
-              files it may touch. Two builders at once cannot tread on each other, and a change
-              outside the list is a failure, not a favour.
-          - title: The gate.
+              *Two-way* if undoing puts everything back; *one-way* if something is dropped or
+              changed for good (data deleted, a format changed). The door is the worst signal in
+              the change, never an average. You read this line first because it sets how careful
+              the rest of your reading has to be.
+          - title: Before merging.
+            body: 'What someone has to do first, if anything. "Nothing" is an answer.'
+          - title: Undo.
             body: >-
-              Before the builder may say done, a set of checks must all pass: code style, types,
-              the unit tests, and a run through the thing in a real browser. A red check is the box
-              pushing back. The builder fixes and runs it again, as many times as it takes.
-          - title: Done, in its instructions.
-            body: >-
-              The bead's acceptance, the gate, and the rule "nothing outside your files" are in the
-              prompt the builder is given, as the finish line, not as advice.
-          - title: Its word is not taken.
-            body: >-
-              The builder pastes the gate's own output into its report, and says plainly what it
-              could not confirm. The orchestrator reads the output, not the summary. "I ran it and
-              it looks good" is not a gate result.
+              A recipe, not a reassurance. If it cannot be written, the door is one-way.
       - type: aside
-        term: gate
-        text: the checks that must be green before work is handed back.
-      - type: aside
-        term: worktree
-        text: a builder's own copy of the project.
-
-  - type: choose
-    slug: build-the-box
-    scored: false
-    mode: multi
-    eyebrow: Try it
-    heading: Build the box
-    intro: >-
-      Bead .4 is about to start. Choose what goes round the builder. Tick everything that is a
-      wall; the box on the right draws itself as you go.
-    nav: build the box
-    checkLabel: Check my box
-    options:
-      - label: A unit test that every item has exactly one right shelf and a reason.
-        right: true
-        wall: gate
-        feedback: Wall. If the builder breaks the data, this goes red.
-      - label: A line asking it to please be careful and not change anything else.
-        right: false
-        feedback: Not a wall. It will agree, and then it will tidy the shelves. Hope is not a check.
-      - label: A run through the demo script in a browser, which must pass.
-        right: true
-        wall: gate
-        feedback: Wall. The touch drag breaking would be caught here.
-      - label: Its own working area, with the feedback and score files as the only ones it may touch.
-        right: true
-        wall: area
-        feedback: Wall. The shelf layout is not on the list.
-      - label: A much longer prompt explaining the whole project so it understands.
-        right: false
-        feedback: >-
-          Not a wall. More context is not a constraint; the record from the brief is what it
-          needs. The rest is room to wander in.
-      - label: '"Done means" in its instructions: the acceptance, the gate green, nothing outside its files.'
-        right: true
-        wall: done
-        feedback: Wall. The finish line, in writing.
-      - label: The gate's own output pasted into its report, and anything unconfirmed named.
-        right: true
-        wall: word
-        feedback: Wall. The orchestrator reads the output, not the summary.
-    box:
-      builder:
-        title: the builder
-        subtitle: bead .4
-      walls:
-        - id: area
-          label: own area, its files only
-        - id: gate
-          label: "the gate: lint, types, tests, a browser run"
-        - id: done
-          label: done, in its instructions
-        - id: word
-          label: its word not taken
-      caption: "{up} of {total} walls up. Hope, context and a promise to report are not walls."
+        term: door
+        text: whether undoing the change puts everything back.
 
   - type: scene
-    heading: The same bead, twice
-    nav: the same bead, twice
+    heading: The rest of the page
+    nav: the rest of the page
+    intro: What follows the three lines.
     blocks:
-      - type: columns
-        columns:
-          - heading: Loose
-            blocks:
-              - type: list
-                items:
-                  - text: Changes the feedback files.
-                    marker: "00:00"
-                    tone: neutral
-                  - text: '"While I was there" tidies the shelf layout, in bead .3''s file.'
-                    marker: "00:20"
-                    tone: neutral
-                  - text: Simplifies the drag code. Touch dragging stops working. Nothing notices.
-                    marker: "00:30"
-                    tone: neutral
-                  - text: '**"Done, I ran it and it looks good."**'
-                    marker: "00:40"
-                    tone: neutral
-                  - text: The client finds the touch bug. Bead .3's work was overwritten.
-                    marker: +7 days
-                    tone: wrong
-          - heading: Boxed
-            blocks:
-              - type: list
-                items:
-                  - text: Changes the feedback files.
-                    marker: "00:00"
-                    tone: neutral
-                  - text: "Tries to tidy the shelves: the file is outside its list. Rejected."
-                    marker: "00:20"
-                    tone: wrong
-                  - text: "Runs the gate: the browser run goes red at step 3, touch drag."
-                    marker: "00:35"
-                    tone: wrong
-                  - text: "Fixes it, runs the gate again: green."
-                    marker: "00:50"
-                    tone: right
-                  - text: >-
-                      **Reports with the gate's output pasted in**, and one line: "Could not
-                      confirm the screen-reader wording; that is bead .3's."
-                    marker: "00:55"
-                    tone: right
-              - type: mono
-                text: |-
-                  gate: lint ok · typecheck ok · unit 14/14 · e2e fridge 6/6 · 4m12s
-                  touched: src/feedback/*, src/score/*  (2 files)
-                  unconfirmed: screen-reader wording (bead .3)
+      - type: cards
+        items:
+          - title: What changed, in one picture.
+            body: >-
+              Two or three sentences in plain words, and a diagram when there is something to
+              draw.
+          - title: Evidence, matched to the change.
+            body: >-
+              For a thing you can see: the recorded walkthrough of the demo script, one chapter
+              per step, slowed down so a person can follow it. For a bug fix: the test that
+              failed and now passes.
+          - title: A review guide.
+            body: >-
+              At most ten places to look, each with what to check there. Not the whole change:
+              the places where a mistake would hide.
+          - title: Choices made for you.
+            body: >-
+              What the run decided on its own, each as the choice, what it was chosen over, and
+              why: the ones that matter most on the page, the rest in a list at the end. You can
+              disagree with any of them.
+      - type: quote
+        text: >-
+          The pull request is the point where everything the agents did is shown to you in a way
+          you can consume safely.
+        attribution: Ross
+
+  - type: scene
+    eyebrow: Try it
+    heading: The pull request, condensed
+    intro: >-
+      The fridge's pull request, cut down to what you judge from. Read it in the order on the
+      right.
+    nav: the pull request, condensed
+    blocks:
+      - type: paragraph
+        heading: Pull request · ready for review
+        text: >-
+          **Fridge activity: shelves, dragging, keyboard, feedback and score.** Five pieces ·
+          forty files · every check green · simplify: 11 changes · review: 4 fixed · adversarial
+          review: 7 findings, 5 confirmed, 5 fixed
+      - type: list
+        style: bullets
+        items:
+          - "**Two-way door.** Reverting the merge removes the activity and nothing else depends on it."
+          - "**Before merging:** nothing."
+          - "**Undo:** revert the merge and redeploy."
+      - type: list
+        heading: Evidence · the recorded walkthrough, one chapter per step
+        items:
+          - text: "Open: four shelves, eight items in the tray."
+            marker: ch 1
+            tone: right
+          - text: "Raw chicken to the top shelf: it returns, and the reason reads as written."
+            marker: ch 2
+            tone: right
+          - text: "Raw chicken to the bottom shelf: it stays."
+            marker: ch 3
+            tone: right
+          - text: >-
+              Keyboard: Tab to the lettuce, Enter, arrow down three times, Enter: placed. The
+              screen reader says "Lettuce placed. Correct."
+            marker: ch 4
+            tone: neutral
+          - text: >-
+              All eight placed: "7 out of 8 right first time", raw chicken listed with its
+              reason.
+            marker: ch 5
+            tone: right
+          - text: "Try again: the tray is full, the score cleared."
+            marker: ch 6
+            tone: right
+      - type: paragraph
+        heading: Choices made for you
+        text: >-
+          The reason for a wrong drop stays on screen until the next move, over fading after a
+          few seconds, because D3 says one line and nothing about how long.
+      - type: list
+        heading: Review guide (about 6 minutes)
+        items:
+          - Where the shelves, items and reasons are written down, against the client's guide.
+          - The drop code, where a new reason replaces the one on screen (the adversarial review's fix).
+          - The score screen's wording against D4.
+    side:
+      - type: cards
+        heading: Read it in this order
+        items:
+          - title: 1. The door.
+            body: >-
+              Two-way if undoing puts everything back; one-way if something is lost for good. The
+              worst signal in the change, never an average.
+          - title: 2. Before merging, and undo.
+            body: A recipe, not a reassurance.
+          - title: 3. Evidence against the demo script.
+            body: >-
+              One chapter per step, each against what the step says you will see. A missing
+              chapter is missing proof.
+          - title: 4. Choices made for you.
+            body: >-
+              What the run decided alone, over what, and why, so you can disagree with any of it.
+      - type: list
+        heading: The record, for reference
+        items:
+          - text: A wrong drop returns the item and shows a one-line reason; unlimited tries.
+            marker: D3
+          - text: >-
+              Keyboard: Enter picks up, arrows move between shelves, Enter places; a screen
+              reader hears **item, shelf and result**.
+            marker: D5
+          - text: >-
+              Tab to the lettuce, Enter, arrow down to the salad drawer, Enter: placed; the
+              screen reader says "Lettuce placed **in the salad drawer**. Correct."
+            marker: step 4
+
+  - type: choose
+    slug: merge-or-not
+    scored: false
+    mode: single
+    eyebrow: Try it
+    heading: What do you do?
+    nav: "what do you do?"
+    options:
+      - label: Merge. Every chapter plays, and the one choice made for you is reasonable.
+        right: false
+        feedback: >-
+          The choice is reasonable, but chapter 4 names no shelf. D5 and step 4 say the
+          announcement names the item, the shelf and the result, and nothing in the choices made
+          for you explains it, so it is a gap, not a choice. Reasonable is not the test; the
+          record is.
+      - label: >-
+          Send it back as one piece of work: the announcement must name the shelf, per D5 and
+          step 4.
+        right: true
+        feedback: >-
+          Yes. You judged from the evidence against the record, found the one gap, and sent back
+          exactly that. It goes through the box like any other piece.
+      - label: Read the forty files to be sure there is nothing else.
+        right: false
+        feedback: >-
+          You can, but the reviewers already read them, and every finding was checked. Your time
+          goes on judging the evidence against the record. If the evidence were missing, that
+          would be the reason to send it back.
+    after:
       - type: paragraph
         text: >-
-          Fifteen minutes slower. The whole of the difference is that the box pushed back twice.
+          You did not read a line of code. You read six chapters against six steps and a list of
+          choices against eight decisions.
+
+  - type: compare
+    eyebrow: The job, done
+    heading: The two fridges
+    intro: >-
+      On the left, what the agent handed you in module 00 from a one-line ask. On the right, what
+      you just accepted. Both work. Try them.
+    nav: the two fridges
+    left: one-shot
+    right: accepted
+    table:
+      heading: What is different, and which wall made the difference
+      rows:
+        - aspect: Shelves and items
+          left: Five shelves including "the door", fourteen items.
+          right: Four shelves, eight items, the ones in the client's guide.
+          wall: 01 the record (D2)
+        - aspect: The rules
+          left: The agent's guess. Raw chicken is accepted on the lower middle shelf.
+          right: The client's guide. Raw meat and fish on the bottom shelf, with the reason.
+          wall: 01 the record (D2)
+        - aspect: A wrong drop
+          left: Snaps back with a red flash. Nothing says why.
+          right: Returns, with a one-line reason. Unlimited tries.
+          wall: 01 the record (D3)
+        - aspect: The score
+          left: Points, a leaderboard against people who do not exist, confetti.
+          right: Right first time out of eight, wrong ones listed with their reasons, Try again.
+          wall: 01 the record (D4, D6, D7)
+        - aspect: Time
+          left: Fifteen seconds, then "Time's up".
+          right: None. Induction, not a game.
+          wall: 01 the record (D6)
+        - aspect: Keyboard and screen reader
+          left: >-
+            Added for this course so everyone can try it; a one-shot build would have had
+            neither.
+          right: >-
+            Enter, arrows, Enter; the reader hears item, shelf and result, and the walkthrough
+            was sent back once to get the shelf in.
+          wall: 01 the record (D5) · 03 evidence
 
   - type: choose
     slug: check-1
     scored: true
     mode: single
     eyebrow: Check · 1 of 2
-    heading: The gate is red. What happens?
+    heading: >-
+      A pull request's door line says "Two-way door" but the change deletes a column of learner
+      data. What is wrong?
     intro: Every module ends with two of these. Each option tells you why, right or wrong.
     nav: check
     options:
-      - label: The builder explains why the failure does not matter and hands back.
+      - label: Nothing; the change can be reverted.
         right: false
-        feedback: A red gate is not a discussion. Green or not done.
-      - label: The builder fixes it and runs the gate again, as many times as it takes.
+        feedback: The change can. The data cannot. A revert does not put the column back.
+      - label: >-
+          The door is wrong: it is one-way, and the rest of the page has to be read as one.
         right: true
-        feedback: Yes. The gate is the finish line; it does not move.
-      - label: You turn off the failing check so the work can land.
+        feedback: Yes. The door is the worst signal in the change.
+      - label: It should say "no door".
         right: false
-        feedback: >-
-          Then it is not a wall. If the check is wrong, that is its own piece of work, found and
-          fixed as one.
+        feedback: Every change has a door. This one is one-way.
 
   - type: choose
     slug: check-2
@@ -195,26 +264,24 @@ screens:
     mode: single
     eyebrow: Check · 2 of 2
     heading: >-
-      The builder's report says "I tested it manually and everything works." The gate output is not
-      in the report. What do you do?
+      The walkthrough has five chapters and the demo script has six steps. What does that tell
+      you?
     nav: question 2
     options:
-      - label: Accept it; it tested it.
+      - label: The sixth step was not important.
         right: false
-        feedback: Its word. Module 00.
-      - label: Treat it as not done until the gate's own output is there and green.
+        feedback: Every step is in the script because it has to be shown. A missing step is missing proof.
+      - label: One step has no evidence, so it is not shown to be done.
         right: true
-        feedback: Yes. The output, not the summary.
-      - label: Run the tests yourself.
+        feedback: Yes. Send it back for the chapter, or for the fix the chapter would have shown.
+      - label: The video was cut for length.
         right: false
-        feedback: >-
-          You can, but then you are the gate, every time, for every builder. The point is that the
-          box does it.
+        feedback: Then the proof was cut for length.
 
   - type: takeaway
     eyebrow: Takeaway
     nav: takeaway
     text: >-
-      **A builder needs walls, not advice.** Its own area, the files it may touch, a gate that must
-      be green, and done written in. The gate's output is the proof, never the builder's word.
-    caption: "The box gains its third wall: **the gate**."
+      **You still sign off. You just do not start from the code.** Door, undo, evidence against
+      the demo script, the choices made for you. A gap in the evidence is a gap in the work.
+    caption: The box gains its fourth and last wall, evidence. The arrow round it comes next.
