@@ -1,52 +1,69 @@
 # Getting the most out of agents: the course
 
-A content draft for Ross's review, 2026-10-15, written by the agent at Ross's request
-(log: `docs/conversations/2026-10-15-what-the-course-teaches.md`). Ross is not a learning
-designer and asked the agent to make the content decisions; they are listed in §9 with
-their reasons so any one can be reversed. The draft is a storyboard: every module's
-screens in order, with draft copy for the teaching, the full script of every fake-agent
-interaction, and every check question with its feedback. It is not the final copy and not
-the authoring format; the brief settles the format and the epic's beads move the content
-into it.
+The course's decision record and outline. It began as a content draft for Ross's review,
+2026-10-15, written by the agent at Ross's request (log:
+`docs/conversations/2026-10-15-what-the-course-teaches.md`). Ross is not a learning designer
+and asked the agent to make the content decisions; they are listed in §9 with their reasons
+so any one can be reversed. Round three (2026-10-19, log
+`docs/conversations/2026-10-19-four-walls-not-five.md`) reshaped the course after Ross
+reviewed both builds, and added C18–C24.
 
-Next: Ross reviews; Claude Design mocks up the module shape and the fake agent; the brief,
-which is short because §9 is already decided and only §10 is open; then the epic.
+The copy now lives in `content/`, which is the source (C24): the YAML the engine renders,
+which Ross reviews by playing the course. The storyboard under `modules/` (every module's
+screens in order, with draft copy, the fake agent's scripts and the check questions) is
+round one's draft for eight modules, kept for the record and not updated.
+
+Next: epic `agent-course-bsg` builds round three: four walls, five modules, the learner's
+seat.
 
 ## 1. Who it is for
 
 Learning experience designers at the company (LED and LXD name the same role), and anyone
 else who is interested. Everyone has some technical background; nobody needs to write or
-read code to follow the course. Developers can take it too; the workflow is theirs as well.
+read code to follow the course, and no screen shows any (C22). Developers can take it too;
+the workflow is theirs as well.
 
 The reason it exists: the bespoke team sometimes has to leave the authoring tools and build
 a piece of a course in code. Agents can do that building. The course shows what it takes to
 get something trustworthy out of them, so a designer can see that this is a thing the
 company can do, and knows what the work around the agent looks like.
 
-## 2. The one thing to remember
+## 2. The two ideas
 
-**Agents are better at reviewing than building.** So never let a builder run loose: write
-down what it is building, define done before it starts, put it in a box of tests and gates
-it cannot leave, have other agents check its work, judge the result from evidence, and when
-something slips through, change the process rather than the hope. Every module of the
-course adds one wall to that box.
+The course has two ideas to remember (C19).
+
+1. **How you ask.** Hold the agent's hand with a page of detail and you get exactly that:
+   your mistakes built in, and no suggestion, because you left it no room. Say "go and do
+   it" and you get surprises. The middle is to describe what you want loosely, let the agent
+   explore, and use the brief as the forum where its questions and its own ideas meet your
+   decisions: accepted, declined or talked through. The surprises that matter are gone
+   before the build, and the agent is an extension of your creativity, working with you.
+2. **The builder is the worst judge of its own work.** So box it, let other agents at it,
+   and judge what comes back from evidence.
+
+The first idea is the record, the first wall of the box; the second is the other three: the
+gate, the reviews and evidence. The retro is the arrow round the box: when a check misses
+something, change the check (C20).
 
 ## 3. What the learner can do afterwards
 
-After the course a learner can set up a piece of agent work so that it is:
+The course teaches the learner's seat, not the agent's (C18). After it a learner can:
 
-1. **written down**: the agent asked, they answered, the decisions are on the record;
-2. **defined as done**: each piece has acceptance a reviewer can see, in a demo script;
-3. **boxed**: the builder has its own working area and a gate of tests and checks that must
-   be green before it can say done;
-4. **checked by other agents**: simplified, reviewed and adversarially reviewed, and they can
-   say which mistake each layer catches;
-5. **judged from evidence**: they can decide from a pull request's door, undo and recorded
-   walkthrough whether to accept it, without reading the diff;
-6. **improved by rounds**: they expect a second round, and when a check misses something
-   they change the check.
+1. **describe what they want loosely and answer the brief**: the agent explores, asks and
+   brings its own ideas, and the decisions go on the record;
+2. **read the plan and say go**, or ask for what is missing first;
+3. **wait**, while the agents build inside the box and review each other's work;
+4. **judge what comes back from its evidence**: the pull request's first lines and its
+   recorded walkthrough, without reading the code;
+5. **go round again**, expecting a second round, and changing the check when one misses;
+6. **tell the agent how they like to work**, so that it becomes a skill the agent follows
+   every time.
 
-Each module's own objective is on its page.
+The four walls are what make that seat safe to sit in: the record holds what they
+decided, the gate and the reviews hold the builders while they are away, and evidence is
+what they judge from. The agents' own work (writing the plan, boxing a builder, reviewing,
+settling a clash) is shown as a story; no screen asks the learner to do it. Each module's
+own objective is on its page.
 
 ## 4. The worked example
 
@@ -55,38 +72,38 @@ One request runs through the whole course. A client's food-hygiene course needs 
 (top, middle, bottom, salad drawer), gets told why when a drop is wrong, and sees a score.
 The authoring tool's drag-and-drop cannot do shelves with rules and feedback, so it would be
 built in code. The course puts the learner in the seat of the person asking an agent to build
-it, and the example grows module by module: the vague ask (00), the brief and its decisions
-(01), the epic and its beads (02), the box around the builder (03), the reviews (04), the pull
-request (05), the second round and the check that missed (06), and a fresh request to do it
-all again (07).
+it, and the example grows through five modules: the one-line ask and the hand-holder's page,
+each going wrong its own way (00); the brief, its decisions and the agent's own idea (01);
+what happens while you are away: the plan, the box round each builder, and the reviews (02);
+the pull request, its walkthrough and the two fridges side by side (03); and the client's
+second round, the check that missed, and making your own process a skill (04).
 
 The fridge rules are illustrative and are the designer's to check; the course's claim is
-about agents, not food hygiene. Items and shelves are in `modules/01-write-it-down.md`
-(decision D2 of the fake brief).
+about agents, not food hygiene. The items and shelves are in `content/fridge/accepted.yaml`.
 
 ## 5. The shape of a module
 
-Eight modules, five to nine minutes each, about fifty minutes in all; a learner can leave
-after any module and come back. Every module has the same five parts, so the shape itself
-teaches:
+Five modules, five to eight minutes each, about thirty minutes in all (C21); a learner can
+leave after any module and come back. Every module has the same five parts, so the shape
+itself teaches:
 
-1. **Something goes wrong.** A short scene where an agent without this wall does what agents
-   do: guesses, over-builds, wanders, marks its own homework.
-2. **The practice.** What the workflow does instead, in plain words, with the real name of the
-   thing (brief, bead, epic, gate, pull request, retro) introduced once and kept.
-3. **Try it.** The learner does it on the fake agent (§6) or on the example's artefacts.
+1. **A scene from the job.** What happens when the wall is missing: an agent guesses,
+   over-builds, wanders, marks its own homework.
+2. **The idea.** What the workflow does instead, in plain words, with the real name of the
+   thing (brief, epic, gate, pull request, retro, skill) introduced once and kept.
+3. **One interaction from the learner's seat.** The learner does what they would do in the
+   workflow (answer the brief, say go or ask, merge or send back, decide what to do with a
+   process), on the fake agent (§6) or on the example's artefacts (C18).
 4. **Check.** Two scenario questions with feedback on every option, right or wrong.
-5. **Takeaway.** One card, and the box diagram gains its wall.
+5. **Takeaway.** One card, and the box diagram with the walls gained so far.
 
-The box diagram is the course's through-line: an open box in module 00, a wall added in each
-of 01 to 05 (the record, done, the gate, other agents, evidence), and the retro drawn as the
-arrow that goes round it in 06. Module 07 shows the whole thing and asks the learner to
-build it for a new request.
+The box diagram is the course's through-line (C20): a box with four sides, open in module
+00; the record goes up in 01; the gate and the reviews both in 02, because the learner is
+away for both; evidence in 03; and in 04 the retro is drawn as the arrow that goes round it.
+Module 04's takeaway is also the course's end: the box with its ring, then the end copy.
 
-Module 07 is the exception to the five parts: it has no Check, its scored order of the loop
-and its walls take that place, and its end screen is its takeaway (plan §6). The scenario
-(C16) and the home page come before module 00 and belong to the course, not to any module,
-so module 00 starts at "The request" (plan §6).
+The scenario (C16) and the home page come before module 00 and belong to the course, not to
+any module, so module 00 starts at "The request" (plan §6).
 
 ## 6. The fake agent
 
@@ -100,43 +117,49 @@ ones do: confident, helpful, fast, and happy to fill a gap with a guess.
 
 ## 7. Assessment and completion
 
-- Every check question and capstone item gives feedback on the option chosen, so the checks
-  teach as well as measure.
+- Every check question gives feedback on the option chosen, so the checks teach as well as
+  measure.
 - A module is complete when its takeaway is reached. Next stays disabled on a scored screen
   until it is answered, so a learner reaches the takeaway only with every check done;
-  unscored interactions can be skipped. The course is complete when all eight modules are.
-- The course reports a score out of 28 points: the two checks in each of modules 00 to 06
-  (14), and the capstone's order of the loop (8) and its walls (6). Module 07 has no checks;
-  the capstone is its scored part. The scaled score is the points over 28, and when an item
-  is answered again the latest answer counts. There is no pass mark in round one: the point
-  is the practice, and a learner who gets a check wrong has read why. The brief kept it so
-  (D11, D19); "passed" is added only if the LMS turns out to need it (plan §5).
+  unscored interactions can be skipped. The course is complete when all five modules are.
+- The score is the ten checks: two in each of modules 00 to 04, one point each (C21). The
+  scaled score is the points over 10, and when a check is answered again the latest answer
+  counts. There is no order or match screen, and no pass mark: the point is the practice,
+  and a learner who gets a check wrong has read why. The brief kept it so (D11, D19);
+  "passed" is added only if the LMS turns out to need it (plan §5).
 - Every interaction is operable by keyboard and announced to a screen reader (WCAG 2.2 AA).
-  The course teaches that in 02 and 03, so it has to do it.
+  The plan in module 02 asks for exactly that and module 03 judges it, so the course has to
+  do it.
 
 ## 8. What the course sends to the LMS
 
 xAPI statements, as the brief settled them (D19; the full rules in plan §6): initialized
-when the course launches; completed on each module at its takeaway; answered on every Check
-press of a scored screen, with the response and whether it was right; interacted on each
-option pick on an unscored screen, so a designer can see where learners wander; completed on
-each fridge play, with its score; and completed on the course with the scaled score, the
-points out of 28. Nothing else leaves the course.
+when the course launches; completed on each of the five modules at its takeaway; answered
+on every Check press of a scored screen, with the response and whether it was right;
+interacted on each option pick on an unscored screen, so a designer can see where learners
+wander; completed on each fridge play, with its score; and completed on the course with the
+scaled score, the points out of 10. Nothing else leaves the course.
 
-## 9. Decisions (made by the agent for Ross, 2026-10-15)
+## 9. Decisions
+
+C1–C17 were made by the agent for Ross on 2026-10-15. C18–C24 come from Ross's review of
+both builds on 2026-10-19 (log `docs/conversations/2026-10-19-four-walls-not-five.md`, epic
+`agent-course-bsg`); where one replaces an earlier decision, both say so.
 
 - **C1 Audience.** LXDs and anyone interested; light technical background assumed; no code
   read or written. Reason: Ross, this session.
 - **C2 One message.** Agents review better than they build; box the builder and have agents
   check agents. Reason: Ross's emphasis, this session; it is the thesis of the whole workflow.
+  (Replaced by C19's two ideas, 2026-10-19.)
 - **C3 Outcome.** §3. Reason: a course needs a behaviour to aim at, and the six walls are the
-  behaviour.
+  behaviour. (Replaced by C18: §3 is now the learner's seat, 2026-10-19.)
 - **C4 Structure.** Eight modules following the loop, about fifty minutes, each standalone.
   Reason: the loop is the subject and the order is the argument; standalone modules suit a
-  self-paced LMS.
+  self-paced LMS. (Replaced by C21's five modules, 2026-10-19.)
 - **C5 Module shape.** Wrong, practice, try, check, takeaway; the box gains a wall each time.
   Reason: "what works and what doesn't" is the brief, so every module shows the doesn't
-  first; one repeated shape is easier to build, review and learn from.
+  first; one repeated shape is easier to build, review and learn from. (The try is now one
+  interaction from the learner's seat, C18, and a module may add two walls, C20.)
 - **C6 Worked example.** The fridge activity, a bespoke interaction for a client's course
   that the authoring tool cannot do. Reason: it is what the bespoke team does and what Ross
   wants designers to see is possible; designers know the domain; the rules are checkable, so
@@ -148,10 +171,12 @@ points out of 28. Nothing else leaves the course.
   one real run's numbers from the presentation repo, which is public; module 06 tells the
   story of the check that missed, without the colleague's or the repo's name. Reason: Ross
   said the real record is not needed; one real card makes the thesis credible; the story is
-  the best reason for retros there is.
+  the best reason for retros there is. (Since C21 the numbers are in module 02 and the story
+  in module 04.)
 - **C9 Vocabulary.** The workflow's own names, each introduced in plain words first, with a
   glossary. Reason: it is Ross's workflow and the bespoke team will meet these words; plain
-  words first keep the designers in.
+  words first keep the designers in. (C22 keeps the names the learner meets and drops the
+  agents' own.)
 - **C10 Voice.** Second person throughout; Ross named as the author on the opening screen,
   with his thesis in his words there and as an occasional quote card. Reason: the course is
   one colleague's workflow, and the attribution is honest and persuasive.
@@ -182,7 +207,67 @@ points out of 28. Nothing else leaves the course.
   because the course must be, and the one-shot says so. It is built by the workflow as part
   of the course, so the course carries its own proof that a bespoke interaction comes out of
   it. Reason: Ross, 2026-10-15: seeing the two next to each other is the payoff, and it is
-  what the LXDs are meant to see is possible.
+  what the LXDs are meant to see is possible. (Since C21 the two fridges are in module 03.)
+- **C18 The learner's seat.** The course teaches what the learner does with the workflow:
+  describe what you want loosely and answer the brief; read the plan and say go; wait; judge
+  what comes back from its evidence; go round again; and tell the agent how you like to
+  work, so it becomes a skill. No screen asks the learner to do an agent's job (write
+  acceptance, box a builder, play the skeptic, order the loop): the agents' work is shown as
+  a story. Replaces C3's six outcomes. Reason: the audience never writes a bead, and walking
+  them through the workflow as if they were one of the agents is absurd (Ross).
+- **C19 Two ideas.** First, how you ask: the hand-holder's page of detail gets exactly that,
+  the designer's mistakes built in and no suggestion; "go and do it" gets surprises; the
+  middle is to describe it loosely, let the agent explore, and use the brief as the forum
+  where its questions and its own ideas meet your decisions, accepted, declined or talked
+  through, so the surprises that matter are gone before the build and the agent is an
+  extension of your creativity, working with you. Second, the builder is the worst judge of
+  its own work: box it, let other agents at it, judge from evidence. The first is the record
+  wall; the second the other three. Replaces C2's one message. Reason: Ross, 2026-10-19: the
+  brief is where you and the agent are both creative, and that is half of what the course
+  is for.
+- **C20 Four walls and the arrow.** The record (01), the gate and the reviews (both gained
+  in 02), evidence (03), and the retro's ring (04). "Done" is not a wall: the plan with its
+  acceptance and demo script is the orchestrator's work, shown in 02 and judged against in
+  03. The box is labelled "01 the record", "02 the gate", "02 the reviews" and "03
+  evidence", and its ring "the retro: round again, change the check"; it is drawn with four
+  sides, top first and clockwise, and its text alternative counts the walls. A module may
+  add two walls. Replaces the five walls of C5 and §5. Reason: Ross never writes a
+  definition of done, and a five-walled box drew as a pentagon.
+- **C21 Five modules.** About thirty minutes: 00 "What works and what doesn't" (5 minutes,
+  no wall), 01 "The brief" (7, the record), 02 "While you're away" (8, the gate and the
+  reviews), 03 "What comes back" (8, evidence), 04 "Round again, and make it yours" (7, the
+  ring). No module adds the whole box at once; module files 05, 06 and 07 go. The home
+  page's meta reads "Five modules · about 30 minutes", the scenario's note begins "Five
+  short modules, about 30 minutes.", and the scenario's second line no longer says "decide
+  what done means": it reads answer its questions, say go to its plan, judge what comes
+  back. The score is the ten checks, two per module, and the scaled score is the points
+  over 10; there is no order or match screen. Replaces C4's eight modules. Reason: too many
+  modules for what is taught; the score follows the content, as round one's rule says.
+- **C22 No code on any screen.** No code, file paths, line numbers, gate output, bead
+  cards, or read-first and touches lines anywhere; evidence is described in words ("the
+  drop code, where it says to ignore a drop while a message is showing"). The copy says
+  "piece" for a bead and names "epic" once, as the plan's name; "orchestrator" is introduced once, in 02, as the
+  agent that runs the job and never writes code. Reason: the skeptic page and the gate
+  output were pages for programmers (Ross).
+- **C23 True to the skills.** Every claim the course makes about the workflow is what the
+  skills do. A builder's gate is lint, types and the unit tests, and the browser run is the
+  full gate at the end of the run. A builder that edits outside its files is sent back by
+  the orchestrator reading its report and the change against the piece at hand-back, never
+  refused at the keystroke, so no copy says "rejected". A clash where two builders' work is
+  joined is a merge conflict another agent settles, not an overwrite. The rule that a
+  skeptic must show what makes a failure impossible came from a refuted race, so 04's story
+  does not list it. The one-shot runs fifteen seconds everywhere, 03's table included. The
+  orchestrator, not the demo script, catches a thing built that nobody asked for. The
+  closing copy says "a recorded walkthrough someone judged", not a pull request. Reason:
+  the course claimed walls the workflow does not have (the log's review against the skills
+  and agents).
+- **C24 content/ is the source of the copy.** `docs/course/modules/*.md` are round one's
+  draft, kept for the record and not updated; `content/README.md` and this file say so.
+  Copy the decisions do not fix is the worker's, in the course's register (second person,
+  plain words, the existing YAML as the pattern); a product choice the decisions leave open
+  is the orchestrator's, recorded as chosen by the orchestrator. Replaces round one's rule
+  that the storyboard is the source (plan §6). Reason: Ross reviews the running course, not
+  markdown, and two copies drift.
 
 ## 10. Settled by the brief
 
@@ -207,13 +292,14 @@ in plan §6.
 
 | # | Module | Wall | Minutes |
 |---|---|---|---|
-| 00 | [What works and what doesn't](modules/00-what-works-and-what-doesnt.md) | the open box | 5 |
-| 01 | [Write it down](modules/01-write-it-down.md) | the record | 7 |
-| 02 | [Define done before you start](modules/02-define-done-first.md) | done | 7 |
-| 03 | [The box](modules/03-the-box.md) | the gate | 6 |
-| 04 | [Agents checking agents](modules/04-agents-checking-agents.md) | other agents | 9 |
-| 05 | [Judging what comes back](modules/05-judging-what-comes-back.md) | evidence | 8 |
-| 06 | [Round again](modules/06-round-again.md) | the arrow round the box | 6 |
-| 07 | [Put it together](modules/07-put-it-together.md) | all of them | 6 |
+| 00 | [What works and what doesn't](../../content/modules/00.yaml) | the open box | 5 |
+| 01 | [The brief](../../content/modules/01.yaml) | the record | 7 |
+| 02 | [While you're away](../../content/modules/02.yaml) | the gate and the reviews | 8 |
+| 03 | [What comes back](../../content/modules/03.yaml) | evidence | 8 |
+| 04 | [Round again, and make it yours](../../content/modules/04.yaml) | the arrow round the box | 7 |
+
+`content/` is now the source of the copy: `content/course.yaml` lists the modules and
+`content/modules/00.yaml` to `04.yaml` hold their screens (C24). `docs/course/modules/` is
+round one's draft of eight modules, kept for the record and not updated.
 
 Glossary: [glossary.md](glossary.md).
