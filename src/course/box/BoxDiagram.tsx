@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { BOX_WALLS, type BoxWall, type Course } from '../../content/index.ts';
+import { Copy } from '../../screens/scene/Copy.tsx';
 import './BoxDiagram.css';
 
 export interface BoxDiagramProps {
@@ -93,7 +94,7 @@ export function BoxDiagram(props: BoxDiagramProps) {
           );
         })}
       </svg>
-      {caption !== undefined && <figcaption className="box-caption">{caption}</figcaption>}
+      {caption !== undefined && <figcaption className="box-caption"><Copy text={caption} /></figcaption>}
     </figure>
   );
 }
