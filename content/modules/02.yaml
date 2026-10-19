@@ -14,10 +14,11 @@ screens:
           While you are away, I hand each piece of the plan to a builder, an agent of its own, up
           to three at a time. Each works in a box: its own copy of the project, its piece, your
           decisions and a finish line. When a builder hands its piece back, I read its report and
-          its change against the piece, and send back anything that does not match. When every
-          piece is in, I run the whole thing in a browser, send in the reviewers, have what they
-          find fixed in the same box, and record a walkthrough for you to judge. I never write any
-          of it myself.
+          its change against the piece, and send back anything that does not match. When the
+          building pieces are in, I run the whole thing in a browser and send in three layers of
+          reviewers: the first two fix what they find as they read, and what the third finds goes
+          back to builders, through the same box. Last comes the walkthrough, recorded for you to
+          judge. I never write any of it myself.
       - type: aside
         term: orchestrator
         text: >-
@@ -38,9 +39,10 @@ screens:
         items:
           - title: The shelves and the items.
             body: >-
-              Four shelves and eight items, each with its right shelf and its reason, from the
-              client's guide (D2). *A reviewer sees:* a check that every item has exactly one
-              right shelf and a reason, passing.
+              Four shelves, each with a short label of what goes there, and eight items, each
+              with its right shelf and its reason, from the client's guide (D2, D8). *A reviewer
+              sees:* a label on every shelf, and a check that every item has exactly one right
+              shelf and a reason, passing.
           - title: The fridge and dragging.
             body: >-
               Drag with the mouse or a finger; a right drop stays, a wrong drop goes back to the
@@ -64,7 +66,7 @@ screens:
         text: >-
           **The order:** the shelves and items first; then the fridge and dragging, which the next
           two build on; then the keyboard and the feedback at the same time, two builders at once,
-          because they change different files; the walkthrough last.
+          because they change different files; the walkthrough last, once the reviewers are done.
       - type: paragraph
         text: >-
           Before it runs, another agent reads the plan against the project and your decisions,
@@ -89,8 +91,8 @@ screens:
             go on the bottom shelf so they can't drip onto other food."
           - "Drag raw chicken to the bottom shelf: it stays."
           - >-
-            Place the other seven: the score screen reads "7 out of 8 right first time" and lists
-            raw chicken with its reason.
+            Place the rest: the score screen reads "7 out of 8 right first time" and lists raw
+            chicken with its reason.
           - "Press Try again: the tray is full and the score is cleared."
       - type: paragraph
         text: >-
@@ -172,7 +174,7 @@ screens:
       - type: paragraph
         text: >-
           The run through the whole thing in a browser is not in a builder's box. It comes at the
-          end, once every piece is in.
+          end, once the building pieces are in.
       - type: aside
         term: gate
         text: >-
@@ -244,8 +246,9 @@ screens:
     heading: The reviewers
     nav: the reviewers
     intro: >-
-      When every piece is in and the full checks are green, I send in other agents to read the
-      work. Three layers, in the order they run.
+      When the building pieces are in and the full checks are green, I send in other agents to
+      read the work. Three layers, in the order they run; the walkthrough waits until they are
+      done.
     blocks:
       - type: cards
         numbered: true
@@ -270,9 +273,10 @@ screens:
       - type: paragraph
         heading: The skeptic's rule
         text: >-
-          A finding dies only when the skeptics show what makes it impossible. "Unlikely" is not
-          that, and nor is "a test exists" or "the framework handles it". A skeptic that cannot
-          tell may say uncertain, and uncertain keeps the finding alive.
+          A finding dies only when both skeptics show what makes it impossible; one doubting is
+          not enough. "Unlikely" is not showing, and nor is "a test exists" or "the framework
+          handles it". A skeptic that cannot tell may say uncertain, and uncertain keeps the
+          finding alive.
       - type: table
         heading: One real run of this workflow, on Ross's presentation project
         header: [Pieces built, Reviewers in the adversarial review, Findings, Fixed]
@@ -327,8 +331,9 @@ screens:
       - label: Uncertain, and the finding stays alive.
         right: true
         feedback: >-
-          Yes. A finding dies only when someone shows what makes it impossible. Until then it stays
-          alive, and goes to whoever fixes it, with the reviewer's note.
+          Yes. A finding dies only when both skeptics show what makes it impossible; one doubting
+          is not enough. Until then it stays alive, and goes to whoever fixes it, with the
+          reviewer's note.
       - label: Confirmed, to be safe.
         right: false
         feedback: >-
