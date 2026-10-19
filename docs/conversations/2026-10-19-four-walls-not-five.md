@@ -374,3 +374,18 @@ rest. Ross was reviewing the two builds screen by screen and stopped on module
   the course stays true to them (C23).
 - The lint found nothing a worker would hit. Next: /epic-review
   agent-course-bsg, then /orchestrate agent-course-bsg.
+
+## Ross: review the epic in a subagent, and merge everything into main
+
+- Can you review that epic, in a subagent please? And you can merge
+  everything into main now, before we get started on the orchestration.
+
+## Agent: the review running, rounds one and two merged
+
+- The epic review is running in one subagent: the lint, the finders through
+  the four lenses, the skeptics, fixes on the beads, and the questions for
+  you with a recommendation each.
+- Merged the round-two branch, which carries round one, into main as
+  3a83f84. The only conflict was the beads export, which I regenerated from
+  the database. Main now holds the whole course; the epic's run mode is
+  updated to say base is main.
