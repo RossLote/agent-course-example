@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { heading, HOME_HEADING, keepLocal } from '../course/play.ts';
+import { dashedWalls, heading, HOME_HEADING, keepLocal } from '../course/play.ts';
 
 const SCENARIO_HEADING = "A client wants something the authoring tool can't do. You have an AI agent. You've never used one for this.";
 
@@ -24,10 +24,10 @@ test('the app opens on the scenario, takes the job to the home page, and fetches
   expect(new URL(page.url()).search).toBe('?registration=smoke');
   expect(new URL(page.url()).hash).toBe('#/home');
   const cards = page.getByRole('region', { name: 'The modules' }).getByRole('link');
-  await expect(cards).toHaveCount(8);
+  await expect(cards).toHaveCount(5);
   // Each card's status is a pill in its top row, beside the number.
-  await expect(cards.locator('.module-card-head .module-card-status')).toHaveText(Array.from({ length: 8 }, () => 'Not started'));
-  await expect(page.locator('[data-wall][data-state="dashed"]')).toHaveCount(5);
+  await expect(cards.locator('.module-card-head .module-card-status')).toHaveText(Array.from({ length: 5 }, () => 'Not started'));
+  await expect(dashedWalls(page)).toHaveCount(4);
 
   expect(external).toEqual([]);
 });

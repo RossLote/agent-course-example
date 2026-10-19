@@ -59,7 +59,7 @@ test('a launch sends every statement and State write to the record store with th
   await page.getByRole('link', { name: 'Take the job' }).click();
   await expect(heading(page)).toHaveText(HOME_HEADING);
   await playModule00(page);
-  await expect(page.getByRole('banner')).toContainText('1 of 8 done');
+  await expect(page.getByRole('banner')).toContainText('1 of 5 done');
 
   const isStatements = (r: Recorded) => r.url.pathname.endsWith('/statements');
   const isStateWrite = (r: Recorded) => r.url.pathname.endsWith('/activities/state') && r.method !== 'GET';
@@ -69,9 +69,8 @@ test('a launch sends every statement and State write to the record store with th
   // The queue sends one request at a time: wait for the last statement and the last State write.
   const sent = [
     `${VERB}initialized ${LAUNCH_ACTIVITY_ID}`,
-    ...Array.from({ length: 5 }, () => `${VERB}interacted ${COURSE_ID}modules/00/interactions/what-went-wrong`),
+    ...Array.from({ length: 3 }, () => `${VERB}interacted ${COURSE_ID}modules/00/interactions/what-went-wrong`),
     `${VERB}completed ${COURSE_ID}fridge/one-shot`,
-    `${VERB}answered ${COURSE_ID}modules/00/checks/1`,
     `${VERB}answered ${COURSE_ID}modules/00/checks/1`,
     `${VERB}answered ${COURSE_ID}modules/00/checks/2`,
     `${VERB}completed ${COURSE_ID}modules/00`,
@@ -117,10 +116,10 @@ test('a launch sends every statement and State write to the record store with th
     savedAt: expect.any(String),
     modules: {
       '00': {
-        reached: 7,
+        reached: 8,
         completed: true,
         answers: {
-          'what-went-wrong': { answer: { picked: [0, 1, 2, 3, 4] } },
+          'what-went-wrong': { answer: { picked: [0, 1, 2] } },
           'one-shot': expect.objectContaining({ score: { raw: 50, max: 1400 } }),
           'check-1': { answer: { picked: [1] }, score: { raw: 1, max: 1 }, right: true },
           'check-2': { answer: { picked: [1] }, score: { raw: 1, max: 1 }, right: true },
@@ -158,7 +157,7 @@ test('a State read that fails holds every State write back until a later read an
   await page.getByRole('link', { name: 'Take the job' }).click();
   await expect(heading(page)).toHaveText(HOME_HEADING);
   await playModule00(page);
-  await expect(page.getByRole('banner')).toContainText('1 of 8 done');
+  await expect(page.getByRole('banner')).toContainText('1 of 5 done');
   // The read is tried again at most once every 30 s, before a write. Jump the clock past it
   // rather than run through it, so the read's own 4 s wait starts afresh and its answer lands.
   await page.clock.fastForward(30_000);

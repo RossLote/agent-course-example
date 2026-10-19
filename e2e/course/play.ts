@@ -4,13 +4,13 @@ import { VERDICTS, type Verdict } from '../../src/screens/choose/labels.ts';
 
 // The e2e specs' shared moves: the course id as course.yaml gives it, the home page's heading,
 // the guard that keeps every request on the local server, the frame's Next, a pointer drag, and
-// module 00 played as the ACCEPTANCE BAR's steps 3 and 4 play it (the launch spec plays it too).
+// module 00 played as the ACCEPTANCE BAR's step 2 plays it (the launch spec plays it too).
 
 /** course.yaml's id: the root of every module, check, interaction and fridge id (D24). */
 export const COURSE_ID = readContent().id;
 
 /** The home page's h1, which module 00's takeaway goes on to. */
-export const HOME_HEADING = 'Agents are better at reviewing than building.';
+export const HOME_HEADING = 'Talk it through before it builds. Then never let the builder judge its own work.';
 
 /**
  * Aborts and records every request that would leave `origin`. Register it before any narrower
@@ -111,12 +111,16 @@ export async function verdicts(page: Page, expected: readonly Verdict[], summary
 /** The takeaway's box: the walls drawn solid. */
 export const solidWalls = (page: Page) => page.locator('[data-wall][data-state="solid"]');
 
+/** The box's walls drawn dashed: the open box on the home page, and module 00's takeaway. */
+export const dashedWalls = (page: Page) => page.locator('[data-wall][data-state="dashed"]');
+
 /**
- * Module 00 from the home page to its takeaway and back home, as the bar's steps 3 and 4 play
- * it: the chat, all five ticked, the one-shot (raw chicken on the lower middle stays, cheese
- * on the bottom returns, then the clock runs the fifteen seconds out through the last five's
- * warning), check 1 wrong then right, check 2 right. The page's clock must be installed before
- * it loaded; it is paused for the countdown and runs on again after it.
+ * Module 00 from the home page to its takeaway and back home, as the bar's step 2 plays it: the
+ * chat, the hand-holder's page and what came back, the three right options ticked, the one-shot
+ * (its timer at 0:15; raw chicken on the lower middle stays, cheese on the bottom returns, then
+ * the clock runs the fifteen seconds out through the last five's warning), both checks right.
+ * The page's clock must be installed before it loaded; it is paused for the countdown and runs
+ * on again after it.
  */
 export async function playModule00(page: Page): Promise<void> {
   await page.getByRole('region', { name: 'The modules' }).getByRole('link', { name: /^00 · / }).click();
@@ -127,21 +131,26 @@ export async function playModule00(page: Page): Promise<void> {
   await expect(chat).toContainText('Build a drag-and-drop fridge activity for the food hygiene course.');
   await expect(chat).toContainText("Done! I've built a fridge activity.");
 
+  // The page-long ask, and the agent's reply: exactly the page, mistakes and all, and no suggestion.
+  await next(page, 'Hold its hand');
+  const main = page.getByRole('main');
+  await expect(main.locator('.block-list', { hasText: 'Your page' }).locator('.block-list-item')).toHaveCount(7);
+  const reply = main.locator('.block-quote', { hasText: 'The agent' });
+  await expect(reply).toContainText('Wrong, try again');
+  await expect(reply).toContainText('Cooked chicken goes on the bottom shelf with the raw chicken');
+  await expect(reply).not.toContainText('?');
+  await expect(reply).not.toContainText(/want me to|suggest/i);
+
   await next(page, 'Tick everything that went wrong here.');
-  await tick(page, [
-    'It built things nobody asked for',
-    'It invented the rules.',
-    'It checked its own work.',
-    'It should have said no.',
-    'It was too slow.',
-  ]);
-  await verdicts(page, ['right-tick', 'right-tick', 'right-tick', 'wrong-tick', 'wrong-tick'], "3 of 5 right: 2 ticks shouldn't be there.");
+  await tick(page, ['It built things nobody asked for', 'It invented the rules.', 'It checked its own work.']);
+  await verdicts(page, ['right-tick', 'right-tick', 'right-tick', 'right-leave', 'right-leave'], '5 of 5 right.');
   await expect(page.locator('.choice-feedback')).toHaveCount(5);
-  await expect(page.getByText('What just happened')).toBeVisible();
-  await expect(page.locator('.block-card')).toHaveCount(4);
+  const happened = main.locator('.block-cards', { hasText: 'What just happened' });
+  await expect(happened).toBeVisible();
+  await expect(happened.locator('.block-card')).toHaveCount(5);
 
   await next(page, 'Try what it built');
-  await expect(page.getByRole('main')).toContainText('Optional, fifteen seconds.');
+  await expect(main).toContainText('Optional, fifteen seconds.');
   const oneShot = fridge(page, 'Module 00: "Build me a fridge activity"');
   await expect(oneShot.timer).toHaveText('0:15');
   // No switching the timer off.
@@ -170,17 +179,13 @@ export async function playModule00(page: Page): Promise<void> {
   await page.clock.resume();
 
   await next(page, 'Your agent built a feature you never mentioned. What most likely happened?');
-  const misread = await choose(page, 'It misread your message.');
-  await expect(misread).toHaveAttribute('data-state', 'wrong');
-  await expect(misread).toContainText('Not usually. It read what you wrote');
-  await page.getByRole('button', { name: 'Try again' }).click();
-  const gap = await choose(page, 'It filled a gap in your ask with a guess.');
-  await expect(gap).toHaveAttribute('data-state', 'right');
+  await expect(await choose(page, 'It filled a gap in your ask with a guess.')).toHaveAttribute('data-state', 'right');
 
   await next(page, 'The agent says "I tested it myself and it all works." What is that worth?');
   await expect(await choose(page, 'Something, but not a sign-off')).toHaveAttribute('data-state', 'right');
 
   await next(page, /^The builder is the worst judge of its own work\./);
-  await expect(page.locator('[data-wall][data-state="dashed"]')).toHaveCount(5);
+  await expect(dashedWalls(page)).toHaveCount(4);
+  await expect(solidWalls(page)).toHaveCount(0);
   await next(page, HOME_HEADING);
 }
