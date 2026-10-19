@@ -37,4 +37,13 @@ describe('BoxDiagram', () => {
     const turns = [...container.querySelectorAll('[data-wall] rect')].map((r) => r.getAttribute('transform'));
     expect(turns).toEqual(['rotate(0)', 'rotate(90)', 'rotate(180)', 'rotate(270)']);
   });
+
+  it('renders **bold** and *italic* in the caption as strong and em, with no asterisks', () => {
+    render(<BoxDiagram labels={labels} walls={[]} ring={false} caption="One **strong** wall and an *open* gate." />);
+    const caption = document.querySelector('figcaption.box-caption');
+    expect(caption?.querySelector('strong')?.textContent).toBe('strong');
+    expect(caption?.querySelector('em')?.textContent).toBe('open');
+    expect(caption?.textContent).toBe('One strong wall and an open gate.');
+    expect(caption?.textContent).not.toContain('*');
+  });
 });
