@@ -62,3 +62,15 @@ is the agent working alone, so the log is short.
   ran 39 seconds, too fast to follow, so it was recorded again with a pause
   on every screen: 4 minutes 43. I sent it to you; there is no remote, so no
   pull request. The branch to merge is agent-course-bsg/round-three.
+
+## Ross: two walls with the same number
+
+- In the home page picture, the box on the right has two walls both numbered 02.
+  Quickly fix that.
+
+## Agent: walls numbered one to four
+
+- The numbers were the module that raises each wall, and module 02 raises two. I
+  numbered the walls in the order they go up instead: 01 the record, 02 the gate,
+  03 the reviews, 04 evidence. Module 03's comparison table now cites 04 evidence,
+  and C20 says why. I made it on the round-three branch, so it merges with the rest.

@@ -15,8 +15,8 @@ box:
   walls:
     record: 01 the record
     gate: 02 the gate
-    agents: 02 the reviews
-    evidence: 03 evidence
+    agents: 03 the reviews
+    evidence: 04 evidence
   ring: "the retro: round again, change the check"
 
 scenario:

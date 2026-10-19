@@ -236,7 +236,7 @@ screens:
           right: >-
             Enter, arrows, Enter; the reader hears item, shelf and result, and the walkthrough
             was sent back once to get the shelf in.
-          wall: 01 the record (D5) · 03 evidence
+          wall: 01 the record (D5) · 04 evidence
 
   - type: choose
     slug: check-1

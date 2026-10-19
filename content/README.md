@@ -86,7 +86,7 @@ description: A course on working with AI agents, …   # written into tincan.xml
 
 box:                         # the labels the box is drawn with
   centre: the builder
-  walls: { record: 01 the record, gate: 02 the gate, agents: 02 the reviews, evidence: 03 evidence }
+  walls: { record: 01 the record, gate: 02 the gate, agents: 03 the reviews, evidence: 04 evidence }
   ring: "the retro: round again, change the check"
 
 scenario:                    # the first page (D16)

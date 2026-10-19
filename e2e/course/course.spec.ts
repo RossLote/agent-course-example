@@ -114,7 +114,7 @@ test('the whole course in preview sends every statement, in order, and comes bac
   await expect(banner).toContainText('Five modules · about 30 minutes');
   await expect(page.getByRole('blockquote')).toContainText('have agents look at what the agents have done');
   await expect(dashedWalls(page)).toHaveCount(4);
-  await expect(page.locator('[data-wall] text')).toHaveText(['01 the record', '02 the gate', '02 the reviews', '03 evidence']);
+  await expect(page.locator('[data-wall] text')).toHaveText(['01 the record', '02 the gate', '03 the reviews', '04 evidence']);
   const cards = page.getByRole('region', { name: 'The modules' }).getByRole('link');
   const pills = cards.locator('.module-card-status');
   await expect(cards).toHaveCount(5);

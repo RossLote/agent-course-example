@@ -228,8 +228,9 @@ both builds on 2026-10-19 (log `docs/conversations/2026-10-19-four-walls-not-fiv
 - **C20 Four walls and the arrow.** The record (01), the gate and the reviews (both gained
   in 02), evidence (03), and the retro's ring (04). "Done" is not a wall: the plan with its
   acceptance and demo script is the orchestrator's work, shown in 02 and judged against in
-  03. The box is labelled "01 the record", "02 the gate", "02 the reviews" and "03
-  evidence", and its ring "the retro: round again, change the check"; it is drawn with four
+  03. The walls are numbered in the order they go up, not by module, so no two share a
+  number: "01 the record", "02 the gate", "03 the reviews" and "04 evidence" (Ross,
+  2026-10-19: two walls both read 02), and its ring "the retro: round again, change the check"; it is drawn with four
   sides, top first and clockwise, and its text alternative counts the walls. A module may
   add two walls. Replaces the five walls of C5 and §5. Reason: Ross never writes a
   definition of done, and a five-walled box drew as a pentagon.
