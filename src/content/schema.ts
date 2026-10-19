@@ -411,7 +411,7 @@ export type ModuleFile = z.infer<typeof moduleFile>;
 
 export const fridgeFile = z
   .strictObject({
-    /** The panel's heading ("What you accepted"). */
+    /** The panel's heading ("Module 03: what you accepted"). */
     title: text,
     /** The line under the panel. */
     caption: text,

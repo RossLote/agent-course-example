@@ -122,7 +122,7 @@ describe('the views', () => {
   });
 
   it('counts each stored raw between 0 and what its screen is worth now', () => {
-    const stored = (raw: number, max = 1): ProgressDoc => ({ version: 1, modules: { '00': { answers: { 'check-1': { score: { raw, max } }, 'check-2': { score: { raw: 1, max: 1 } } }, reached: 3, completed: false } } });
+    const stored = (raw: number, max = 1): ProgressDoc => ({ version: 2, modules: { '00': { answers: { 'check-1': { score: { raw, max } }, 'check-2': { score: { raw: 1, max: 1 } } }, reached: 3, completed: false } } });
     // A score saved when the screen was worth more counts no more than it is worth now.
     expect(courseScore(course, stored(6, 6))).toEqual({ raw: 2, max: 2 });
     expect(courseScore(course, stored(-3))).toEqual({ raw: 1, max: 2 });
@@ -211,6 +211,12 @@ describe('parseProgress', () => {
     expect(parseProgress(JSON.parse(JSON.stringify(saved)))).toEqual(saved);
   });
 
+  it("reads a version-1 document, saved against round two's modules under the same slugs, as none", () => {
+    const roundTwo = { version: 1, savedAt: '2026-10-15T10:00:00.000Z', modules: { '00': { answers: { 'check-1': { answer: { picked: [1] }, score: { raw: 1, max: 1 }, right: true } }, reached: 7, completed: true } } };
+    expect(parseProgress(roundTwo)).toBeNull();
+    expect(parseProgress({ ...roundTwo, version: 2 })).toEqual({ ...roundTwo, version: 2 });
+  });
+
   it('ignores a corrupt or foreign document', () => {
     const record = { answers: {}, reached: 1, completed: false };
     for (const value of [
@@ -219,15 +225,15 @@ describe('parseProgress', () => {
       [],
       {},
       { modules: {} },
-      { version: 2, modules: {} },
-      { version: 1, modules: [] },
-      { version: 1, modules: { '00': { ...record, reached: -1 } } },
-      { version: 1, modules: { '00': { ...record, reached: 1.5 } } },
-      { version: 1, modules: { '00': { answers: {}, reached: 1 } } },
-      { version: 1, modules: { '00': { ...record, answers: [] } } },
-      { version: 1, modules: { '00': { ...record, answers: { c: { score: { raw: '1', max: 1 } } } } } },
-      { version: 1, modules: { '00': { ...record, answers: { c: { right: 'yes' } } } } },
-      { version: 1, savedAt: 1, modules: {} },
+      { version: 3, modules: {} },
+      { version: 2, modules: [] },
+      { version: 2, modules: { '00': { ...record, reached: -1 } } },
+      { version: 2, modules: { '00': { ...record, reached: 1.5 } } },
+      { version: 2, modules: { '00': { answers: {}, reached: 1 } } },
+      { version: 2, modules: { '00': { ...record, answers: [] } } },
+      { version: 2, modules: { '00': { ...record, answers: { c: { score: { raw: '1', max: 1 } } } } } },
+      { version: 2, modules: { '00': { ...record, answers: { c: { right: 'yes' } } } } },
+      { version: 2, savedAt: 1, modules: {} },
     ]) {
       expect(parseProgress(value), JSON.stringify(value)).toBeNull();
     }
@@ -235,7 +241,7 @@ describe('parseProgress', () => {
 });
 
 describe('isNewer', () => {
-  const at = (savedAt?: string): ProgressDoc => ({ version: 1, ...(savedAt !== undefined && { savedAt }), modules: {} });
+  const at = (savedAt?: string): ProgressDoc => ({ version: 2, ...(savedAt !== undefined && { savedAt }), modules: {} });
 
   it('says a document saved later is newer, and a tie is not', () => {
     expect(isNewer(at('2026-10-15T10:00:01.000Z'), at('2026-10-15T10:00:00.000Z'))).toBe(true);

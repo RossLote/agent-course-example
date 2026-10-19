@@ -12,7 +12,7 @@ import { createProgressStore } from './store.ts';
 
 // A course played through a fresh store connected to a memory tracker. The events are built from
 // the screens the way the screens build them (src/screens/*/index.tsx). Most tests play an inline
-// course of four modules with a screen of every kind; the last plays the real course, whatever
+// course of four modules with a screen of every kind but chat; the last plays the real course, whatever
 // its modules hold, and builds what it expects from what it reads.
 
 /** A Check press on a choose: `answered` when scored, else `interacted` per pick, as ChooseScreen sends them. */
@@ -205,7 +205,7 @@ function short(s: Statement): string {
 beforeEach(() => localStorage.clear());
 
 describe('statements from the progress store', () => {
-  it('module 00 as the bar plays it: interacted on Check, answered per press, the fridge, completed on the module once', () => {
+  it("module 00 as round one's bar played it: interacted on Check, answered per press, the fridge, completed on the module once", () => {
     const l = learner();
     play00(l);
     expect(l.sent().map(short)).toEqual([

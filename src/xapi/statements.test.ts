@@ -15,8 +15,8 @@ import {
 } from './statements.ts';
 import { ACTIVITY_TYPES, VERBS } from './vocabulary.ts';
 
-// The builders run on course.yaml, so the ids are the D24 ids, and on an inline module 00 that
-// has a screen of every kind that sends a statement.
+// The builders run on course.yaml, so the ids are the D24 ids, and on an inline module 00 with
+// a scene, a chat, a check, an order, a match and a takeaway.
 const COURSE_ID = 'https://rosslote.github.io/agent-course/';
 const launch = sparkLaunch();
 

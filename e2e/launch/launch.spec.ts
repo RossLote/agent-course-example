@@ -112,7 +112,7 @@ test('a launch sends every statement and State write to the record store with th
     expect(url.searchParams.get('stateId')).toBe('progress');
   }
   expect(lastState()).toEqual({
-    version: 1,
+    version: 2,
     savedAt: expect.any(String),
     modules: {
       '00': {
