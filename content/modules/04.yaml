@@ -1,289 +1,221 @@
 slug: "04"
 screens:
   - type: scene
-    heading: The build was green
+    heading: The client tries it
     blocks:
-      - type: stats
-        heading: One real run of this workflow
-        items:
-          - value: 16
-            caption: pieces built, all green at the gate
-          - value: 16
-            caption: finders, one lens each
-          - value: 50
-            caption: findings
-          - value: 39
-            caption: fixed
-      - type: paragraph
-        text: A public project of Ross's, October 2026.
       - type: paragraph
         text: >-
-          Every one of those sixteen pieces passed its gate. The gate catches what a test can
-          describe. It does not catch three copies of the same function, a message that reads
-          wrongly, or a drop that is silently lost while another message is on screen. Those took
-          other agents, reading with a question in mind.
+          The fridge activity is live. The client's feedback: "Great. Could learners get a hint
+          after two wrong drops? And the salad drawer should take the eggs too." Neither is in
+          the brief. Nothing went wrong. This is round two.
       - type: quote
         text: >-
-          Agents are better at reviewing than building. Whenever you have agents do anything,
-          have agents look at what the agents have done.
+          The first round is not necessarily the one that hits. You merge it, and you go round
+          again. You may not know what you want until you see the first round.
         attribution: Ross
 
   - type: scene
-    heading: Three layers, three kinds of mistake
-    nav: three layers, three kinds of mistake
-    intro: In the order they run.
+    heading: Rounds
+    nav: rounds
     blocks:
       - type: cards
         numbered: true
         items:
-          - title: Simplify.
+          - title: Big things are not one-shot.
             body: >-
-              Agents over-build, and they write a new helper rather than find the one that
-              exists. Four reviewers read the whole change with one question each: *should this
-              reuse something? is it more complicated than it needs to be? does it waste work? is
-              it at the wrong level?* The fixes are applied and the gate run again. Any fix that
-              changes behaviour is reverted: this layer tidies, it does not decide.
-          - title: Review.
+              A small fix, yes. A piece of a course, no: a first round to see it, a second to get
+              it right. Expecting that is not failure; it is the plan.
+          - title: The first round's feedback shapes the second.
             body: >-
-              A plain pass for the obvious bugs: a typo in a shelf name, a message that never
-              shows, a case that was not handled. Its fixes are applied first so the next layer
-              is not spent on easy things.
-          - title: Adversarial review.
+              Round two starts with a brief, from what the client saw. The hint and the eggs
+              become decisions D9 and D10, a short plan, a run, a pull request. Same loop,
+              smaller.
+          - title: Each round leaves a record.
             body: >-
-              The hard look. It is built so that a real bug cannot be waved away:
-      - type: list
-        style: bullets
-        items:
-          - >-
-            **Find.** Several finders each read the work through one **lens** (is it correct;
-            what states can the screen be in; is it consistent with what already exists; what
-            would an ordinary user do). Each finding carries a concrete scenario in which it goes
-            wrong and the exact lines the finder read.
-          - >-
-            **Dedupe.** One agent reads only the list of findings, never the code, and says which
-            ones are the same bug, so each bug is verified once and fixed in every place.
-          - >-
-            **Verify.** Two **skeptics** per finding, independently. **Confirmed**: they read the
-            lines and the scenario happens. **Refuted**: only by citing the exact line that makes
-            the scenario impossible; a refutation without a line is recorded as uncertain.
-            **Uncertain**: a legitimate answer that keeps the finding alive at lower priority. If
-            the two disagree, the finding goes to the fixer with both views; there is no third
-            vote to kill it.
-          - >-
-            **Fix.** Every surviving finding becomes a piece of work and goes through the box.
-      - type: paragraph
-        text: >-
-          *Why so strict about refuting? An earlier version let skeptics refute whenever they were
-          unsure. The record showed it killed a real bug, which a second review raised again
-          later. A wrong refutation costs a bug in production; an uncertain costs a few minutes.*
-      - type: aside
-        term: lens
-        text: >-
-          one way of reading the work (correctness, the states a screen can be in, consistency
-          with what exists, what an ordinary caller would do, and so on). One finder, one lens.
-      - type: aside
-        term: skeptic
-        text: >-
-          the agent that verifies one finding: confirmed, refuted or uncertain. A refutation must
-          cite the exact line that makes the failure impossible; uncertain keeps the finding
-          alive.
+              The decisions, the pieces, the run's record, the pull request. The next brief starts
+              from them, not from memory.
 
   - type: scene
-    eyebrow: Try it
-    heading: Follow one finding
+    eyebrow: A true story
+    heading: The check that missed
     intro: >-
-      The build is green. The adversarial review starts. Follow one finding from the finder to
-      the fix, and take the skeptic's seat in the middle.
-    nav: follow one finding
+      Not every miss is the client's taste. Sometimes a wall has a gap. This happened, in Ross's
+      work, in October 2026.
+    nav: the check that missed
     blocks:
       - type: cards
         numbered: true
         items:
-          - title: The finder.
+          - title: Built twice.
             body: >-
-              *Lens: the states a screen can be in.* **Finding.** If the learner drops a second
-              item while a wrong-placement message is still on screen, the drop is ignored: the
-              item snaps back to the tray with no message. **Scenario:** drop raw chicken on the
-              top shelf (the message shows for 2.5 seconds); within that time drop cheese on the
-              top shelf; cheese returns to the tray and nothing explains why. **Lines read:** the
-              drop handler, 40 to 58; the message timer, 80 to 84.
-          - title: The deduper.
+              A feature was built twice, on purpose: once by hand by a colleague, once by this
+              workflow, with every agent told to ignore the other attempt. The question was
+              whether the workflow could get to a passable result on its own.
+          - title: A person caught it.
             body: >-
-              A finder with the *correctness* lens found the same thing in different words. The
-              deduper reads the list, never the code, and folds the two into one finding with
-              both locations. It will be verified once and fixed everywhere.
-    side:
-      - type: list
-        heading: The skeptic's rules
-        items:
-          - "**Confirmed** means you read the lines and the scenario happens."
-          - "**Refuted** only by citing the exact line that makes it impossible. No line, no refutation."
-          - >-
-            **Uncertain** is allowed. It keeps the finding alive at lower priority. A wrong
-            refutation costs a bug; an uncertain costs minutes.
-          - >-
-            "Unlikely", "a test exists", "the framework handles it", "the spec says so": none of
-            these is a refutation.
+              A reviewer on the hand-built version asked for one change. A check on who may edit
+              a record looked at whether a field was **present** in what was sent, when it
+              should have looked at whether the field was **changing**. An ordinary user who
+              opened a record, changed something else and saved it would have been turned away.
+          - title: The workflow had it too, so the workflow changed.
+            body: >-
+              The workflow's version had the same check. It had been written into the plan as a
+              settled decision, so every agent respected it and no reviewer questioned it. In the
+              days after, three things changed: a new question for the reviewers, *what would an
+              ordinary user do?*; a new rule for the skeptics, that "the spec says so" refutes
+              nothing when the spec is the problem; and a new step, the retro, which reads
+              several runs' records back to find what goes wrong more than once.
+      - type: paragraph
+        text: "*The agent was not told to be more careful. The check was changed.*"
+      - type: aside
+        term: retro
+        text: >-
+          reading several runs' records back to see what went wrong more than once, and
+          proposing changes to the process.
+
+  - type: scene
+    heading: Make it yours
+    nav: make it yours
+    blocks:
+      - type: paragraph
+        text: >-
+          Everything in this course runs on a handful of skills: written-down ways of working
+          that the agent follows every time. One holds the brief, one writes the plan, one reads
+          the plan for gaps, one runs the job while you are away, one runs the reviews, one
+          writes up what comes back, and one reads the runs back for the retro.
+      - type: paragraph
+        text: >-
+          Ross did not invent them on a blank page. He told the agent how he works and had it
+          written down, and after each run he changed whatever had missed. That is all a skill
+          is: your way of working, said once, followed every time.
+      - type: paragraph
+        text: >-
+          **If you have a process you like, tell the agent about it and have it made into a
+          skill.** Talk it through as you would a brief: let it ask what it needs and suggest
+          what you had not thought of.
+      - type: quote
+        text: >-
+          If you have a process you like, talk to the agent about it and make a skill of it. You
+          don't have to come up with all the solutions yourself.
+        attribution: Ross
+      - type: aside
+        term: skill
+        text: >-
+          a written-down way of working that the agent follows every time. A process you like
+          can become one.
 
   - type: choose
-    slug: verdict
+    slug: your-process
     scored: false
     mode: single
     eyebrow: Try it
-    heading: You are the skeptic
-    intro: Three excerpts.
-    body:
-      - type: paragraph
-        heading: The finding
-        text: >-
-          If the learner drops a second item while a wrong-placement message is still on screen,
-          the drop is ignored: the item snaps back to the tray with no message.
-      - type: mono
-        heading: A · drop handler, line 41
-        text: "if (message.visible) return;"
-      - type: mono
-        heading: B · message timer, line 82
-        text: "hideAfter(message, 2500);"
-      - type: mono
-        heading: C · test
-        text: >-
-          "shows the reason on a wrong drop":
-          drops one item, checks the message.
-    prompt: Your verdict?
+    heading: You have a process. What do you do with it?
+    intro: >-
+      Every activity you make is checked against your accessibility checklist before it ships.
+      Now an agent is building some of them.
+    prompt: What do you do with the checklist?
+    nav: your process
     options:
-      - label: Confirmed, citing A.
+      - label: Paste the checklist into every prompt.
+        right: false
+        feedback: >-
+          It works until the day you forget. And a checklist in a prompt is advice, not a wall:
+          nothing stops the work coming back without it.
+      - label: >-
+          Give the agent the checklist and have it made into a skill that runs on every piece
+          before it is handed back.
         right: true
         feedback: >-
-          Yes. Line 41 returns before anything happens when a message is showing. The scenario
-          happens. You cited the line.
-        reveal:
-          - type: paragraph
-            heading: The fix
-            text: >-
-              The second skeptic also confirmed, citing line 41. The finding becomes a piece of
-              work: *a drop while a message is showing replaces the message*, with its own
-              acceptance, built in the box, gate green.
-      - label: "Refuted: there is a test for wrong drops (C)."
+          Yes. You say it once and it runs on every piece, whether or not you remember. When it
+          misses something, you change the skill, not your habits.
+      - label: Check it by hand each time.
         right: false
         feedback: >-
-          Not a refutation. The test drops one item; it never exercises this scenario. "A test
-          exists" refutes nothing unless it tests exactly this.
-      - label: "Refuted: nobody drops two items within 2.5 seconds."
-        right: false
-        feedback: >-
-          Not a refutation. "Unlikely" is about how bad it is, not whether it is true.
-          Likelihood is severity.
-      - label: Uncertain.
-        right: false
-        feedback: >-
-          Allowed, and never wrong to say. But you were shown line 41; the honest reading here is
-          confirmed. Uncertain is for when you cannot find the line either way.
-    checkLabel: Check my verdict
-    tryAgainLabel: Try another verdict
-    nav: your verdict
-    side:
-      - type: list
-        heading: The skeptic's rules
-        items:
-          - "**Confirmed** means you read the lines and the scenario happens."
-          - "**Refuted** only by citing the exact line that makes it impossible. No line, no refutation."
-          - >-
-            **Uncertain** is allowed. It keeps the finding alive at lower priority. A wrong
-            refutation costs a bug; an uncertain costs minutes.
-          - >-
-            "Unlikely", "a test exists", "the framework handles it", "the spec says so": none of
-            these is a refutation.
-
-  - type: match
-    slug: who-catches-it
-    scored: false
-    eyebrow: Try it
-    heading: Who catches it?
-    nav: who catches it?
-    prompt: >-
-      Four things went wrong in the fridge build. Match each to the layer that catches it.
-    targets:
-      - id: simplify
-        label: Simplify
-      - id: review
-        label: Review
-      - id: adversarial
-        label: Adversarial review
-      - id: epic
-        label: "None of the reviews: the epic"
-    rows:
-      - text: >-
-          Three copies of the "return the item to the tray" code, one per shelf.
-        key: simplify
-        feedback: >-
-          Simplify (reuse). Its first question is whether this should reuse something.
-      - text: >-
-          The message for yoghurt says "Dairy goes on the top shelf" and the top shelf is labelled
-          "Top (ready to eat)".
-        key: review
-        feedback: >-
-          Review (obvious). The plain pass is for the obvious bugs: a typo in a shelf name, a
-          message that is wrong.
-      - text: A drop during a message is silently lost.
-        key: adversarial
-        feedback: >-
-          Adversarial review (a scenario, verified). A finder reported it with a concrete
-          scenario and two skeptics confirmed it.
-      - text: A 60-second timer was built, which D6 said no to.
-        key: epic
-        feedback: >-
-          None of the reviews: the epic. The acceptance bar has no timer step, and the
-          walkthrough would show one. The reviews read code for mistakes; the demo script holds
-          the build to the decisions. Not every miss is a review's job. Some are caught by done
-          being defined.
-    checkLabel: Check my matches
+          Then you are the gate, every time, on every piece, and the day you are busy is the day
+          it slips.
+    after:
+      - type: paragraph
+        text: "**Say it once. It runs every time.**"
 
   - type: choose
     slug: check-1
     scored: true
     mode: single
     eyebrow: Check · 1 of 2
-    heading: >-
-      A skeptic writes: "Refuted. The framework handles this." No line is cited. What is
-      recorded?
+    heading: The client asks for two things that were not in the brief. What does that mean?
     intro: Every module ends with two of these. Each option tells you why, right or wrong.
     nav: check
     options:
-      - label: Refuted; frameworks do handle things.
+      - label: The brief failed.
         right: false
-        feedback: Which line of the framework, for this call? Without it this is a belief.
-      - label: Uncertain; the finding stays alive.
+        feedback: >-
+          It did not. The client saw round one and knew what they wanted. That is what round one
+          is for.
+      - label: "Round two: a short brief, two decisions, a small run."
         right: true
-        feedback: Yes. A refutation without a line is not one.
-      - label: Confirmed, to be safe.
+        feedback: Yes. Same loop, smaller.
+      - label: The builder should have anticipated it.
         right: false
-        feedback: No. Confirmed also needs the lines read. Uncertain is the honest verdict.
+        feedback: Then it would have guessed. Module 00.
 
   - type: choose
     slug: check-2
     scored: true
     mode: single
     eyebrow: Check · 2 of 2
-    heading: >-
-      Simplify's reviewer proposes a change that makes the score screen also show the time
-      taken. What happens to it?
+    heading: A review missed a bug that a person caught. What is the useful question?
     nav: question 2
     options:
-      - label: Applied; it is an improvement.
+      - label: Which agent was at fault?
         right: false
-        feedback: It is a change of behaviour, and D6 said no timer.
-      - label: Reverted; simplify tidies, it does not decide.
+        feedback: None of them disobeyed anything. They did what the process asked.
+      - label: Which check, if it had existed, would have caught it, and does the miss repeat?
         right: true
-        feedback: Yes. A behaviour change in the simplify layer is reverted on sight.
-      - label: Sent to the client to decide.
+        feedback: Yes. That is the retro's question.
+      - label: Should we stop trusting the reviews?
         right: false
-        feedback: The record already decided. Reverted.
+        feedback: >-
+          They found fifty things in one run. One miss is a gap to close, not a reason to go back
+          to reading everything.
+
+  - type: scene
+    heading: Try this tomorrow
+    nav: try this tomorrow
+    intro: Five cards for any agent, including the chat tools you already use.
+    blocks:
+      - type: cards
+        numbered: true
+        items:
+          - title: Before you ask for anything, ask it to ask you five questions first.
+            body: >-
+              Answer in a paragraph. Watch how much of what it would have guessed you had an
+              opinion on.
+          - title: Have it write the finish line, and read it before it starts.
+            body: >-
+              Ask what you will be able to do and see when it is finished. If the answer is
+              adjectives, or leaves out something you care about, say so now.
+          - title: When it says done, open a new chat and ask a fresh agent what is wrong with it.
+            body: Make it say where. Do not let it say "looks fine".
+          - title: Ask for the evidence, not the explanation.
+            body: >-
+              "Show me it doing step 2" beats "tell me it works".
+          - title: Tell it how you like to work, and have it make that a skill.
+            body: >-
+              The checks you always run, the questions you always ask. Said once, followed every
+              time, and changed when one misses.
 
   - type: takeaway
     eyebrow: Takeaway
-    nav: takeaway
+    nav: the end
     text: >-
-      **The same kind of agent that guessed in module 00 is a sharp reviewer, given one question
-      and the rule that it must cite its evidence.** Three layers, three kinds of mistake, and no
-      finding dies on a feeling.
-    caption: "The box gains its fourth wall: **other agents**."
+      **Expect a second round. When a check misses, change the check.** The process is not set in
+      stone; it is the thing you improve, and the way you like to work can become a skill.
+    caption: The four walls are up, and the arrow of the retro is drawn round them.
+    end:
+      - type: paragraph
+        text: >-
+          This course was built the way it describes: a brief, a plan, a run with builders in
+          their boxes, three layers of review, a recorded walkthrough someone judged. The record
+          is in its repository. Nothing in it was one-shot.
+      - type: paragraph
+        text: "*Ross Lote's workflow; the course built with it.*"
