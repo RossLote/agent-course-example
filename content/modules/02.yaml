@@ -1,100 +1,87 @@
 slug: "02"
 screens:
   - type: scene
-    heading: Who builds what, and how do you know it is done?
+    heading: You press go and leave
+    intro: This module is told by the orchestrator, the agent that runs the job once the brief is done.
     blocks:
       - type: paragraph
         text: >-
-          Eight decisions. An agent could start building from them now, and when it said "done" you
-          would have no way to say whether it was. So before anything is built, the work is cut
-          into pieces, and each piece says how a reviewer will know it is finished.
-      - type: aside
-        term: epic
+          The brief is done: eight decisions on the record, D1 to D8. From here I run the job. I
+          turn your decisions into a plan, and you read it and say go. Then you leave, and nobody
+          asks you anything until the work comes back.
+      - type: paragraph
         text: >-
-          the set of pieces for one job, with the decisions, the order they run in, and a demo
-          script for the whole thing.
+          While you are away, I hand each piece of the plan to a builder, an agent of its own, up
+          to three at a time. Each works in a box: its own copy of the project, its piece, your
+          decisions and a finish line. When a builder hands its piece back, I read its report and
+          its change against the piece, and send back anything that does not match. When every
+          piece is in, I run the whole thing in a browser, send in the reviewers, have what they
+          find fixed in the same box, and record a walkthrough for you to judge. I never write any
+          of it myself.
       - type: aside
-        term: bead
-        text: one piece, written for execution.
+        term: orchestrator
+        text: >-
+          the agent that runs the job while you are away. It turns the decisions into a plan,
+          waits for your go, hands each piece to a builder, reads what each builder hands back
+          against its piece, sends the reviewers in, and never writes code itself.
 
   - type: scene
-    heading: A bead is not a ticket
-    nav: a bead is not a ticket
+    heading: The plan
+    nav: the plan
+    intro: >-
+      Here is the plan I wrote from your eight decisions: five pieces, each saying what a reviewer
+      will see when it is done, the order they run in, and the demo script the walkthrough will
+      follow.
     blocks:
-      - type: columns
-        columns:
-          - heading: A ticket (what most of us write)
-            blocks:
-              - type: paragraph
-                text: >-
-                  Fridge activity: feedback and scoring. Show feedback on wrong drops and a score
-                  at the end.
-          - heading: A bead (what the builder gets)
-            blocks:
-              - type: paragraph
-                text: >-
-                  **.4 Feedback and the score screen.** A wrong drop returns the item to the tray
-                  and shows its one-line reason (D3). When all eight are placed, the score screen
-                  shows how many were right first time out of eight and lists each wrong placement
-                  with its reason (D4). Try again resets the tray and clears the score; the latest
-                  attempt is what is reported (D7).
-              - type: paragraph
-                text: >-
-                  *Acceptance:* dropping raw chicken on the top shelf returns it and shows "Raw
-                  meat and fish go on the bottom shelf so they can't drip onto other food"; after
-                  placing all eight with one wrong, the score screen reads "7 out of 8 right first
-                  time" and lists raw chicken with that reason; Try again empties the shelves.
-              - type: paragraph
-                text: >-
-                  *Read first:* the data file from .1; the drop handling from .2. *Touches:* the
-                  feedback and score files only. *Depends on:* .2.
       - type: cards
         numbered: true
         items:
-          - title: The decisions are cited, not re-explained.
-            body: D3, D4, D7. The builder reads the record.
-          - title: The acceptance is something a reviewer can do and see.
-            body: Drop this, read that.
-          - title: It says what it may touch.
-            body: So two builders working at once do not collide.
-
-  - type: scene
-    eyebrow: The epic
-    heading: The fridge activity, cut into pieces
-    intro: >-
-      Eight decisions become five beads. Each says what it is, which decisions bind it, what it may
-      touch, and how a reviewer will know it is done. The demo script on the right is what done
-      means for the whole thing.
-    nav: the fridge epic
-    blocks:
-      - type: cards
-        items:
-          - title: .1 The data (runs alone)
+          - title: The shelves and the items.
             body: >-
-              Shelves, items, rules and reasons in one file, from the client's guide (D2).
-              *Acceptance:* a test that every item has exactly one right shelf and a reason.
-          - title: .2 The fridge and dragging (runs alone, sets the pattern)
+              Four shelves and eight items, each with its right shelf and its reason, from the
+              client's guide (D2). *A reviewer sees:* a check that every item has exactly one
+              right shelf and a reason, passing.
+          - title: The fridge and dragging.
             body: >-
-              Four shelves, eight items, drag with mouse and touch; a right drop stays, a wrong
-              drop returns (D3, D5). Depends on .1. *Acceptance:* drag raw chicken to the top
-              shelf: it returns; to the bottom shelf: it stays.
-          - title: .3 Keyboard and screen reader (with .4)
+              Drag with the mouse or a finger; a right drop stays, a wrong drop goes back to the
+              tray (D3, D5). *A reviewer sees:* raw chicken dragged to the top shelf comes back;
+              dragged to the bottom shelf, it stays.
+          - title: The keyboard and the screen reader.
             body: >-
-              Enter, arrows, Enter; announcements of item, shelf and result (D5). Depends on .2.
-              *Acceptance:* you write it below.
-          - title: .4 Feedback and the score screen (with .3)
+              Enter picks up, the arrows move between shelves, Enter places; the screen reader
+              says the item, the shelf and the result (D5). *A reviewer sees:* the lettuce placed
+              without a mouse, and what the screen reader says.
+          - title: The feedback and the score.
             body: >-
               The one-line reason on a wrong drop (D3); the score screen and Try again (D4, D7).
-              Depends on .2. *Touches:* the feedback and score files only.
-          - title: .5 The walkthrough (last)
+              *A reviewer sees:* after all eight placed with one wrong, "7 out of 8 right first
+              time" and raw chicken listed with its reason.
+          - title: The walkthrough.
             body: >-
-              Runs the demo script in a browser, recorded, one chapter per step. Depends on .3 and
-              .4.
+              The demo script performed in a browser and recorded, one chapter per step. *A
+              reviewer sees:* the recording.
       - type: paragraph
-        text: "**Order:** .1, then .2, then .3 and .4 together (they touch different files), then .5."
+        text: >-
+          **The order:** the shelves and items first; then the fridge and dragging, which the next
+          two build on; then the keyboard and the feedback at the same time, two builders at once,
+          because they change different files; the walkthrough last.
+      - type: paragraph
+        text: >-
+          Before it runs, another agent reads the plan against the project and your decisions,
+          looking for gaps. The last read is yours: nothing starts until you say go.
+      - type: aside
+        term: epic
+        text: >-
+          the plan's name: the job cut into pieces, each saying what a reviewer will see when it
+          is done, with the order they run in and a demo script.
+      - type: aside
+        term: demo script
+        text: >-
+          numbered steps a person can perform to see the whole thing work. The recorded
+          walkthrough follows it, and what is not in it is not proven.
     side:
       - type: list
-        heading: The demo script (done means)
+        heading: The demo script
         items:
           - "Open the activity: four labelled shelves and eight items in a tray."
           - >-
@@ -102,131 +89,259 @@ screens:
             go on the bottom shelf so they can't drip onto other food."
           - "Drag raw chicken to the bottom shelf: it stays."
           - >-
-            Tab to the lettuce, Enter, arrow down to the salad drawer, Enter: placed; the screen
-            reader says "Lettuce placed in the salad drawer. Correct."
-          - >-
-            Place the other six; the score screen reads "7 out of 8 right first time" and lists
+            Place the other seven: the score screen reads "7 out of 8 right first time" and lists
             raw chicken with its reason.
           - "Press Try again: the tray is full and the score is cleared."
       - type: paragraph
         text: >-
-          Every step performed in a browser and recorded, with all the checks green. Not "the
-          agent says so".
+          The walkthrough performs every step in a browser and records it, one chapter per step.
+          That recording is what you judge when the work comes back.
 
   - type: choose
-    slug: write-the-acceptance
-    scored: false
-    mode: multi
-    eyebrow: Try it
-    heading: Bead .3 has no acceptance yet. Pick the three lines a reviewer could check.
-    nav: write the acceptance
-    options:
-      - label: Pressing Enter on the focused tomatoes, then arrow down three times, then Enter, places them in the salad drawer.
-        right: true
-        feedback: Yes. A reviewer can do it and see it.
-      - label: Keyboard use is smooth and intuitive.
-        right: false
-        feedback: No. Nobody can check "smooth". What would they press?
-      - label: 'The screen reader says "Tomatoes placed in the salad drawer. Correct."'
-        right: true
-        feedback: Yes. A reviewer can hear it.
-      - label: Works with a screen reader.
-        right: false
-        feedback: No. Which reader, saying what? Without the words, any noise passes.
-      - label: Pressing Escape while an item is picked up puts it back in the tray.
-        right: true
-        feedback: Yes. A key, an action, a visible result.
-      - label: Accessibility is handled properly.
-        right: false
-        feedback: No. A wish, not a test.
-    after:
-      - type: paragraph
-        text: >-
-          **Three you can check, three you can only hope.** The builder is held to the first
-          three; the second three would have let it decide what "proper" meant.
-
-  - type: choose
-    slug: epic-review
+    slug: say-go
     scored: false
     mode: single
     eyebrow: Try it
-    heading: The epic review
-    nav: the epic review
+    heading: Go, or ask?
+    nav: go, or ask?
     intro: >-
-      Before the epic runs, another agent reads it against the project and the decisions. It found
-      this:
-    body:
-      - type: quote
-        text: >-
-          **Finding.** Beads .3 and .4 are set to run together, but both change the drop handling
-          file to add their messages. They will collide. Also: .3's acceptance line "works with a
-          screen reader" names nothing a reviewer could hear.
-      - type: paragraph
-        text: "*What do you do?*"
+      You have read the plan. The keyboard and the screen reader are on the record as D5, and
+      they are one of the five pieces.
+    prompt: What do you say?
     options:
-      - label: Let it run; the builders will sort it out.
+      - label: Go; D5 is on the record, the builders will cover it.
         right: false
         feedback: >-
-          They will each change the file, and the second one in will overwrite the first. Found
-          mid-run, this costs a rebuild. Found now, it costs one line.
-      - label: >-
-          Fix the epic now: give .4 its own file to add messages to, and replace .3's line with the
-          words the reader should say.
+          They will build it: D5 is in every builder's instructions. But the walkthrough follows
+          the demo script, and what is not in the script is not proven. When the work comes back
+          you would have nothing to judge the keyboard from.
+      - label: Ask for a step that shows the keyboard route and the announcement, then go.
         right: true
         feedback: >-
-          Yes. Every gap found before the run is one line; every gap found during it is a rebuild.
-      - label: Cancel .3; accessibility can be a later round.
+          Yes. A gap found now costs a sentence; found after the run, it costs another round. In
+          Ross's runs, before plans were read for gaps ahead of the run, gaps like this added
+          between twelve and thirty pieces of work to a job.
+        reveal:
+          - type: paragraph
+            heading: Step 4, as I add it
+            text: >-
+              Tab to the lettuce, press Enter, arrow down to the salad drawer, press Enter: it is
+              placed, and the screen reader says "Lettuce placed in the salad drawer. Correct."
+              The walkthrough will show you this one too.
+      - label: Write the step yourself, with the keys and the exact wording.
         right: false
-        feedback: It is a decision (D5) and the client's learners are the point. Fix the bead, not the scope.
-    after:
+        feedback: >-
+          That is the hand-holder's reflex from module 00. Say what you want to see and leave the
+          how to the plan: D5 already names the keys and what the screen reader hears, and I write
+          the step from it.
+    side:
+      - type: paragraph
+        heading: D5, on the record
+        text: >-
+          Keyboard: Enter picks up, arrows move between shelves, Enter places; a screen reader
+          hears item, shelf and result. Touch drag works.
+
+  - type: scene
+    heading: The box
+    nav: the box
+    intro: You said go. Each piece goes to a builder of its own, and every builder works in a box.
+    blocks:
+      - type: cards
+        numbered: true
+        items:
+          - title: Its own copy of the project.
+            body: >-
+              Builders working at the same time cannot get in each other's way while they build.
+              When their work is joined, a clash is a merge conflict, and another agent settles
+              it; the checks run again afterwards.
+          - title: Its piece, your decisions, and the files it may change.
+            body: >-
+              It builds what the piece asks and nothing it does not. Your decisions are settled:
+              it builds them as written and does not reopen them.
+          - title: A finish line, in its instructions.
+            body: >-
+              The piece's acceptance; the checks green: code style, types and the unit tests;
+              nothing changed outside its files; nothing in its report it could not confirm. A red
+              check is the box pushing back: the builder fixes it and runs them again, as many
+              times as it takes.
+          - title: A report, with the checks' own output pasted in.
+            body: >-
+              I read the output, not the summary, and I read its change against its piece.
+              Anything that does not match goes back with one specific correction. If it comes back
+              wrong a second time, a fresh builder starts the piece, told what went wrong.
       - type: paragraph
         text: >-
-          In Ross's runs, gaps like these added between twelve and thirty pieces of work to an epic
-          before this review existed. Now they cost a sentence.
+          The run through the whole thing in a browser is not in a builder's box. It comes at the
+          end, once every piece is in.
+      - type: aside
+        term: gate
+        text: >-
+          the checks a builder's work must pass before it can hand it back: code style, types and
+          the unit tests, with their output pasted into its report. The run through the whole
+          thing in a browser is the full gate, at the end of the run.
+
+  - type: scene
+    heading: The same piece, twice
+    nav: the same piece, twice
+    intro: >-
+      The feedback and the score, built once by a builder with no box and once by a builder in
+      one. The piece's list of files has two on it: the feedback and the score.
+    blocks:
+      - type: columns
+        columns:
+          - heading: Loose
+            blocks:
+              - type: list
+                items:
+                  - text: Changes the feedback and score files.
+                    marker: "00:00"
+                    tone: neutral
+                  - text: Tidies the shelf layout, "while I was there".
+                    marker: "00:20"
+                    tone: neutral
+                  - text: Simplifies the drag code. Dragging with a finger stops working. Nothing notices.
+                    marker: "00:30"
+                    tone: neutral
+                  - text: '**"Done, I ran it and it looks good."**'
+                    marker: "00:40"
+                    tone: neutral
+                  - text: The client finds the touch bug.
+                    marker: +7 days
+                    tone: wrong
+          - heading: Boxed
+            blocks:
+              - type: list
+                items:
+                  - text: Changes the feedback and score files.
+                    marker: "00:00"
+                    tone: neutral
+                  - text: Tidies the shelves anyway. Nothing stops it at the keystroke.
+                    marker: "00:20"
+                    tone: neutral
+                  - text: "Runs the checks: a test of the score screen goes red."
+                    marker: "00:35"
+                    tone: wrong
+                  - text: "Fixes it, runs the checks again: green."
+                    marker: "00:45"
+                    tone: right
+                  - text: >-
+                      **Reports with the checks' own output pasted in**, and one line: "The
+                      screen-reader wording is the keyboard piece's work, not this one's."
+                    marker: "00:50"
+                    tone: neutral
+                  - text: >-
+                      The orchestrator reads it: three files changed against a list of two. It
+                      sends the piece back.
+                    marker: "00:55"
+                    tone: wrong
+                  - text: "The tidy undone, the checks green again: accepted."
+                    marker: "01:00"
+                    tone: right
+      - type: paragraph
+        text: "**Twenty minutes slower. The box pushed back twice.**"
+
+  - type: scene
+    heading: The reviewers
+    nav: the reviewers
+    intro: >-
+      When every piece is in and the full checks are green, I send in other agents to read the
+      work. Three layers, in the order they run.
+    blocks:
+      - type: cards
+        numbered: true
+        items:
+          - title: Simplify.
+            body: >-
+              Agents over-build, and they write something new rather than find what already
+              exists. Reviewers read the whole change for what could be simpler or could reuse
+              what is there. Their fixes go in and the checks run again; any fix that changes what
+              the activity does is undone. This layer tidies; it does not decide.
+          - title: Review.
+            body: >-
+              A plain pass for the obvious bugs: a typo in a shelf name, a message that never
+              shows. They are fixed first, so the next layer is not spent on easy things.
+          - title: The adversarial review.
+            body: >-
+              The hard look. Many reviewers each read the work one way: is it right, what states
+              can a screen be in, what would an ordinary learner do. Each finding says how it goes
+              wrong. One agent folds the findings that are the same problem into one, and two
+              skeptics check each finding on their own. Every finding that survives becomes a
+              piece of work and goes through the same box.
+      - type: paragraph
+        heading: The skeptic's rule
+        text: >-
+          A finding dies only when the skeptics show what makes it impossible. "Unlikely" is not
+          that, and nor is "a test exists" or "the framework handles it". A skeptic that cannot
+          tell may say uncertain, and uncertain keeps the finding alive.
+      - type: table
+        heading: One real run of this workflow, on Ross's presentation project
+        header: [Pieces built, Reviewers in the adversarial review, Findings, Fixed]
+        rows:
+          - ["16", "16", "50", "39"]
+      - type: aside
+        term: review
+        text: >-
+          other agents reading the built work, in three layers: simplify, a plain review for
+          obvious bugs, and the adversarial review, where every finding is checked by skeptics.
+      - type: aside
+        term: skeptic
+        text: >-
+          the agent that checks one finding and says confirmed, refuted or uncertain. Uncertain
+          is allowed, and keeps the finding alive.
 
   - type: choose
     slug: check-1
     scored: true
     mode: single
     eyebrow: Check · 1 of 2
-    heading: Which of these is acceptance a reviewer can check?
+    heading: >-
+      The builder's report says it tested everything, and the checks' output is not in it. What do
+      you do?
     intro: Every module ends with two of these. Each option tells you why, right or wrong.
     nav: check
     options:
-      - label: '"The feedback is clear and helpful."'
+      - label: Take its word; it says it tested everything.
         right: false
-        feedback: Clear to whom? Nothing to do or see.
-      - label: >-
-          "Dropping yoghurt on the bottom shelf returns it and shows 'Dairy goes on the top shelf,
-          away from raw meat.'"
+        feedback: Its word is what module 00 was about. The builder is the worst judge of its own work.
+      - label: Treat it as not done until the checks' own output is there, and green.
         right: true
-        feedback: Yes. Do this, see that.
-      - label: '"Feedback works."'
+        feedback: Yes. The output, not the summary. That is how every report is read.
+      - label: Run the tests yourself.
         right: false
-        feedback: What would the reviewer do to find out?
+        feedback: >-
+          You could, but then you are the gate, every time, for every builder. The box is there so
+          that you are not.
 
   - type: choose
     slug: check-2
     scored: true
     mode: single
     eyebrow: Check · 2 of 2
-    heading: Two beads are set to run at the same time. What has to be true?
+    heading: >-
+      A reviewer writes "Not a bug, the framework handles it" and shows nothing. What is recorded?
     nav: question 2
     options:
-      - label: They are about different features.
+      - label: Refuted; the reviewer says it is not a bug.
         right: false
-        feedback: Not enough. Different features can share a file.
-      - label: They touch different files, and neither depends on the other.
+        feedback: Saying is not showing. With nothing shown, it is not a refutation.
+      - label: Uncertain, and the finding stays alive.
         right: true
-        feedback: Yes. Disjoint touches and no dependency, or they collide.
-      - label: They are both small.
+        feedback: >-
+          Yes. A finding dies only when someone shows what makes it impossible. Until then it stays
+          alive, and goes to whoever fixes it, with the reviewer's note.
+      - label: Confirmed, to be safe.
         right: false
-        feedback: Size decides how long they take, not whether they collide.
+        feedback: >-
+          Confirmed needs evidence too: someone read it and it happens. Uncertain is the honest
+          record.
 
   - type: takeaway
     eyebrow: Takeaway
     nav: takeaway
     text: >-
-      **Done is defined before the build starts, as things a reviewer can do and see.** The epic
-      review finds the gaps while they still cost a sentence.
-    caption: "The box gains its second wall: **done**."
+      **You were not there, and nothing depended on anyone's word.** Each builder worked in a box
+      and handed back its checks' own output, every change was read against its piece, and other
+      agents read the whole of it, where a finding dies only on evidence.
+    caption: >-
+      The box gains two walls at once: the gate and the reviews. Evidence is still to come, then
+      the arrow.
