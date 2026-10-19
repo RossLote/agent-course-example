@@ -157,8 +157,8 @@ screens:
               reader hears **item, shelf and result**.
             marker: D5
           - text: >-
-              Tab to the lettuce, Enter, arrow down to the salad drawer, Enter: placed; the
-              screen reader says "Lettuce placed **in the salad drawer**. Correct."
+              Tab to the lettuce, press Enter, arrow down to the salad drawer, press Enter: it is
+              placed, and the screen reader says "Lettuce placed **in the salad drawer**. Correct."
             marker: step 4
 
   - type: choose
