@@ -33,10 +33,10 @@ Three cards:
 
 The story, as cards stepped with "next":
 
-1. A feature was built twice, on purpose: once by hand by a colleague, once by this
-   workflow, with every agent told to ignore the other attempt. The question was whether the
-   workflow could get to a passable result on its own.
-2. A reviewer on the hand-built version asked for one change: a permission check looked at
+1. A feature was built twice, on purpose: once by an agent in one go, with no brief and none
+   of this workflow, and once by this workflow, with every agent told to ignore the other
+   attempt. The question was whether the workflow did any better than the one-shot.
+2. A reviewer on the one-shot version asked for one change: a permission check looked at
    whether a field was *present* in the request, when it should have looked at whether the
    field was *changing*. An ordinary user who fetched a record, changed something else and
    sent it all back would be refused.

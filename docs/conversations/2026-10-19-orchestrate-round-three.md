@@ -74,3 +74,18 @@ is the agent working alone, so the log is short.
   numbered the walls in the order they go up instead: 01 the record, 02 the gate,
   03 the reviews, 04 evidence. Module 03's comparison table now cites 04 evidence,
   and C20 says why. I made it on the round-three branch, so it merges with the rest.
+
+## Ross: the other version was a one-shot
+
+- The check-that-missed screen says one of the two builds was written by hand.
+  That's wrong. It was written by an AI agent as a one-shot, without the brief
+  and without this workflow: a way of testing whether another way of working is
+  as effective as mine. It helped shape what the workflow is today.
+
+## Agent: the story corrected
+
+- Module 04's first card now says the feature was built once by an agent in one
+  go, with no brief and none of the workflow, and once by the workflow, and that
+  the question was whether the workflow did any better. The second card's
+  reviewer is on the one-shot version. The design note for the module and C8
+  say the same, and C8 no longer mentions a colleague.

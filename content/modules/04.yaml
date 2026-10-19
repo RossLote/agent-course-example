@@ -48,12 +48,13 @@ screens:
         items:
           - title: Built twice.
             body: >-
-              A feature was built twice, on purpose: once by hand by a colleague, once by this
-              workflow, with every agent told to ignore the other attempt. The question was
-              whether the workflow could get to a passable result on its own.
+              A feature was built twice, on purpose: once by an agent in one go, with no brief
+              and none of this workflow, and once by this workflow, with every agent told to
+              ignore the other attempt. The question was whether the workflow did any better
+              than the one-shot.
           - title: A person caught it.
             body: >-
-              A reviewer on the hand-built version asked for one change. A check on who may edit
+              A reviewer on the one-shot version asked for one change. A check on who may edit
               a record looked at whether a field was **present** in what was sent, when it
               should have looked at whether the field was **changing**. An ordinary user who
               opened a record, changed something else and saved it would have been turned away.

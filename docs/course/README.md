@@ -169,7 +169,7 @@ both builds on 2026-10-19 (log `docs/conversations/2026-10-19-four-walls-not-fiv
   at run time; a wrong turn the learner chooses teaches more than one described.
 - **C8 Examples invented, two real cards.** The fridge example is invented. Module 04 shows
   one real run's numbers from the presentation repo, which is public; module 06 tells the
-  story of the check that missed, without the colleague's or the repo's name. Reason: Ross
+  story of the check that missed, without naming anyone or the repo. Reason: Ross
   said the real record is not needed; one real card makes the thesis credible; the story is
   the best reason for retros there is. (Since C21 the numbers are in module 02 and the story
   in module 04.)
