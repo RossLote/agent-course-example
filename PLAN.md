@@ -119,8 +119,9 @@ brief's, recorded with their reasons on bead `agent-course-r4n` (log
 `docs/conversations/2026-10-15-brief.md`). The rules after them are epic
 `agent-course-wqw`'s, with the epic review's additions folded in; where an addition replaced
 an earlier rule, only the final rule is here. Round two's rules, epic `agent-course-7ec`'s,
-come last; where one replaces a round-one rule, that rule records the reversal. All of them
-bind every bead.
+follow, then round three's, epic `agent-course-bsg`'s, whose C18–C24 are the same numbers in
+`docs/course/README.md` §9; where a later rule replaces an earlier one, the later rule
+records the reversal. All of them bind every bead.
 
 ### From the content draft (D1–D17)
 
@@ -425,46 +426,139 @@ bead, except where a rule here replaces one.
   under it (WCAG 2.4.11). *Reason:* Ross could not see on a long screen whether Next was
   open, so whether he could skip it (added 2026-10-15 after round two).
 
+### Epic `agent-course-bsg`'s rules (round three)
+
+Ross reviewed both builds on 2026-10-19 and asked for the course to be reshaped: the
+learner's seat, four walls, five modules (log
+`docs/conversations/2026-10-19-four-walls-not-five.md`). Round one's and two's rules above
+still bind every bead, except where a rule here replaces one. C18–C24 are recorded with the
+same numbers in `docs/course/README.md` §9.
+
+- **C18 The learner's seat.** The course teaches what the learner does with the workflow:
+  describe what you want loosely and answer the brief; read the plan and say go; wait;
+  judge what comes back from its evidence; go round again; and tell the agent how you like
+  to work, so it becomes a skill. No screen asks the learner to do an agent's job (write
+  acceptance, box a builder, play the skeptic, order the loop): the agents' work is shown as
+  a story. This replaces D3's six outcomes. *Reason:* the audience never writes a bead;
+  walking them through the workflow as if they were a worker is absurd (Ross).
+- **C19 Two ideas.** First, how you ask: the hand-holder's page of detail gets exactly that,
+  the designer's mistakes built in and no suggestion; "go and do it" gets surprises; the
+  middle is to describe it loosely, let the agent explore, and use the brief as the forum
+  where its questions and its own ideas meet your decisions, accepted, declined or talked
+  through, so the surprises that matter are gone before the build and the agent is an
+  extension of your creativity. Second, the builder is the worst judge of its own work: box
+  it, let other agents at it, judge from evidence. The first is the record wall; the second
+  the other three. This replaces D2's one message. *Reason:* Ross, 2026-10-19.
+- **C20 Four walls and the arrow.** The record (01), the gate and the reviews (both gained
+  in 02), evidence (03), and the retro's ring (04). "Done" is not a wall: the plan with its
+  acceptance and demo script is the orchestrator's work, shown in 02 and judged against in
+  03. course.yaml's box has four wall labels, in this order and with these words: record "01
+  the record", gate "02 the gate", agents "02 the reviews", evidence "03 evidence"; the ring
+  label stays "the retro: round again, change the check". The diagram draws a box with four
+  sides, top first and clockwise, and its text alternative counts the walls instead of
+  saying five. A module may add two walls. This replaces round one's five walls (D5, and
+  "Choose extras"' box panel in module 03). *Reason:* Ross never writes a definition of
+  done, and a five-walled box drew as a pentagon.
+- **C21 Five modules.** About thirty minutes, slugs "00" to "04": 00 "What works and what
+  doesn't" (5 minutes, wall none), 01 "The brief" (7, record), 02 "While you're away" (8,
+  gate and agents), 03 "What comes back" (8, evidence), 04 "Round again, and make it yours"
+  (7, ring). No module has wall all. Module files 05, 06 and 07 go. The home page's meta
+  reads "Five modules · about 30 minutes", the scenario's note begins "Five short modules,
+  about 30 minutes.", and the scenario's second line no longer says "decide what done
+  means" (it reads: answer its questions, say go to its plan, judge what comes back). The
+  score is the ten checks, two per module, one point each, and the scaled score is the
+  points over 10; there is no order or match screen in the content. This replaces D4's
+  eight modules, round one's "Progress and score" (28 points), "Module 07" and the
+  completion rule's "all eight modules". *Reason:* too many modules for what is taught; the
+  score follows the content, as round one's rule says.
+- **C22 No code on any screen.** No code, file paths, line numbers, gate output, bead cards
+  or read-first and touches lines anywhere; evidence is described in words ("the drop code,
+  where it says to ignore a drop while a message is showing"). Copy says "piece" for a bead
+  and names "epic" once as the plan's name; "orchestrator" is introduced once, in 02, as
+  the agent that runs the job and never writes code. The glossary keeps only the words the
+  five modules use, at most sixteen, with door kept for module 03's aside. *Reason:* the
+  skeptic page and the gate block were pages for programmers (Ross).
+- **C23 True to the skills.** Every claim the course makes about the workflow is what the
+  skills do: a builder's gate is lint, types and the unit tests, and the browser run is the
+  full gate at the end of the run; a builder that edits outside its files is sent back by
+  the orchestrator reading its report and the change against the piece at hand-back, never
+  refused at the keystroke, so no copy says "rejected"; a clash where two builders' work is
+  joined is a merge conflict another agent settles, not an overwrite; the cite-a-line rule
+  came from a refuted race, so 04's story does not list it; the one-shot runs fifteen
+  seconds everywhere, 03's table included; the orchestrator, not the demo script, catches a
+  thing built that nobody asked for; the closing copy says "a recorded walkthrough someone
+  judged", not a pull request; the brief never says how many questions remain. *Reason:*
+  the course claimed walls the workflow does not have (the log's review against the skills
+  and agents).
+- **C24 content/ is the source of the copy.** `docs/course/modules/*.md` are round one's
+  draft, kept for the record and not updated; `content/README.md` and
+  `docs/course/README.md` say so. Copy this epic does not decide is the worker's, in the
+  course's register (second person, plain words, the existing YAML as the pattern); a
+  product choice the decisions leave open is the orchestrator's, recorded under "chosen by
+  orchestrator". This replaces round one's "Content in YAML" rule that the storyboard is
+  the source, carried word for word. *Reason:* Ross reviews the running course, not
+  markdown, and two copies drift.
+- **Unit tests hold whatever the content says.** No unit test depends on a module's copy,
+  screen list, slug, option count or point total except through the content it reads at
+  run time or an inline fixture, so a content edit never turns the fast gate red (D13).
+  This finishes round one's "Test fixtures" rule. *Reason:* round two's tests played module
+  07 and asserted 28 points, which every content bead would have broken.
+- **Activity ids reused.** The slugs 00 to 04 are reused with new content, so the module,
+  check and interaction ids keep their shape (D24); the statement shapes are unchanged.
+  *Reason:* the course has not launched, so nothing is recorded against them.
+- **Engine unchanged but for the walls.** The look, the engine's fixed words, the screen
+  types and the blocks are unchanged; the schema changes only for the walls (four of them,
+  and a module adding two). No new dependency. *Reason:* round three changes what the
+  course teaches, not how it looks or what it sends; the box is the one engine change it
+  needs.
+
 ## 6a. Engine terms
 
 The names later beads cite. The rules behind them are §6.
 
 - **Content.** `content/course.yaml` (title, description, activity id, the scenario and home
-  copy, the eight modules in order with slug, title, minutes, wall and file),
-  `content/modules/00.yaml` to `07.yaml` (each module's screens), `content/fridge/one-shot.yaml`
-  and `content/fridge/accepted.yaml`. One schema in `src/content/` validates all of it and
-  gives the app a typed course; `content/README.md` documents each screen type.
+  copy, the box's labels, the five modules in order with slug, title, minutes, wall and
+  file), `content/modules/00.yaml` to `04.yaml` (each module's screens),
+  `content/fridge/one-shot.yaml` and `content/fridge/accepted.yaml`. One schema in
+  `src/content/` validates all of it and gives the app a typed course; `content/README.md`
+  documents each screen type. `content/` is the source of the copy (C24).
+- **The box.** Four walls, in this order: the record, the gate, the reviews (the wall
+  called agents) and evidence, labelled "01 the record", "02 the gate", "02 the reviews" and
+  "03 evidence"; and the ring round them, "the retro: round again, change the check".
+  Drawn as a box with four sides, top first and clockwise; its text alternative counts the
+  walls. Each module adds no wall (00), one wall (01 the record, 03 evidence), two walls (02
+  the gate and the reviews) or the ring (04); no module adds the whole box at once (C20,
+  C21).
 - **Screen types.** *scene*: heading, eyebrow, body blocks. *takeaway*: the card and the box
-  with the wall gained (the ring on 06; the complete box and the end copy on 07). *chat*: a
+  with the walls gained (the ring on 04, with the end copy after it). *chat*: a
   fixed learner opening, agent messages, optional reply options each with a scripted reply,
   a side panel. *brief*: ranked questions with chips, the recommended one marked, decision
   text per option filling a panel, a playback message, round two, a "Your defaults" button,
   a closing message. *choose*: prompt, options with label, right or wrong and feedback,
   optional reveal blocks; mode multi or single; scored or not; optional after blocks and a
-  box panel; the checks are scored single-choice. *match*: rows each with a key among a
-  shared set of targets, feedback per row, scored or not. *order*: cards in a correct order,
-  keyboard-operable, scored. *fridge*: one fridge from a fridge file. *compare*: two fridges
-  side by side and a table of differences.
+  box panel; the checks are scored single-choice. *fridge*: one fridge from a fridge file.
+  *compare*: two fridges side by side and a table of differences. Round one's capstone
+  types stay in the engine and `content/README.md`, and no module uses them (C21).
 - **Scene blocks.** paragraph, cards, quote, numbered list, table, two columns (each a list
   of blocks), monospace, stats row (numbers with captions), aside (with a glossary term).
 - **Course-level pages.** The scenario (role chip, heading, memo, three lines, "Take the
-  job") and the home page (thesis quote and attribution, the box, eight module cards with
+  job") and the home page (thesis quote and attribution, the box, five module cards with
   blurbs). Neither is part of a module; module 00 starts at "The request".
-- **The frame.** `src/course/frame/`: the top bar with the module name, eight progress dots
-  and "Screen n of m"; Back and Next; a screen registry keyed by type; hash routes per
+- **The frame.** `src/course/frame/`: the top bar with the module name, one progress dot per
+  module (five) and "Screen n of m"; Back and Next; a screen registry keyed by type; hash routes per
   screen. It gives each screen three props: its content, its saved answer when one exists,
   and a read-only view of the module's progress (every slug's latest answer and score).
 - **The event callback.** One function the frame passes to every screen, with four events:
-  *answered* (slug, right, score raw and max: 1 of 1 for a check, n of 8 for the order,
-  n of 6 for the walls; one per Check press); *interacted* (slug, option; one per option
+  *answered* (slug, right, score raw and max: 1 of 1 for a check; one per Check
+  press); *interacted* (slug, option; one per option
   pick, three for the brief's defaults); *fridge ended* (slug, score raw and max);
   *takeaway reached*.
 - **Module completion.** The module's takeaway is reached with every scored screen in it
   answered. Next is disabled on a scored screen until it is answered, and no route passes
-  the first one still unanswered. The course is complete when all eight modules are.
-- **The score.** 28 points: 14 checks (two in each of modules 00 to 06, one point each),
-  the order's 8 and the walls' 6 in module 07. Scaled is points over 28. The latest answer
-  counts. Fridge scores are reported per play and are not part of it.
+  the first one still unanswered. The course is complete when all five modules are.
+- **The score.** The ten checks: two in each of modules 00 to 04, one point each. Scaled
+  is points over 10. The latest answer counts. Fridge scores are reported per play and are
+  not part of it (C21).
 - **Preview mode.** No launch (no endpoint, or no actor or auth): an in-memory store, the
   PREVIEW badge and the statements drawer; progress in localStorage under "preview".
 - **Activity ids.** Course `https://rosslote.github.io/agent-course/`; modules
@@ -494,3 +588,15 @@ The names later beads cite. The rules behind them are §6.
   four groups). Its first bead wrote the decision record (§6, §6a), rewrote §5 to what is left
   for UAT and later rounds, and corrected `docs/course/README.md` §7 and §10 and module 07.
   Next: `/orchestrate agent-course-wqw`.
+- 2026-10-19, round three filed: Ross reviewed both builds and reshaped the course (log
+  `docs/conversations/2026-10-19-four-walls-not-five.md`): the learner's seat, not the
+  agent's; two ideas, how you ask and the builder as the worst judge of its own work; four
+  walls and the arrow, "done" no longer a wall; five modules of about thirty minutes; no
+  code on any screen; every claim true of the skills; content/ the source of the copy. Rounds
+  one and two merged into main (3a83f84). Epic `agent-course-bsg` filed, nine beads, then
+  `/epic-review`: 29 findings, all confirmed, 24 fixed on the beads and five answered (the
+  agent's own idea in the brief is labelling each shelf, not shuffling; 03's choices name
+  the reason staying until the next move). Its first bead wrote the decision record (C18–C24
+  in `docs/course/README.md` §9, with its preamble, §2–§5, §7, §8 and §11 in line; round
+  three's rules in §6; §6a) and cut the glossary to sixteen words. Next:
+  `/orchestrate agent-course-bsg`.
