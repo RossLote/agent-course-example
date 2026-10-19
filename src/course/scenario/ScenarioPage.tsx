@@ -1,4 +1,5 @@
 import type { Course } from '../../content/index.ts';
+import { Copy } from '../../screens/scene/Copy.tsx';
 import { formatRoute } from '../route.ts';
 import { TopBar } from '../TopBar.tsx';
 import './ScenarioPage.css';
@@ -13,31 +14,45 @@ export function ScenarioPage({ course }: ScenarioPageProps) {
   const { scenario } = course;
   return (
     <div className="page">
-      <TopBar title={course.title}>{scenario.label}</TopBar>
+      <TopBar title={course.title}>
+        <Copy text={scenario.label} />
+      </TopBar>
       <main className="page-main scenario">
         <div className="scenario-intro">
           <p className="scenario-role">
             <span className="scenario-role-dot" aria-hidden="true">
               You
             </span>
-            {scenario.role}
+            <Copy text={scenario.role} />
           </p>
-          <h1>{scenario.heading}</h1>
+          <h1>
+            <Copy text={scenario.heading} />
+          </h1>
         </div>
 
         <div className="scenario-memo">
           <p className="scenario-memo-head">
             <span>
-              From: <strong>{scenario.memo.from}</strong>
+              From:{' '}
+              <strong>
+                <Copy text={scenario.memo.from} />
+              </strong>
             </span>
-            <span>{scenario.memo.date}</span>
             <span>
-              Subject: <strong>{scenario.memo.subject}</strong>
+              <Copy text={scenario.memo.date} />
+            </span>
+            <span>
+              Subject:{' '}
+              <strong>
+                <Copy text={scenario.memo.subject} />
+              </strong>
             </span>
           </p>
           <div className="scenario-memo-body">
             {scenario.memo.body.map((paragraph, i) => (
-              <p key={i}>{paragraph}</p>
+              <p key={i}>
+                <Copy text={paragraph} />
+              </p>
             ))}
           </div>
         </div>
@@ -49,7 +64,10 @@ export function ScenarioPage({ course }: ScenarioPageProps) {
                 {String(i + 1).padStart(2, '0')}
               </span>
               <p>
-                <strong>{line.title}</strong> {line.text}
+                <strong>
+                  <Copy text={line.title} />
+                </strong>{' '}
+                <Copy text={line.text} />
               </p>
             </li>
           ))}
@@ -57,9 +75,11 @@ export function ScenarioPage({ course }: ScenarioPageProps) {
 
         <div className="scenario-go">
           <a className="btn btn-primary btn-large" href={formatRoute({ page: 'home' })}>
-            {scenario.button}
+            <Copy text={scenario.button} />
           </a>
-          <p className="muted small">{scenario.note}</p>
+          <p className="muted small">
+            <Copy text={scenario.note} />
+          </p>
         </div>
       </main>
     </div>

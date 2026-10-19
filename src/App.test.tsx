@@ -145,7 +145,7 @@ describe('App with progress', () => {
 
   it(`reads "${total} of ${total} done", every card "Done" and "Review from module 00" once all are done`, () => {
     const done: ProgressDoc = {
-      version: 1,
+      version: 2,
       modules: Object.fromEntries(course.modules.map((m) => [m.slug, { answers: {}, reached: m.screens.length, completed: true }])),
     };
     localStorage.setItem(localStateKey(course, null), JSON.stringify(done));
@@ -279,7 +279,7 @@ describe('App with a launch', () => {
       vi.fn<typeof fetch>((_url, init) => (init?.method === 'GET' ? new Promise((resolve) => (answer = resolve)) : Promise.resolve(new Response(null, { status: 204 })))),
     );
     const state: ProgressDoc = {
-      version: 1,
+      version: 2,
       modules: { '00': { answers: { 'check-1': { answer: { picked: [1] }, score: { raw: 1, max: 1 }, right: true } }, reached: 5, completed: false } },
     };
     const store = createProgressStore(inline, createLrsTracker(inline, sparkLaunch()));

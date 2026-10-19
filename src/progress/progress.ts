@@ -22,24 +22,26 @@ export interface ModuleRecord {
 
 /**
  * The progress document, written to State and localStorage as it is. A module with nothing
- * reached is left out. `version` changes only when the shape does. `savedAt` is when it last
+ * reached is left out. `version` changes when the shape does, and when the course's modules are
+ * replaced under the same slugs, so a document saved against the old modules reads as none
+ * (round three, which replaced round two's modules 00 to 04, made it 2). `savedAt` is when it last
  * changed (an ISO timestamp, set by the store), so on load the newer of State and the local copy
  * wins; a document without it (one saved before it was added, or the empty one) is the oldest.
  */
 export type ProgressDoc = {
-  readonly version: 1;
+  readonly version: 2;
   readonly savedAt?: string;
   readonly modules: Readonly<Record<string, ModuleRecord>>;
 };
 
 /** The progress of a learner who has done nothing yet. */
-export const EMPTY_PROGRESS: ProgressDoc = { version: 1, modules: {} };
+export const EMPTY_PROGRESS: ProgressDoc = { version: 2, modules: {} };
 
 const EMPTY_RECORD: ModuleRecord = { answers: NO_ANSWERS, reached: 0, completed: false };
 
 const scoreSchema = z.object({ raw: z.number(), max: z.number() });
 const docSchema = z.object({
-  version: z.literal(1),
+  version: z.literal(2),
   savedAt: z.string().optional(),
   modules: z.record(
     z.string(),
@@ -143,7 +145,7 @@ export function courseComplete(course: ProgressCourse, doc: ProgressDoc): boolea
   return course.modules.length > 0 && modulesDone(course, doc) === course.modules.length;
 }
 
-/** The course's score: every module's (the latest answer of each scored screen) out of what the content gives them, 28. */
+/** The course's score: every module's (the latest answer of each scored screen) out of what the content gives them. */
 export function courseScore(course: ProgressCourse, doc: ProgressDoc): Score {
   let raw = 0;
   let max = 0;

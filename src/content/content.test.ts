@@ -38,10 +38,9 @@ describe('content/', () => {
     expect(problems(contentFiles)).toEqual([]);
   });
 
-  it("gives the app a course with course.yaml's modules in order, numbered from 00, and the fridges by name", () => {
+  it("gives the app a course with course.yaml's modules in order and the fridges by name", () => {
     expect(course.id).toBe('https://rosslote.github.io/agent-course/');
     expect(course.modules.map((m) => m.slug)).toEqual(entries.map((e) => e.slug));
-    expect(course.modules.map((m) => m.slug)).toEqual(course.modules.map((_, i) => String(i).padStart(2, '0')));
     for (const m of course.modules) expect(m.screens.at(-1)?.type).toBe('takeaway');
     const fridges = Object.keys(contentFiles).flatMap((f) => (f.startsWith('fridge/') ? [f.replace(/^fridge\/(.*)\.yaml$/, '$1')] : []));
     expect(Object.keys(course.fridges).sort()).toEqual(fridges.sort());

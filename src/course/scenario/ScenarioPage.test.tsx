@@ -43,4 +43,24 @@ describe('ScenarioPage', () => {
     expect(within(bar).getByText('Scenario label')).toBeTruthy();
     expect(screen.getAllByRole('main')).toHaveLength(1);
   });
+
+  it('renders **bold** and *italic* in every piece of its copy as strong and em, with no asterisks', () => {
+    /** A field's copy, in bold and in italic, named so each field's emphasis can be found. */
+    const marked = (name: string) => `**${name}** and *${name} too*`;
+    const scenario = {
+      label: marked('label'),
+      role: marked('role'),
+      heading: marked('heading'),
+      memo: { from: marked('from'), date: marked('date'), subject: marked('subject'), body: [marked('body 1'), marked('body 2')] },
+      lines: [1, 2, 3].map((n) => ({ title: marked(`title ${n}`), text: marked(`text ${n}`) })),
+      button: marked('button'),
+      note: marked('note'),
+    };
+    const { container } = render(<ScenarioPage course={{ ...course, scenario }} />);
+    const names = ['label', 'role', 'heading', 'from', 'date', 'subject', 'body 1', 'body 2', 'button', 'note', ...[1, 2, 3].flatMap((n) => [`title ${n}`, `text ${n}`])];
+    const texts = (tag: string) => [...container.querySelectorAll(tag)].map((e) => e.textContent);
+    expect(texts('strong')).toEqual(expect.arrayContaining(names));
+    expect(texts('em')).toEqual(expect.arrayContaining(names.map((n) => `${n} too`)));
+    expect(container.textContent).not.toContain('*');
+  });
 });

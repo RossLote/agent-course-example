@@ -97,4 +97,28 @@ describe('HomePage', () => {
     expect(primary().textContent).toBe('Review from module 00');
     expect(primary().getAttribute('href')).toBe('#/modules/00/1');
   });
+
+  it('renders **bold** and *italic* in every piece of its copy as strong and em, with no asterisks', () => {
+    /** A field's copy, in bold and in italic, named so each field's emphasis can be found. */
+    const marked = (name: string) => `**${name}** and *${name} too*`;
+    const home = {
+      meta: marked('meta'),
+      leave: marked('leave'),
+      eyebrow: marked('eyebrow'),
+      heading: marked('heading'),
+      quote: { text: marked('quote'), attribution: marked('attribution') },
+      line: marked('line'),
+      start: marked('start'),
+      scenarioLink: marked('scenarioLink'),
+      box: { centre: marked('centre'), caption: marked('caption') },
+      modulesHeading: marked('modulesHeading'),
+    };
+    const modules = course.modules.map((m) => ({ ...m, title: marked(`title ${m.slug}`), wallLabel: marked(`wallLabel ${m.slug}`), blurb: marked(`blurb ${m.slug}`) }));
+    const { container } = render(<HomePage course={{ ...course, home, modules }} />);
+    const names = [...'meta leave eyebrow heading quote attribution line start scenarioLink caption modulesHeading'.split(' '), ...modules.flatMap((m) => [`title ${m.slug}`, `wallLabel ${m.slug}`, `blurb ${m.slug}`])];
+    const texts = (tag: string) => [...container.querySelectorAll(tag)].map((e) => e.textContent);
+    expect(texts('strong')).toEqual(expect.arrayContaining(names));
+    expect(texts('em')).toEqual(expect.arrayContaining(names.map((n) => `${n} too`)));
+    expect(container.textContent).not.toContain('*');
+  });
 });

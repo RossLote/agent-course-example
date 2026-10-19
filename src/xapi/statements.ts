@@ -27,7 +27,7 @@ export function initialized(course: StatementCourse, launch: Launch | null): Sta
 }
 
 /**
- * `completed` on the course: completion true and the score out of 28 (`score.max`), scaled
+ * `completed` on the course: completion true and the score out of the course's points (`score.max`), scaled
  * points over max. Sent when the last module completes and again when the score changes.
  */
 export function courseCompleted(course: StatementCourse, launch: Launch | null, score: Score): Statement {
