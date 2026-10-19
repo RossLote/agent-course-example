@@ -42,3 +42,23 @@ is the agent working alone, so the log is short.
   any copy, so a small piece (.15) renders it like all other copy.
 - The fast gate is green after every merge (405 unit tests). The e2e tier
   (.8) is next, then the review passes and the walkthrough.
+
+## Agent: reviews, the walkthrough, done
+
+- .8 brought the e2e tier to the five modules and 10 of 10; the full gate went
+  green: lint, types, unit, e2e and the package check.
+- Simplify, then a plain review, then the adversarial review: ten finders, 32
+  findings, 26 after folding duplicates, 25 confirmed and one tie. Most were
+  about the course telling the truth about the workflow: the skeptic rule
+  (both skeptics must show a finding impossible, not one), the retro proposes
+  changes rather than making them, the walkthrough comes last, the content
+  guide's examples still taught round two's gate. All are fixed in four
+  batches; the tie (round two's decisions numbered D9 and D10) held, because
+  a later brief does carry the numbering on.
+- One choice I made for you: progress saved against round two's content is
+  dropped when round three loads, because the modules under 00 to 04 are new
+  and nothing was launched. It is in the epic's DECISIONS and reversible.
+- The walkthrough plays the acceptance bar in six chapters. The first take
+  ran 39 seconds, too fast to follow, so it was recorded again with a pause
+  on every screen: 4 minutes 43. I sent it to you; there is no remote, so no
+  pull request. The branch to merge is agent-course-bsg/round-three.
